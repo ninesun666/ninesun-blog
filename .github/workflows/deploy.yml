@@ -94,11 +94,11 @@ jobs:
             
             # 停止旧服务
             echo "🛑 停止旧服务..."
-            docker compose down || true
+            docker compose -f docker-compose.prod.yml down || true
             
             # 启动服务
             echo "🚀 启动服务..."
-            docker compose up -d
+            docker compose -f docker-compose.prod.yml up -d
             
             echo "✅ 容器启动成功"
             
@@ -108,7 +108,7 @@ jobs:
             
             # 检查容器状态
             echo "📊 检查容器状态..."
-            docker compose ps
+            docker compose -f docker-compose.prod.yml ps
             
             # 健康检查 - 后端
             echo "🧪 执行后端健康检查..."
@@ -119,7 +119,7 @@ jobs:
               fi
               if [ $i -eq 5 ]; then
                 echo "⚠️ 后端健康检查失败，查看日志..."
-                docker compose logs backend --tail=100
+                docker compose -f docker-compose.prod.yml logs backend --tail=100
                 exit 1
               fi
               echo "⏳ 等待后端就绪... ($i/5)"
@@ -135,7 +135,7 @@ jobs:
               fi
               if [ $i -eq 5 ]; then
                 echo "⚠️ 前端健康检查失败，查看日志..."
-                docker compose logs frontend --tail=100
+                docker compose -f docker-compose.prod.yml logs frontend --tail=100
                 exit 1
               fi
               echo "⏳ 等待前端就绪... ($i/5)"
