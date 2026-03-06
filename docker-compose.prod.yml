@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # ==================== PostgreSQL 数据库 ====================
+  postgres:
+    image: postgres:15-alpine
+    container_name: ninesun-blog-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ninesun_blog
+      POSTGRES_USER: ${POSTGRES_USER:-ninesun}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ninesun} -d ninesun_blog"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - blog-net
+
+  # ==================== Redis 缓存 ====================
+  redis:
+    image: redis:7-alpine
+    container_name: ninesun-blog-redis
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis123}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - blog-net
+
+  # ==================== 后端服务 ====================
+  backend:
+    image: ${DOCKER_USERNAME}/ninesun-blog-backend:latest
+    container_name: ninesun-blog-backend
+    restart: always
+    ports:
+      - "8089:8089"
+    volumes:
+      - uploads_data:/app/uploads
+    environment:
+      # 数据库配置
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ninesun_blog
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-ninesun}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      
+      # Redis 配置
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=${REDIS_PASSWORD:-redis123}
+      
+      # JWT 配置
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      
+      # 站点配置
+      - SITE_URL=${SITE_URL:-https://blog.ninesun.site}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8089/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - blog-net
+
+  # ==================== 前端服务 ====================
+  frontend:
+    image: ${DOCKER_USERNAME}/ninesun-blog-frontend:latest
+    container_name: ninesun-blog-frontend
+    restart: always
+    ports:
+      - "8999:80"
+    depends_on:
+      - backend
+    networks:
+      - blog-net
+
+# ==================== 网络 ====================
+networks:
+  blog-net:
+    driver: bridge
+
+# ==================== 数据卷 ====================
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:

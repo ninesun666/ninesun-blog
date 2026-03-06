@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+**/target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+!.env.example
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Upload files
+uploads/
+
+# Test coverage
+coverage/
+.nyc_output/

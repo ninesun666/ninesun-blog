@@ -1,0 +1,6 @@
+export { default as AdminLayout } from './AdminLayout'
+export { default as AdminDashboard } from './AdminDashboard'
+export { default as AdminArticles } from './AdminArticles'
+export { default as AdminComments } from './AdminComments'
+export { default as AdminUsers } from './AdminUsers'
+export { default as AdminSettings } from './AdminSettings'

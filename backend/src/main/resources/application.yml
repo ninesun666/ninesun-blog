@@ -1,0 +1,57 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: ninesun-blog
+  config:
+    import: optional:file:./.env[.properties]
+  
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5441/${POSTGRES_DB:ninesun_blog}}
+    username: ${SPRING_DATASOURCE_USERNAME:${POSTGRES_USER:ninesun}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${POSTGRES_PASSWORD:ninesun123}}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6388}
+      password: ${SPRING_DATA_REDIS_PASSWORD:${REDIS_PASSWORD:redis123}}
+      timeout: 10000ms
+  
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+jwt:
+  secret: ${JWT_SECRET:your-jwt-secret-key-change-in-production}
+  expiration: 86400000
+
+app:
+  site-url: ${SITE_URL:http://localhost:8999}
+  upload:
+    dir: ${UPLOAD_DIR:uploads}
+
+github:
+  client-id: ${GITHUB_CLIENT_ID:}
+  client-secret: ${GITHUB_CLIENT_SECRET:}
+
+logging:
+  level:
+    root: INFO
+    com.ninesun.blog: DEBUG
+    org.hibernate.SQL: DEBUG
