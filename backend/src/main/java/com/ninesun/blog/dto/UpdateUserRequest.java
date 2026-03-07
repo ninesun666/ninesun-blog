@@ -6,6 +6,8 @@ public record UpdateUserRequest(
         String nickname,
         String avatar,
         User.UserRole role,
-        Boolean enabled
+        Boolean enabled,
+        String currentPassword,
+        String newPassword
 ) {
 }

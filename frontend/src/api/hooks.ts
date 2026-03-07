@@ -17,17 +17,27 @@ export function useArticle(slug: string) {
 }
 
 export function useArticlesByCategory(slug: string, page = 0, size = 10) {
+  // "all" 表示查询所有文章
+  const isAll = slug === 'all'
+  
   return useQuery({
     queryKey: ['articles', 'category', slug, page, size],
-    queryFn: () => articleApi.getArticlesByCategory(slug, page, size),
+    queryFn: () => isAll 
+      ? articleApi.getArticles(page, size) 
+      : articleApi.getArticlesByCategory(slug, page, size),
     enabled: !!slug,
   })
 }
 
 export function useArticlesByTag(slug: string, page = 0, size = 10) {
+  // "all" 表示查询所有文章
+  const isAll = slug === 'all'
+  
   return useQuery({
     queryKey: ['articles', 'tag', slug, page, size],
-    queryFn: () => articleApi.getArticlesByTag(slug, page, size),
+    queryFn: () => isAll 
+      ? articleApi.getArticles(page, size) 
+      : articleApi.getArticlesByTag(slug, page, size),
     enabled: !!slug,
   })
 }

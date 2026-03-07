@@ -1,4 +1,4 @@
-import { Box, Heading, Text, SimpleGrid, Card, Badge, HStack, Spinner, Center } from '@chakra-ui/react'
+import { Container, Heading, Text, SimpleGrid, Card, Badge, HStack, Spinner, Center } from '@chakra-ui/react'
 import { Link, useParams } from 'react-router-dom'
 import { useArticlesByCategory, useCategories } from '../api/hooks'
 import { SEO, generateBreadcrumbJsonLd } from '../components/SEO'
@@ -26,11 +26,12 @@ const CategoryPage = () => {
 
   const articles = data?.content || []
   const siteUrl = import.meta.env.VITE_SITE_URL || 'http://localhost:8999'
+  const isAll = slug === 'all'
   const category = categories?.find((c: any) => c.slug === slug)
-  const categoryName = category?.name || slug || '未知分类'
+  const categoryName = isAll ? '全部分类' : (category?.name || slug || '未知分类')
 
   return (
-    <Box>
+    <Container maxW="container.xl" py={8}>
       <SEO
         title={`分类: ${categoryName}`}
         description={`${categoryName}分类下的所有文章 - Ninesun Blog`}
@@ -66,7 +67,7 @@ const CategoryPage = () => {
           ))}
         </SimpleGrid>
       )}
-    </Box>
+    </Container>
   )
 }
 

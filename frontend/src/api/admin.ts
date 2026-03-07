@@ -145,3 +145,9 @@ export const updateSiteSettings = async (settings: SiteSettings): Promise<SiteSe
   const response = await api.put<SiteSettings>('/admin/settings', settings)
   return response.data
 }
+
+// Change Password
+export const changePassword = async (currentPassword: string, newPassword: string): Promise<User> => {
+  const response = await api.put<User>('/auth/password', { currentPassword, newPassword })
+  return response.data
+}

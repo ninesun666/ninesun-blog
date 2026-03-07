@@ -28,8 +28,8 @@ public class DataInitializer implements CommandLineRunner {
 
         // 创建默认管理员账户
         User admin = new User();
-        admin.setUsername("JasonGuo");
-        admin.setEmail("291236025@qq.com");
+        admin.setUsername("admin");
+        admin.setEmail("admin@ninesun.blog");
         admin.setPassword(passwordEncoder.encode("admin123"));
         admin.setNickname("管理员");
         admin.setRole(User.UserRole.ADMIN);

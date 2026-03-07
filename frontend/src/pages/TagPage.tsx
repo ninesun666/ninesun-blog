@@ -1,4 +1,4 @@
-import { Box, Heading, Text, SimpleGrid, Card, Badge, HStack, Spinner, Center } from '@chakra-ui/react'
+import { Container, Heading, Text, SimpleGrid, Card, Badge, HStack, Spinner, Center } from '@chakra-ui/react'
 import { Link, useParams } from 'react-router-dom'
 import { useArticlesByTag, useTags } from '../api/hooks'
 import { SEO, generateBreadcrumbJsonLd } from '../components/SEO'
@@ -26,11 +26,12 @@ const TagPage = () => {
 
   const articles = data?.content || []
   const siteUrl = import.meta.env.VITE_SITE_URL || 'http://localhost:8999'
+  const isAll = slug === 'all'
   const tag = tags?.find((t: any) => t.slug === slug)
-  const tagName = tag?.name || slug || '未知标签'
+  const tagName = isAll ? '全部标签' : (tag?.name || slug || '未知标签')
 
   return (
-    <Box>
+    <Container maxW="container.xl" py={8}>
       <SEO
         title={`标签: ${tagName}`}
         description={`${tagName}标签下的所有文章 - Ninesun Blog`}
@@ -66,7 +67,7 @@ const TagPage = () => {
           ))}
         </SimpleGrid>
       )}
-    </Box>
+    </Container>
   )
 }
 

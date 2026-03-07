@@ -137,6 +137,20 @@ public class UserService {
             user.setEnabled(request.enabled());
         }
         
+        // 修改密码
+        if (request.newPassword() != null && !request.newPassword().isEmpty()) {
+            if (request.currentPassword() == null || request.currentPassword().isEmpty()) {
+                throw new IllegalArgumentException("修改密码需要提供当前密码");
+            }
+            if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("当前密码错误");
+            }
+            if (request.newPassword().length() < 6) {
+                throw new IllegalArgumentException("新密码至少需要6个字符");
+            }
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
+        }
+        
         return UserDTO.from(userRepository.save(user));
     }
     

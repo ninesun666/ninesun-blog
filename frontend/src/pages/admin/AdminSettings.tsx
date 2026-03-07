@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Box, Card, Heading, Input,
-  Textarea, Button, SimpleGrid, Switch, Flex, Spinner, Center, Text
+  Textarea, Button, SimpleGrid, Switch, Flex, Spinner, Center, Text, VStack, Separator
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { getSiteSettings, updateSiteSettings } from '../../api/admin'
+import { getSiteSettings, updateSiteSettings, changePassword } from '../../api/admin'
+import { useAuthStore } from '../../stores'
 import type { SiteSettings } from '../../types'
 
 const defaultSettings: SiteSettings = {
@@ -21,7 +22,17 @@ const defaultSettings: SiteSettings = {
 
 export default function AdminSettings() {
   const queryClient = useQueryClient()
+  const { user } = useAuthStore()
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings)
+  
+  // 修改密码状态
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['site-settings'],
@@ -41,12 +52,47 @@ export default function AdminSettings() {
     },
   })
 
+  const passwordMutation = useMutation({
+    mutationFn: () => changePassword(passwordForm.currentPassword, passwordForm.newPassword),
+    onSuccess: () => {
+      setPasswordSuccess('密码修改成功')
+      setPasswordError('')
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    },
+    onError: (err: any) => {
+      setPasswordError(err.response?.data?.message || '密码修改失败')
+      setPasswordSuccess('')
+    },
+  })
+
   const handleSave = () => {
     updateMutation.mutate(settings)
   }
 
   const handleChange = (field: keyof SiteSettings, value: string | boolean) => {
     setSettings(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleChangePassword = () => {
+    setPasswordError('')
+    setPasswordSuccess('')
+
+    if (!passwordForm.currentPassword || !passwordForm.newPassword) {
+      setPasswordError('请填写所有密码字段')
+      return
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      setPasswordError('新密码至少需要6个字符')
+      return
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('两次输入的新密码不一致')
+      return
+    }
+
+    passwordMutation.mutate()
   }
 
   if (isLoading) {
@@ -173,6 +219,61 @@ export default function AdminSettings() {
           保存设置
         </Button>
       </Flex>
+
+      {/* 修改密码 */}
+      <Separator my={8} />
+      
+      <Card.Root maxW="md">
+        <Card.Body>
+          <Heading size="lg" mb={4}>修改密码</Heading>
+          <Text fontSize="sm" color="gray.500" mb={4}>
+            当前用户: {user?.username}
+          </Text>
+          <VStack gap={4}>
+            <Box w="full">
+              <Text fontSize="sm" mb={1} color="gray.500">当前密码</Text>
+              <Input
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                placeholder="输入当前密码"
+              />
+            </Box>
+            <Box w="full">
+              <Text fontSize="sm" mb={1} color="gray.500">新密码</Text>
+              <Input
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                placeholder="至少6个字符"
+              />
+            </Box>
+            <Box w="full">
+              <Text fontSize="sm" mb={1} color="gray.500">确认新密码</Text>
+              <Input
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                placeholder="再次输入新密码"
+              />
+            </Box>
+            {passwordError && (
+              <Text color="red.500" fontSize="sm">{passwordError}</Text>
+            )}
+            {passwordSuccess && (
+              <Text color="green.500" fontSize="sm">{passwordSuccess}</Text>
+            )}
+            <Button
+              w="full"
+              colorPalette="purple"
+              onClick={handleChangePassword}
+              loading={passwordMutation.isPending}
+            >
+              修改密码
+            </Button>
+          </VStack>
+        </Card.Body>
+      </Card.Root>
     </Box>
   )
 }
