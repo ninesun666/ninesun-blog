@@ -86,9 +86,12 @@ public class FileUploadService {
 
     public byte[] getFile(String filename) throws IOException {
         Path filePath = Paths.get(uploadDir).resolve(filename);
+        log.info("读取文件: {}, 绝对路径: {}", filePath, filePath.toAbsolutePath());
         if (!Files.exists(filePath)) {
+            log.error("文件不存在: {}", filePath.toAbsolutePath());
             throw new IOException("文件不存在: " + filename);
         }
+        log.info("文件存在，正在读取: {}", filePath.toAbsolutePath());
         return Files.readAllBytes(filePath);
     }
 
