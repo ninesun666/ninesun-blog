@@ -42,6 +42,9 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
+                // Static files - must be first, no auth required
+                .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/api/files/**").permitAll()
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/oauth/**").permitAll()
@@ -52,11 +55,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/comments/article/**").permitAll()
                 .requestMatchers("/api/likes/**").permitAll()
                 .requestMatchers("/api/seo/**").permitAll()
-                // Files - GET is public, upload/delete requires auth
-                .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
-                // Allow OPTIONS for CORS preflight
-                .requestMatchers(HttpMethod.OPTIONS, "/api/files/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/files/**").authenticated()
+                // File upload/delete requires auth
+                .requestMatchers(HttpMethod.POST, "/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/files/**").authenticated()
                 // Admin endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
