@@ -52,10 +52,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/comments/article/**").permitAll()
                 .requestMatchers("/api/likes/**").permitAll()
                 .requestMatchers("/api/seo/**").permitAll()
+                // Files - GET is public, upload/delete requires auth
                 .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
-                // File upload requires admin
-                .requestMatchers(HttpMethod.POST, "/api/files/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/files/**").hasRole("ADMIN")
+                // Allow OPTIONS for CORS preflight
+                .requestMatchers(HttpMethod.OPTIONS, "/api/files/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/files/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/files/**").authenticated()
                 // Admin endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Write operations require authentication
