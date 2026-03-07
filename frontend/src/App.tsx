@@ -12,6 +12,8 @@ import {
   AdminLayout,
   AdminDashboard,
   AdminArticles,
+  AdminCategories,
+  AdminTags,
   AdminComments,
   AdminUsers,
   AdminSettings
@@ -48,6 +50,8 @@ function App() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="articles" element={<AdminArticles />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="tags" element={<AdminTags />} />
           <Route path="comments" element={<AdminComments />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="settings" element={<AdminSettings />} />

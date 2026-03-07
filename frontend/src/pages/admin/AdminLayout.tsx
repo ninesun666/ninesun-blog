@@ -1,11 +1,13 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { Box, Flex, VStack, HStack, Text, Button, Container, Icon, Avatar } from '@chakra-ui/react'
 import { useAuthStore } from '../../stores'
-import { FiHome, FiFileText, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiBarChart2 } from 'react-icons/fi'
+import { FiHome, FiFileText, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiBarChart2, FiFolder, FiTag } from 'react-icons/fi'
 
 const navItems = [
   { to: '/admin', label: '仪表盘', icon: FiBarChart2, end: true },
   { to: '/admin/articles', label: '文章管理', icon: FiFileText },
+  { to: '/admin/categories', label: '分类管理', icon: FiFolder },
+  { to: '/admin/tags', label: '标签管理', icon: FiTag },
   { to: '/admin/comments', label: '评论审核', icon: FiMessageSquare },
   { to: '/admin/users', label: '用户管理', icon: FiUsers },
   { to: '/admin/settings', label: '站点设置', icon: FiSettings },
