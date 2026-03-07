@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-ninesun}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
-      - postgres_data:/var/lib/postql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ninesun} -d ninesun_blog"]
       interval: 10s
