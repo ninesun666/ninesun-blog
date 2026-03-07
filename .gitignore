@@ -31,3 +31,7 @@ uploads/
 # Test coverage
 coverage/
 .nyc_output/
+
+# Data directories (local mounts)
+data/
+
