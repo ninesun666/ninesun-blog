@@ -52,10 +52,43 @@ const MarkdownEditor = ({
     }
   }
 
+  // 获取编辑器中的 textarea 元素
+  const getTextarea = useCallback((): HTMLTextAreaElement | null => {
+    const container = containerRef.current
+    if (!container) return null
+    
+    // 查找 MDEditor 内的 textarea
+    const textarea = container.querySelector('.w-md-editor-text-input') as HTMLTextAreaElement
+    return textarea
+  }, [])
+
+  // 在光标位置插入文本
+  const insertAtCursor = useCallback((text: string) => {
+    const textarea = getTextarea()
+    
+    if (textarea) {
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      
+      // 在光标位置插入文本
+      const newValue = value.substring(0, start) + text + value.substring(end)
+      onChange(newValue)
+      
+      // 恢复光标位置到插入文本之后
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(start + text.length, start + text.length)
+      }, 0)
+    } else {
+      // 降级：追加到末尾
+      onChange(value + '\n' + text + '\n')
+    }
+  }, [value, onChange, getTextarea])
+
   const insertImageMarkdown = useCallback((url: string, filename: string) => {
     const imageMarkdown = `![${filename}](${url})`
-    onChange(value + '\n' + imageMarkdown + '\n')
-  }, [value, onChange])
+    insertAtCursor(imageMarkdown)
+  }, [insertAtCursor])
 
   const processImageFile = async (file: File) => {
     try {
