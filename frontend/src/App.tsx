@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Box } from '@chakra-ui/react'
+import { useEffect } from 'react'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import ArticleList from './pages/ArticleList'
@@ -18,7 +19,7 @@ import {
   AdminUsers,
   AdminSettings
 } from './pages/admin'
-import { useAuthStore } from './stores'
+import { useAuthStore, useThemeStore } from './stores'
 
 // 管理员路由保护组件
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,13 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  const { mode } = useThemeStore()
+
+  // 初始化主题
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', mode)
+  }, [mode])
+
   return (
     <Box minH="100vh">
       <Routes>
