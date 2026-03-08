@@ -3,6 +3,7 @@ package com.ninesun.blog.service;
 import com.ninesun.blog.dto.TagCreateRequest;
 import com.ninesun.blog.dto.TagDTO;
 import com.ninesun.blog.entity.Tag;
+import com.ninesun.blog.repository.ArticleRepository;
 import com.ninesun.blog.repository.TagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class TagService {
     
     private final TagRepository tagRepository;
+    private final ArticleRepository articleRepository;
     
     public List<TagDTO> getAllTags() {
         return tagRepository.findAllByOrderByNameAsc().stream()
@@ -70,7 +72,7 @@ public class TagService {
     }
     
     private TagDTO toDTO(Tag tag) {
-        long articleCount = tag.getArticles() != null ? tag.getArticles().size() : 0;
+        long articleCount = articleRepository.countByTagIdAndPublished(tag.getId());
         
         return new TagDTO(
             tag.getId(),

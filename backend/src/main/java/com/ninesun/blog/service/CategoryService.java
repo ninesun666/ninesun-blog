@@ -84,7 +84,7 @@ public class CategoryService {
     }
     
     private CategoryDTO toDTO(Category category) {
-        long articleCount = articleRepository.countByStatus(com.ninesun.blog.entity.Article.ArticleStatus.PUBLISHED);
+        long articleCount = articleRepository.countByCategoryIdAndPublished(category.getId());
         
         return new CategoryDTO(
             category.getId(),
