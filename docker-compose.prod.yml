@@ -46,6 +46,7 @@ services:
       - "8089:8089"
     volumes:
       - ./data/uploads:/app/uploads
+      - ./data/GeoLite2-City.mmdb:/app/data/GeoLite2-City.mmdb:ro
     environment:
       # 数据库配置
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ninesun_blog
