@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Box, Flex, Heading, Link as ChakraLink, Container, HStack, Button, Text, Icon, MenuRoot, MenuTrigger, MenuContent, MenuItem, VStack, IconButton } from '@chakra-ui/react'
-import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX } from 'react-icons/fi'
-import { useAuthStore } from '../stores'
+import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX, FiSun, FiMoon } from 'react-icons/fi'
+import { useAuthStore, useThemeStore } from '../stores'
 
 const Layout = () => {
   const navigate = useNavigate()
   const { isAuthenticated, user, logout } = useAuthStore()
+  const { mode, toggleTheme } = useThemeStore()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // 初始化主题
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', mode)
+  }, [mode])
 
   const handleLogout = () => {
     logout()
@@ -98,8 +104,20 @@ const Layout = () => {
               ))}
             </HStack>
 
-            {/* Desktop Auth Section */}
+            {/* Desktop Right Section */}
             <HStack gap={3} display={{ base: 'none', md: 'flex' }}>
+              {/* Theme Toggle */}
+              <IconButton
+                aria-label={mode === 'light' ? '切换到暗色模式' : '切换到亮色模式'}
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                borderRadius="lg"
+              >
+                <Icon as={mode === 'light' ? FiMoon : FiSun} boxSize={4} />
+              </IconButton>
+
+              {/* Auth Section */}
               {isAuthenticated ? (
                 <>
                   {user?.role === 'ADMIN' && (
@@ -186,6 +204,32 @@ const Layout = () => {
           {mobileMenuOpen && (
             <Box py={4} borderTop="1px solid" borderColor="gray.100">
               <VStack align="stretch" gap={1}>
+                {/* Theme Toggle */}
+                <Box
+                  as="button"
+                  onClick={toggleTheme}
+                  w="100%"
+                  textAlign="left"
+                  px={4}
+                  py={3}
+                  borderRadius="lg"
+                  fontWeight="600"
+                  fontSize="md"
+                  color="gray.700"
+                  bg="transparent"
+                  _hover={{ 
+                    bg: 'purple.50', 
+                    color: 'brand.600' 
+                  }}
+                  transition="all 0.2s"
+                  cursor="pointer"
+                >
+                  <HStack gap={3}>
+                    <Icon as={mode === 'light' ? FiMoon : FiSun} boxSize={5} />
+                    <Text>{mode === 'light' ? '暗色模式' : '亮色模式'}</Text>
+                  </HStack>
+                </Box>
+
                 {/* Navigation Links */}
                 {navItems.map((item) => (
                   <Box
