@@ -181,18 +181,20 @@ const Layout = () => {
                 </>
               ) : (
                 <Button 
-                  size="sm" 
+                  size="sm"
+                  px={5}
                   colorPalette="brand"
                   fontWeight="600"
-                  borderRadius="lg"
+                  borderRadius="full"
+                  boxShadow="0 2px 8px rgba(124, 58, 237, 0.25)"
+                  _hover={{
+                    boxShadow: "0 4px 12px rgba(124, 58, 237, 0.35)",
+                    transform: "translateY(-1px)"
+                  }}
+                  transition="all 0.2s"
                   asChild
                 >
-                  <Link to="/login">
-                    <HStack gap={2}>
-                      <Icon as={FiUser} />
-                      <Text>登录</Text>
-                    </HStack>
-                  </Link>
+                  <Link to="/login">登录</Link>
                 </Button>
               )}
             </HStack>
@@ -333,16 +335,17 @@ const Layout = () => {
                     size="lg" 
                     colorPalette="brand"
                     fontWeight="600"
-                    borderRadius="lg"
+                    borderRadius="full"
+                    boxShadow="0 2px 8px rgba(124, 58, 237, 0.25)"
+                    _hover={{
+                      boxShadow: "0 4px 12px rgba(124, 58, 237, 0.35)"
+                    }}
                     asChild
                     w="100%"
                     mt={2}
                   >
                     <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                      <HStack gap={2}>
-                        <Icon as={FiUser} />
-                        <Text>登录</Text>
-                      </HStack>
+                      登录
                     </Link>
                   </Button>
                 )}
