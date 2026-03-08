@@ -87,7 +87,7 @@ public class VisitLogService {
         long todayVisits = visitLogRepository.countSince(todayStart);
         long weekVisits = visitLogRepository.countSince(weekStart);
         long monthVisits = visitLogRepository.countSince(monthStart);
-        long uniqueVisitors = visitLogRepository.countUniqueIpSince(LocalDateTime.MIN);
+        long uniqueVisitors = visitLogRepository.countUniqueIp();
         long todayUniqueVisitors = visitLogRepository.countUniqueIpSince(todayStart);
         
         return new VisitStatsDTO(totalVisits, todayVisits, weekVisits, monthVisits, uniqueVisitors, todayUniqueVisitors);

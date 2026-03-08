@@ -43,6 +43,12 @@ public interface VisitLogRepository extends JpaRepository<VisitLog, Long> {
     long countUniqueIpSince(@Param("startTime") LocalDateTime startTime);
     
     /**
+     * 统计所有独立IP数
+     */
+    @Query("SELECT COUNT(DISTINCT v.ipAddress) FROM VisitLog v")
+    long countUniqueIp();
+    
+    /**
      * 获取最近访问记录
      */
     List<VisitLog> findTop100ByOrderByCreatedAtDesc();
