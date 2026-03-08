@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -10,67 +10,33 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Light Theme (default) */
-:root,
-[data-theme="light"] {
-  color-scheme: light;
-  color: #1a1a2e;
-  background-color: #fafafa;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-elevated: #fafafa;
-  --text-primary: #1a1a2e;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --code-bg: rgba(124, 58, 237, 0.1);
-  --code-color: #7c3aed;
-  --pre-bg: #1e1e2e;
-  --pre-color: #cdd6f4;
-}
-
-/* Dark Theme */
-[data-theme="dark"] {
-  color-scheme: dark;
-  color: #e5e7eb;
-  background-color: #0f0f1a;
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #12121f;
-  --bg-elevated: #1e1e32;
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --border-color: #2d2d44;
-  --code-bg: rgba(167, 139, 250, 0.15);
-  --code-color: #a78bfa;
-  --pre-bg: #0d0d1a;
-  --pre-color: #cdd6f4;
-}
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* 暗色模式 */
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
 body {
   min-height: 100vh;
-  background: var(--bg-secondary);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Custom scrollbar */
+/* 滚动条样式 */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -82,7 +48,15 @@ a {
   background: #a78bfa;
 }
 
-/* Animation utilities */
+.dark ::-webkit-scrollbar-thumb {
+  background: #4c1d95;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #5b21b6;
+}
+
+/* 动画 */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -98,7 +72,7 @@ a {
   animation: fadeInUp 0.5s ease-out forwards;
 }
 
-/* Card hover effect */
+/* 卡片悬停效果 */
 .card-hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -108,7 +82,7 @@ a {
   box-shadow: 0 20px 40px -12px rgba(124, 58, 237, 0.15);
 }
 
-/* Gradient text */
+/* 渐变文字 */
 .gradient-text {
   background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #c026d3 100%);
   -webkit-background-clip: text;
@@ -116,25 +90,14 @@ a {
   background-clip: text;
 }
 
-/* Glass effect */
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-[data-theme="dark"] .glass {
-  background: rgba(26, 26, 46, 0.8);
-}
-
 /* ========================================
-   Markdown body styles - Light Theme
+   Markdown 样式
    ======================================== */
 .markdown-body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.8;
-  color: var(--text-primary);
+  word-wrap: break-word;
 }
 
 .markdown-body h1,
@@ -147,32 +110,27 @@ a {
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
-  color: var(--text-primary);
 }
 
 .markdown-body h1 {
   font-size: 2em;
   padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid;
+  border-color: var(--chakra-colors-border, #e5e7eb);
 }
 
 .markdown-body h2 {
   font-size: 1.5em;
   padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid;
+  border-color: var(--chakra-colors-border, #e5e7eb);
 }
 
-.markdown-body h3 {
-  font-size: 1.25em;
-}
-
-.markdown-body h4 {
-  font-size: 1em;
-}
+.markdown-body h3 { font-size: 1.25em; }
+.markdown-body h4 { font-size: 1em; }
 
 .markdown-body p {
   margin-bottom: 16px;
-  color: var(--text-primary);
 }
 
 .markdown-body a {
@@ -186,21 +144,16 @@ a {
   text-decoration: underline;
 }
 
-[data-theme="dark"] .markdown-body a {
+.dark .markdown-body a {
   color: #a78bfa;
 }
 
-[data-theme="dark"] .markdown-body a:hover {
+.dark .markdown-body a:hover {
   color: #c4b5fd;
 }
 
 .markdown-body strong {
   font-weight: 600;
-  color: var(--text-primary);
-}
-
-.markdown-body em {
-  font-style: italic;
 }
 
 .markdown-body ul,
@@ -211,139 +164,124 @@ a {
 
 .markdown-body li {
   margin-bottom: 4px;
-  color: var(--text-primary);
-}
-
-.markdown-body li > ul,
-.markdown-body li > ol {
-  margin-top: 4px;
 }
 
 .markdown-body blockquote {
   margin: 0 0 16px;
   padding: 12px 16px;
-  color: var(--text-secondary);
-  background: var(--bg-elevated);
   border-left: 4px solid #7c3aed;
+  background: rgba(124, 58, 237, 0.05);
   border-radius: 0 8px 8px 0;
 }
 
-[data-theme="dark"] .markdown-body blockquote {
+.dark .markdown-body blockquote {
+  background: rgba(167, 139, 250, 0.1);
   border-left-color: #a78bfa;
-  background: rgba(167, 139, 250, 0.08);
 }
 
-.markdown-body blockquote p {
+.markdown-body blockquote p:last-child {
   margin-bottom: 0;
 }
 
+/* 行内代码 */
 .markdown-body code {
   padding: 0.2em 0.4em;
-  font-family: 'Fira Code', 'SF Mono', Monaco, 'Andale Mono', Consolas, monospace;
+  font-family: 'JetBrains Mono', 'Fira Code', SFMono-Regular, Consolas, monospace;
   font-size: 85%;
-  background-color: var(--code-bg);
-  color: var(--code-color);
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
   border-radius: 6px;
 }
 
+.dark .markdown-body code {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+/* 代码块 */
 .markdown-body pre {
   margin-bottom: 16px;
   padding: 16px;
   overflow: auto;
   font-size: 85%;
   line-height: 1.45;
-  background-color: var(--pre-bg);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
+  background: #f6f8fa;
+  border-radius: 8px;
+  border: 1px solid #e1e4e8;
+}
+
+.dark .markdown-body pre {
+  background: #161b22;
+  border-color: #30363d;
 }
 
 .markdown-body pre code {
   padding: 0;
+  background: transparent;
+  color: inherit;
   font-size: 100%;
-  background-color: transparent;
-  color: var(--pre-color);
 }
 
+/* 图片 */
 .markdown-body img {
   max-width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: 8px;
   margin: 16px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-[data-theme="dark"] .markdown-body img {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
+/* 表格 */
 .markdown-body table {
   width: 100%;
   margin-bottom: 16px;
   border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
 }
 
 .markdown-body table th,
 .markdown-body table td {
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border: 1px solid;
+  border-color: var(--chakra-colors-border, #e5e7eb);
 }
 
 .markdown-body table th {
   font-weight: 600;
-  background-color: var(--bg-elevated);
-  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.02);
 }
 
-.markdown-body table tr:nth-child(2n) {
-  background-color: var(--bg-elevated);
+.dark .markdown-body table th {
+  background: rgba(255, 255, 255, 0.05);
 }
 
+/* 分隔线 */
 .markdown-body hr {
-  height: 0.25em;
+  height: 2px;
   margin: 24px 0;
-  background-color: var(--border-color);
+  background: var(--chakra-colors-border, #e5e7eb);
   border: 0;
   border-radius: 2px;
 }
 
+/* 删除线 */
 .markdown-body del {
   text-decoration: line-through;
-  color: var(--text-muted);
+  opacity: 0.6;
 }
 
-/* Task list styling */
+/* 任务列表 */
 .markdown-body input[type="checkbox"] {
   margin-right: 8px;
   accent-color: #7c3aed;
 }
 
-/* Syntax highlighting improvements for dark mode */
-[data-theme="dark"] .markdown-body pre {
-  background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 100%);
-}
-
-/* Selection styling */
+/* 选择文本 */
 ::selection {
   background: rgba(124, 58, 237, 0.3);
-  color: inherit;
 }
 
-/* Focus visible styling */
-:focus-visible {
-  outline: 2px solid #7c3aed;
-  outline-offset: 2px;
-}
-
-/* Print styles */
+/* 打印样式 */
 @media print {
   .markdown-body {
     color: #000 !important;
-    background: #fff !important;
-  }
-  
-  .markdown-body a {
-    color: #7c3aed !important;
   }
 }

@@ -37,39 +37,3 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: null, token: null, isAuthenticated: false })
   },
 }))
-
-// 主题状态管理
-type ThemeMode = 'light' | 'dark'
-
-interface ThemeState {
-  mode: ThemeMode
-  toggleTheme: () => void
-  setTheme: (mode: ThemeMode) => void
-}
-
-const getStoredTheme = (): ThemeMode => {
-  const stored = localStorage.getItem('theme')
-  if (stored === 'dark' || stored === 'light') {
-    return stored
-  }
-  // 默认跟随系统
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark'
-  }
-  return 'light'
-}
-
-export const useThemeStore = create<ThemeState>((set, get) => ({
-  mode: getStoredTheme(),
-  toggleTheme: () => {
-    const newMode = get().mode === 'light' ? 'dark' : 'light'
-    localStorage.setItem('theme', newMode)
-    document.documentElement.setAttribute('data-theme', newMode)
-    set({ mode: newMode })
-  },
-  setTheme: (mode) => {
-    localStorage.setItem('theme', mode)
-    document.documentElement.setAttribute('data-theme', mode)
-    set({ mode })
-  },
-}))

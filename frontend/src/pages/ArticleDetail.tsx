@@ -1,90 +1,35 @@
-import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center, Code } from '@chakra-ui/react'
+import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useArticle } from '../api/hooks'
 import { articleApi } from '../api'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import hljs from 'highlight.js'
 import LikeButton from '../components/LikeButton'
 import CommentSection from '../components/CommentSection'
 import { SEO, generateArticleJsonLd } from '../components/SEO'
 
-// 代码块组件
-const CodeBlock = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
-  const match = /language-(\w+)/.exec(className || '')
-  const language = match ? match[1] : ''
-  
-  // 如果有语言标记或者是多行代码块
-  if (language || (typeof children === 'string' && children.includes('\n'))) {
-    return (
-      <Box position="relative" my={4}>
-        {language && (
-          <Text
-            position="absolute"
-            top={2}
-            right={3}
-            fontSize="xs"
-            color="gray.400"
-            fontWeight="medium"
-            textTransform="uppercase"
-          >
-            {language}
-          </Text>
-        )}
-        <Box
-          as="pre"
-          p={4}
-          borderRadius="lg"
-          bg="var(--pre-bg)"
-          color="var(--pre-color)"
-          overflow="auto"
-          fontSize="sm"
-          lineHeight="relaxed"
-          border="1px solid"
-          borderColor="var(--border-color)"
-        >
-          <Code
-            bg="transparent"
-            color="inherit"
-            p={0}
-            fontSize="inherit"
-            fontFamily="'Fira Code', 'SF Mono', Monaco, 'Andale Mono', Consolas, monospace"
-          >
-            {children}
-          </Code>
-        </Box>
-      </Box>
-    )
-  }
-  
-  // 行内代码
-  return (
-    <Code
-      bg="var(--code-bg)"
-      color="var(--code-color)"
-      px={2}
-      py={0.5}
-      borderRadius="md"
-      fontSize="0.9em"
-      fontFamily="'Fira Code', 'SF Mono', Monaco, 'Andale Mono', Consolas, monospace"
-    >
-      {children}
-    </Code>
-  )
-}
-
 const ArticleDetail = () => {
   const { slug } = useParams()
   const { data: article, isLoading, error } = useArticle(slug || '')
+  const codeRef = useRef<HTMLDivElement>(null)
 
   // 文章加载完成后增加浏览次数
   useEffect(() => {
     if (article?.id) {
-      articleApi.incrementViewCount(article.id).catch(() => {
-        // 忽略错误，不影响用户体验
-      })
+      articleApi.incrementViewCount(article.id).catch(() => {})
     }
   }, [article?.id])
+
+  // 代码高亮
+  useEffect(() => {
+    if (article?.content && codeRef.current) {
+      codeRef.current.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block as HTMLElement)
+      })
+    }
+  }, [article?.content])
 
   if (isLoading) {
     return (
@@ -124,7 +69,7 @@ const ArticleDetail = () => {
       />
       <VStack gap={4} align="start" mb={6}>
         <Heading size="3xl">{article.title}</Heading>
-        <HStack gap={4} color="gray.500" fontSize="sm">
+        <HStack gap={4} color="fg.muted" fontSize="sm">
           <Text>{new Date(article.createdAt).toLocaleDateString('zh-CN')}</Text>
           <Text>阅读 {article.viewCount}</Text>
         </HStack>
@@ -140,25 +85,18 @@ const ArticleDetail = () => {
 
       <Separator mb={6} />
 
-      <Box className="markdown-body" lineHeight="tall">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            code: CodeBlock,
-          }}
-        >
+      <Box ref={codeRef} className="markdown-body">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {article.content}
         </ReactMarkdown>
       </Box>
 
       <Separator my={8} />
 
-      {/* Like Button */}
       <Box mb={6}>
         <LikeButton articleId={article.id} />
       </Box>
 
-      {/* Comments */}
       <CommentSection articleId={article.id} />
     </Box>
   )

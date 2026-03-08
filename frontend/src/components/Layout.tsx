@@ -1,19 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Box, Flex, Heading, Link as ChakraLink, Container, HStack, Button, Text, Icon, MenuRoot, MenuTrigger, MenuContent, MenuItem, VStack, IconButton } from '@chakra-ui/react'
-import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX, FiSun, FiMoon } from 'react-icons/fi'
-import { useAuthStore, useThemeStore } from '../stores'
+import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX, FiMoon, FiSun } from 'react-icons/fi'
+import { useAuthStore } from '../stores'
+import { useColorMode, useColorModeValue } from '../components/ui/color-mode'
 
 const Layout = () => {
   const navigate = useNavigate()
   const { isAuthenticated, user, logout } = useAuthStore()
-  const { mode, toggleTheme } = useThemeStore()
+  const { colorMode, toggleColorMode } = useColorMode()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // 初始化主题
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', mode)
-  }, [mode])
+  // 使用语义化颜色
+  const bgColor = useColorModeValue('white', 'gray.900')
+  const borderColor = useColorModeValue('gray.200', 'gray.700')
+  const textColor = useColorModeValue('gray.600', 'gray.300')
+  const hoverBg = useColorModeValue('purple.50', 'purple.900')
+  const hoverColor = useColorModeValue('brand.600', 'purple.300')
+  const menuBg = useColorModeValue('white', 'gray.800')
+  const menuBorderColor = useColorModeValue('gray.100', 'gray.700')
+  const mobileTextColor = useColorModeValue('gray.700', 'gray.200')
+  const mobileSubTextColor = useColorModeValue('gray.500', 'gray.400')
+  const dividerColor = useColorModeValue('gray.200', 'gray.600')
+  const pageBg = useColorModeValue('gray.50', 'gray.950')
 
   const handleLogout = () => {
     logout()
@@ -34,17 +43,17 @@ const Layout = () => {
   ]
 
   return (
-    <Box minH="100vh" display="flex" flexDirection="column">
+    <Box minH="100vh" display="flex" flexDirection="column" bg={pageBg}>
       {/* Header */}
       <Box 
         as="header" 
-        bg="white"
+        bg={bgColor}
         position="sticky" 
         top={0} 
         zIndex={100}
         boxShadow="0 1px 3px rgba(0, 0, 0, 0.08)"
         borderBottom="1px solid"
-        borderColor="gray.200"
+        borderColor={borderColor}
       >
         <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
           <Flex justify="space-between" align="center" py={4}>
@@ -87,10 +96,10 @@ const Layout = () => {
                   borderRadius="lg"
                   fontWeight="600"
                   fontSize="sm"
-                  color="gray.600"
+                  color={textColor}
                   _hover={{ 
-                    bg: 'purple.50', 
-                    color: 'brand.600' 
+                    bg: hoverBg, 
+                    color: hoverColor
                   }}
                   transition="all 0.2s"
                 >
@@ -108,13 +117,13 @@ const Layout = () => {
             <HStack gap={3} display={{ base: 'none', md: 'flex' }}>
               {/* Theme Toggle */}
               <IconButton
-                aria-label={mode === 'light' ? '切换到暗色模式' : '切换到亮色模式'}
+                aria-label={colorMode === 'light' ? '切换到暗色模式' : '切换到亮色模式'}
                 variant="ghost"
                 size="sm"
-                onClick={toggleTheme}
+                onClick={toggleColorMode}
                 borderRadius="lg"
               >
-                <Icon as={mode === 'light' ? FiMoon : FiSun} boxSize={4} />
+                <Icon as={colorMode === 'light' ? FiMoon : FiSun} boxSize={4} />
               </IconButton>
 
               {/* Auth Section */}
@@ -202,12 +211,12 @@ const Layout = () => {
 
           {/* Mobile Menu - Collapsible */}
           {mobileMenuOpen && (
-            <Box py={4} borderTop="1px solid" borderColor="gray.100">
+            <Box py={4} borderTop="1px solid" borderColor={menuBorderColor} bg={menuBg}>
               <VStack align="stretch" gap={1}>
                 {/* Theme Toggle */}
                 <Box
                   as="button"
-                  onClick={toggleTheme}
+                  onClick={toggleColorMode}
                   w="100%"
                   textAlign="left"
                   px={4}
@@ -215,18 +224,18 @@ const Layout = () => {
                   borderRadius="lg"
                   fontWeight="600"
                   fontSize="md"
-                  color="gray.700"
+                  color={mobileTextColor}
                   bg="transparent"
                   _hover={{ 
-                    bg: 'purple.50', 
-                    color: 'brand.600' 
+                    bg: hoverBg, 
+                    color: hoverColor
                   }}
                   transition="all 0.2s"
                   cursor="pointer"
                 >
                   <HStack gap={3}>
-                    <Icon as={mode === 'light' ? FiMoon : FiSun} boxSize={5} />
-                    <Text>{mode === 'light' ? '暗色模式' : '亮色模式'}</Text>
+                    <Icon as={colorMode === 'light' ? FiMoon : FiSun} boxSize={5} />
+                    <Text>{colorMode === 'light' ? '暗色模式' : '亮色模式'}</Text>
                   </HStack>
                 </Box>
 
@@ -243,11 +252,11 @@ const Layout = () => {
                     borderRadius="lg"
                     fontWeight="600"
                     fontSize="md"
-                    color="gray.700"
+                    color={mobileTextColor}
                     bg="transparent"
                     _hover={{ 
-                      bg: 'purple.50', 
-                      color: 'brand.600' 
+                      bg: hoverBg, 
+                      color: hoverColor
                     }}
                     transition="all 0.2s"
                     cursor="pointer"
@@ -260,14 +269,14 @@ const Layout = () => {
                 ))}
 
                 {/* Divider */}
-                <Box h="1px" bg="gray.200" my={2} />
+                <Box h="1px" bg={dividerColor} my={2} />
 
                 {/* Auth Section */}
                 {isAuthenticated ? (
                   <>
                     <Box px={4} py={2}>
-                      <Text color="gray.500" fontSize="sm">当前用户</Text>
-                      <Text fontWeight="600" color="gray.800">
+                      <Text color={mobileSubTextColor} fontSize="sm">当前用户</Text>
+                      <Text fontWeight="600" color={mobileTextColor}>
                         {user?.nickname || user?.username}
                       </Text>
                     </Box>
@@ -282,11 +291,11 @@ const Layout = () => {
                         borderRadius="lg"
                         fontWeight="600"
                         fontSize="md"
-                        color="gray.700"
+                        color={mobileTextColor}
                         bg="transparent"
                         _hover={{ 
-                          bg: 'purple.50', 
-                          color: 'brand.600' 
+                          bg: hoverBg, 
+                          color: hoverColor
                         }}
                         transition="all 0.2s"
                         cursor="pointer"
@@ -307,9 +316,9 @@ const Layout = () => {
                       borderRadius="lg"
                       fontWeight="600"
                       fontSize="md"
-                      color="red.600"
+                      color="red.500"
                       bg="transparent"
-                      _hover={{ bg: 'red.50' }}
+                      _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
                       transition="all 0.2s"
                       cursor="pointer"
                     >
@@ -351,7 +360,7 @@ const Layout = () => {
       {/* Footer */}
       <Box 
         as="footer" 
-        bg="gray.900"
+        bg={useColorModeValue('gray.900', 'gray.950')}
         py={8}
         mt="auto"
       >

@@ -28,9 +28,33 @@ const config = defineConfig({
     },
     semanticTokens: {
       colors: {
+        bg: {
+          DEFAULT: {
+            value: { _light: '#f8fafc', _dark: '#0f0f1a' },
+          },
+          subtle: {
+            value: { _light: '#ffffff', _dark: '#1a1a2e' },
+          },
+          muted: {
+            value: { _light: '#f1f5f9', _dark: '#12121f' },
+          },
+        },
+        fg: {
+          DEFAULT: {
+            value: { _light: '#1a1a2e', _dark: '#e5e7eb' },
+          },
+          muted: {
+            value: { _light: '#6b7280', _dark: '#9ca3af' },
+          },
+        },
+        border: {
+          DEFAULT: {
+            value: { _light: '#e5e7eb', _dark: '#2d2d44' },
+          },
+        },
         surface: {
-          DEFAULT: { value: '#ffffff' },
-          elevated: { value: '#fafafa' },
+          DEFAULT: { value: { _light: '#ffffff', _dark: '#1a1a2e' } },
+          elevated: { value: { _light: '#fafafa', _dark: '#1e1e32' } },
         },
       },
     },
