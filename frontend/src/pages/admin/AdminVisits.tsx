@@ -4,6 +4,7 @@ import { useColorModeValue } from '../../components/ui/color-mode'
 import { FiEye, FiUsers, FiGlobe, FiTrendingUp, FiMapPin, FiClock, FiCalendar } from 'react-icons/fi'
 import { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
+import { getVisitStats, getVisitCountries, getVisitMapData, getRecentVisits } from '../../api/admin'
 
 // 访问统计卡片
 function StatCard({ label, value, icon, color }: { label: string; value: number; icon: React.ElementType; color: string }) {
@@ -185,41 +186,25 @@ export default function AdminVisits() {
   // 获取统计数据
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['visit-stats'],
-    queryFn: async () => {
-      const res = await fetch('/api/admin/visits/stats')
-      if (!res.ok) throw new Error('Failed to fetch stats')
-      return res.json()
-    }
+    queryFn: getVisitStats
   })
 
   // 获取地图数据
   const { data: mapData = [] } = useQuery({
     queryKey: ['visit-map'],
-    queryFn: async () => {
-      const res = await fetch('/api/admin/visits/map')
-      if (!res.ok) throw new Error('Failed to fetch map data')
-      return res.json()
-    }
+    queryFn: getVisitMapData
   })
 
   // 获取国家统计
   const { data: countries = [] } = useQuery({
     queryKey: ['visit-countries'],
-    queryFn: async () => {
-      const res = await fetch('/api/admin/visits/countries')
-      if (!res.ok) throw new Error('Failed to fetch countries')
-      return res.json()
-    }
+    queryFn: getVisitCountries
   })
 
   // 获取最近访问
   const { data: recentVisits = [] } = useQuery({
     queryKey: ['visit-recent'],
-    queryFn: async () => {
-      const res = await fetch('/api/admin/visits/recent')
-      if (!res.ok) throw new Error('Failed to fetch recent visits')
-      return res.json()
-    }
+    queryFn: getRecentVisits
   })
 
   if (statsLoading) {

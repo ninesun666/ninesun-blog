@@ -151,3 +151,53 @@ export const changePassword = async (currentPassword: string, newPassword: strin
   const response = await api.put<User>('/auth/password', { currentPassword, newPassword })
   return response.data
 }
+
+// Visit Statistics
+export interface VisitStats {
+  totalVisits: number
+  todayVisits: number
+  weekVisits: number
+  monthVisits: number
+  uniqueVisitors: number
+  todayUniqueVisitors: number
+}
+
+export interface CountryVisit {
+  countryCode: string
+  country: string
+  count: number
+}
+
+export interface MapData {
+  name: string
+  value: number
+  countryCode: string
+}
+
+export interface RecentVisit {
+  ipAddress: string
+  country: string
+  city: string
+  path: string
+  createdAt: string
+}
+
+export const getVisitStats = async (): Promise<VisitStats> => {
+  const response = await api.get<VisitStats>('/admin/visits/stats')
+  return response.data
+}
+
+export const getVisitCountries = async (): Promise<CountryVisit[]> => {
+  const response = await api.get<CountryVisit[]>('/admin/visits/countries')
+  return response.data
+}
+
+export const getVisitMapData = async (): Promise<MapData[]> => {
+  const response = await api.get<MapData[]>('/admin/visits/map')
+  return response.data
+}
+
+export const getRecentVisits = async (): Promise<RecentVisit[]> => {
+  const response = await api.get<RecentVisit[]>('/admin/visits/recent')
+  return response.data
+}
