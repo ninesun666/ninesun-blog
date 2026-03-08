@@ -1,6 +1,8 @@
 import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useArticle } from '../api/hooks'
+import { articleApi } from '../api'
 import ReactMarkdown from 'react-markdown'
 import LikeButton from '../components/LikeButton'
 import CommentSection from '../components/CommentSection'
@@ -9,6 +11,15 @@ import { SEO, generateArticleJsonLd } from '../components/SEO'
 const ArticleDetail = () => {
   const { slug } = useParams()
   const { data: article, isLoading, error } = useArticle(slug || '')
+
+  // 文章加载完成后增加浏览次数
+  useEffect(() => {
+    if (article?.id) {
+      articleApi.incrementViewCount(article.id).catch(() => {
+        // 忽略错误，不影响用户体验
+      })
+    }
+  }, [article?.id])
 
   if (isLoading) {
     return (
