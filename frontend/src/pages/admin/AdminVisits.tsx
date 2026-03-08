@@ -46,8 +46,8 @@ function WorldMap({ data }: { data: any[] }) {
 
   useEffect(() => {
     if (chart && data.length > 0) {
-      // 加载世界地图
-      fetch('https://cdn.jsdelivr.net/npm/echarts@5/map/json/world.json')
+      // 加载世界地图 (ECharts 5 不包含地图数据，使用 ECharts 4 的地图文件)
+      fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json')
         .then(res => res.json())
         .then(mapJson => {
           echarts.registerMap('world', mapJson)
