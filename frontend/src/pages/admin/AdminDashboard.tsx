@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Box, SimpleGrid, Card, Heading, Text, Flex, Icon, Spinner, Center, HStack, Badge, VStack, Separator, Progress } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import { getDetailedStats, type DetailedStats } from '../../api/admin'
+import { useColorModeValue } from '../../components/ui/color-mode'
 import { FiFileText, FiMessageSquare, FiUsers, FiEye, FiHeart, FiTag, FiFolder, FiAlertCircle, FiTrendingUp, FiClock } from 'react-icons/fi'
 
 interface StatCardProps {
@@ -13,21 +14,26 @@ interface StatCardProps {
 }
 
 function StatCard({ label, value, icon, color, helpText }: StatCardProps) {
+  const iconBg = useColorModeValue(`${color}.100`, `${color}.900`)
+  const iconColor = useColorModeValue(`${color}.500`, `${color}.300`)
+  const labelColor = useColorModeValue('gray.500', 'gray.400')
+  const helpColor = useColorModeValue('gray.400', 'gray.500')
+
   return (
-    <Card.Root>
+    <Card.Root borderRadius="xl" shadow="card">
       <Card.Body>
         <Flex justify="space-between" align="center">
           <Box>
-            <Text color="gray.500" fontSize="sm">{label}</Text>
+            <Text color={labelColor} fontSize="sm">{label}</Text>
             <Text fontSize="2xl" fontWeight="bold">{value.toLocaleString()}</Text>
-            {helpText && <Text fontSize="xs" color="gray.400">{helpText}</Text>}
+            {helpText && <Text fontSize="xs" color={helpColor}>{helpText}</Text>}
           </Box>
           <Box
             p={3}
-            borderRadius="lg"
-            bg={`${color}.100`}
+            borderRadius="xl"
+            bg={iconBg}
           >
-            <Icon as={icon} boxSize={6} color={`${color}.500`} />
+            <Icon as={icon} boxSize={6} color={iconColor} />
           </Box>
         </Flex>
       </Card.Body>
@@ -50,17 +56,20 @@ interface ArticleListItemProps {
 }
 
 function ArticleListItem({ article, showStats = true }: ArticleListItemProps) {
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
+  const statsColor = useColorModeValue('gray.500', 'gray.400')
+
   return (
-    <Flex justify="space-between" align="center" py={2} _hover={{ bg: 'gray.50' }} px={2} borderRadius="md">
+    <Flex justify="space-between" align="center" py={2} _hover={{ bg: hoverBg }} px={2} borderRadius="lg">
       <Box flex={1} minW={0}>
         <Link to={`/admin/articles/edit/${article.id}`}>
-          <Text fontWeight="medium" truncate _hover={{ color: 'brand.500' }}>
+          <Text fontWeight="medium" truncate _hover={{ color: 'purple.500' }}>
             {article.title}
           </Text>
         </Link>
       </Box>
       {showStats && (
-        <HStack gap={4} color="gray.500" fontSize="sm">
+        <HStack gap={4} color={statsColor} fontSize="sm">
           <HStack gap={1}>
             <Icon as={FiEye} />
             <Text>{article.viewCount?.toLocaleString() || 0}</Text>
@@ -88,6 +97,8 @@ interface CategoryTagStatsProps {
 function CategoryTagStats({ items, type, maxItems = 5 }: CategoryTagStatsProps) {
   const displayItems = items.slice(0, maxItems)
   const maxCount = Math.max(...items.map(i => i.articleCount), 1)
+  const countColor = useColorModeValue('gray.500', 'gray.400')
+  const moreColor = useColorModeValue('gray.400', 'gray.500')
   
   return (
     <VStack align="stretch" gap={2}>
@@ -95,9 +106,9 @@ function CategoryTagStats({ items, type, maxItems = 5 }: CategoryTagStatsProps) 
         <Box key={item.id}>
           <Flex justify="space-between" mb={1}>
             <Link to={`/${type}/${item.slug}`}>
-              <Text fontSize="sm" _hover={{ color: 'brand.500' }}>{item.name}</Text>
+              <Text fontSize="sm" _hover={{ color: 'purple.500' }}>{item.name}</Text>
             </Link>
-            <Text fontSize="sm" color="gray.500">{item.articleCount} 篇</Text>
+            <Text fontSize="sm" color={countColor}>{item.articleCount} 篇</Text>
           </Flex>
           <Progress.Root size="sm" value={(item.articleCount / maxCount) * 100}>
             <Progress.Track>
@@ -107,7 +118,7 @@ function CategoryTagStats({ items, type, maxItems = 5 }: CategoryTagStatsProps) 
         </Box>
       ))}
       {items.length > maxItems && (
-        <Text fontSize="sm" color="gray.400">还有 {items.length - maxItems} 个{type === 'category' ? '分类' : '标签'}...</Text>
+        <Text fontSize="sm" color={moreColor}>还有 {items.length - maxItems} 个{type === 'category' ? '分类' : '标签'}...</Text>
       )}
     </VStack>
   )
@@ -118,6 +129,9 @@ export default function AdminDashboard() {
     queryKey: ['admin-stats-detailed'],
     queryFn: getDetailedStats,
   })
+
+  const emptyColor = useColorModeValue('gray.500', 'gray.400')
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
 
   if (isLoading) {
     return (
@@ -197,7 +211,7 @@ export default function AdminDashboard() {
       {/* 详细统计卡片 */}
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6} mb={8}>
         {/* 热门文章 */}
-        <Card.Root>
+        <Card.Root borderRadius="xl" shadow="card">
           <Card.Body>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiTrendingUp} color="orange.500" />
@@ -212,14 +226,14 @@ export default function AdminDashboard() {
                   </Box>
                 ))
               ) : (
-                <Text color="gray.500" textAlign="center" py={4}>暂无文章</Text>
+                <Text color={emptyColor} textAlign="center" py={4}>暂无文章</Text>
               )}
             </VStack>
           </Card.Body>
         </Card.Root>
 
         {/* 最近文章 */}
-        <Card.Root>
+        <Card.Root borderRadius="xl" shadow="card">
           <Card.Body>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiClock} color="blue.500" />
@@ -229,10 +243,10 @@ export default function AdminDashboard() {
               {stats.recentArticles.length > 0 ? (
                 stats.recentArticles.map((article, index) => (
                   <Box key={article.id}>
-                    <Flex justify="space-between" align="center" py={2} _hover={{ bg: 'gray.50' }} px={2} borderRadius="md">
+                    <Flex justify="space-between" align="center" py={2} _hover={{ bg: hoverBg }} px={2} borderRadius="lg">
                       <Box flex={1} minW={0}>
                         <Link to={`/admin/articles/edit/${article.id}`}>
-                          <Text fontWeight="medium" truncate _hover={{ color: 'brand.500' }}>
+                          <Text fontWeight="medium" truncate _hover={{ color: 'purple.500' }}>
                             {article.title}
                           </Text>
                         </Link>
@@ -241,7 +255,7 @@ export default function AdminDashboard() {
                         <Badge colorPalette={article.status === 'PUBLISHED' ? 'green' : 'yellow'}>
                           {article.status === 'PUBLISHED' ? '已发布' : '草稿'}
                         </Badge>
-                        <Text fontSize="sm" color="gray.500">
+                        <Text fontSize="sm" color={emptyColor}>
                           {new Date(article.createdAt).toLocaleDateString('zh-CN')}
                         </Text>
                       </HStack>
@@ -250,7 +264,7 @@ export default function AdminDashboard() {
                   </Box>
                 ))
               ) : (
-                <Text color="gray.500" textAlign="center" py={4}>暂无文章</Text>
+                <Text color={emptyColor} textAlign="center" py={4}>暂无文章</Text>
               )}
             </VStack>
           </Card.Body>
@@ -260,7 +274,7 @@ export default function AdminDashboard() {
       {/* 分类和标签统计 */}
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
         {/* 分类统计 */}
-        <Card.Root>
+        <Card.Root borderRadius="xl" shadow="card">
           <Card.Body>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiFolder} color="teal.500" />
@@ -269,13 +283,13 @@ export default function AdminDashboard() {
             {stats.categoryStats.length > 0 ? (
               <CategoryTagStats items={stats.categoryStats} type="category" />
             ) : (
-              <Text color="gray.500" textAlign="center" py={4}>暂无分类</Text>
+              <Text color={emptyColor} textAlign="center" py={4}>暂无分类</Text>
             )}
           </Card.Body>
         </Card.Root>
 
         {/* 标签统计 */}
-        <Card.Root>
+        <Card.Root borderRadius="xl" shadow="card">
           <Card.Body>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiTag} color="cyan.500" />
@@ -284,7 +298,7 @@ export default function AdminDashboard() {
             {stats.tagStats.length > 0 ? (
               <CategoryTagStats items={stats.tagStats} type="tag" />
             ) : (
-              <Text color="gray.500" textAlign="center" py={4}>暂无标签</Text>
+              <Text color={emptyColor} textAlign="center" py={4}>暂无标签</Text>
             )}
           </Card.Body>
         </Card.Root>

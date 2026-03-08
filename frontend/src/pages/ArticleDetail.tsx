@@ -51,7 +51,7 @@ const ArticleDetail = () => {
   const canonicalUrl = `${siteUrl}/article/${article.slug}`
 
   return (
-    <Box maxW="800px" mx="auto">
+    <Box maxW="800px" mx="auto" px={{ base: 4, md: 6 }}>
       <SEO
         title={article.title}
         description={article.summary || article.content?.slice(0, 160)}

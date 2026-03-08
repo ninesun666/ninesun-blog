@@ -22,8 +22,11 @@ const config = defineConfig({
         },
       },
       shadows: {
-        card: { value: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)' },
-        'card-hover': { value: '0 20px 40px -12px rgba(124, 58, 237, 0.15)' },
+        card: { value: '0 2px 8px rgba(0, 0, 0, 0.08)' },
+        'card-hover': { value: '0 8px 24px rgba(0, 0, 0, 0.12)' },
+      },
+      radii: {
+        card: { value: '12px' },
       },
     },
     semanticTokens: {
@@ -57,6 +60,15 @@ const config = defineConfig({
           elevated: { value: { _light: '#fafafa', _dark: '#1e1e32' } },
         },
       },
+    },
+  },
+  globalCss: {
+    '.chakra-card': {
+      borderRadius: '12px',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    },
+    '.dark .chakra-card': {
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
     },
   },
 })

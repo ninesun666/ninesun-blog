@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { Box, Flex, VStack, HStack, Text, Button, Container, Icon, Avatar } from '@chakra-ui/react'
 import { useAuthStore } from '../../stores'
+import { useColorModeValue } from '../../components/ui/color-mode'
 import { FiHome, FiFileText, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiBarChart2, FiFolder, FiTag } from 'react-icons/fi'
 
 const navItems = [
@@ -17,6 +18,12 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
 
+  // 颜色适配
+  const sidebarBg = useColorModeValue('gray.800', 'gray.900')
+  const mainBg = useColorModeValue('gray.50', 'gray.950')
+  const headerBg = useColorModeValue('white', 'gray.800')
+  const borderColor = useColorModeValue('gray.200', 'gray.700')
+
   const handleLogout = () => {
     logout()
     navigate('/login')
@@ -27,7 +34,7 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <Box
         w="240px"
-        bg="gray.800"
+        bg={sidebarBg}
         color="white"
         py={6}
         position="fixed"
@@ -54,11 +61,13 @@ export default function AdminLayout() {
                   gap={3}
                   px={6}
                   py={3}
-                  bg={isActive ? 'blue.500' : 'transparent'}
+                  bg={isActive ? 'purple.600' : 'transparent'}
                   color={isActive ? 'white' : 'gray.300'}
-                  _hover={{ bg: isActive ? 'blue.500' : 'gray.700' }}
+                  _hover={{ bg: isActive ? 'purple.600' : 'gray.700' }}
                   transition="all 0.2s"
                   cursor="pointer"
+                  borderRadius="md"
+                  mx={2}
                 >
                   <Icon as={item.icon} />
                   <Text>{item.label}</Text>
@@ -79,10 +88,12 @@ export default function AdminLayout() {
               gap={3}
               px={6}
               py={3}
+              mx={2}
               color="gray.300"
               _hover={{ bg: 'gray.700' }}
               transition="all 0.2s"
               cursor="pointer"
+              borderRadius="md"
             >
               <Icon as={FiHome} />
               <Text>返回前台</Text>
@@ -92,14 +103,14 @@ export default function AdminLayout() {
       </Box>
 
       {/* Main Content */}
-      <Box ml="240px" flex={1} bg="gray.50">
+      <Box ml="240px" flex={1} bg={mainBg}>
         {/* Header */}
         <Box
-          bg="white"
+          bg={headerBg}
           px={6}
           py={4}
           borderBottom="1px"
-          borderColor="gray.200"
+          borderColor={borderColor}
           position="sticky"
           top={0}
           zIndex={10}
@@ -124,7 +135,7 @@ export default function AdminLayout() {
         </Box>
 
         {/* Page Content */}
-        <Container maxW="container.xl" py={6}>
+        <Container maxW="container.xl" py={6} px={{ base: 4, md: 6 }}>
           <Outlet />
         </Container>
       </Box>
