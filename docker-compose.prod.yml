@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  # ==================== PostgreSQL 数据库 ====================
+  # ==================== PostgreSQL 数据库 (带 pgvector 扩展) ====================
   postgres:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: ninesun-blog-postgres
     restart: always
     environment:
@@ -12,6 +12,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ninesun} -d ninesun_blog"]
       interval: 10s
@@ -63,6 +64,10 @@ services:
       
       # 站点配置
       - SITE_URL=${SITE_URL:-https://blog.ninesun.site}
+      
+      # OpenAI API 配置 (AI 助手)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
     depends_on:
       postgres:
         condition: service_healthy

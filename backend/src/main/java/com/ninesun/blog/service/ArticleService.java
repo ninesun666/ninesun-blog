@@ -31,6 +31,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
+    private final EmbeddingService embeddingService;
     
     public PageResponse<ArticleDTO> getPublishedArticles(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -99,7 +100,14 @@ public class ArticleService {
             article.setTags(tags);
         }
         
-        return toDTO(articleRepository.save(article));
+        Article saved = articleRepository.save(article);
+        
+        // 异步生成向量
+        if (saved.getStatus() == Article.ArticleStatus.PUBLISHED) {
+            embeddingService.generateAndStoreEmbedding(saved.getId());
+        }
+        
+        return toDTO(saved);
     }
     
     @Transactional
@@ -138,7 +146,14 @@ public class ArticleService {
             article.setTags(tags);
         }
         
-        return toDTO(articleRepository.save(article));
+        Article saved = articleRepository.save(article);
+        
+        // 异步更新向量
+        if (saved.getStatus() == Article.ArticleStatus.PUBLISHED) {
+            embeddingService.generateAndStoreEmbedding(saved.getId());
+        }
+        
+        return toDTO(saved);
     }
     
     @Transactional

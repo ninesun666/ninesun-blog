@@ -65,4 +65,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // 按标签ID统计已发布文章数
     @Query("SELECT COUNT(a) FROM Article a JOIN a.tags t WHERE t.id = :tagId AND a.status = 'PUBLISHED'")
     long countByTagIdAndPublished(@Param("tagId") Long tagId);
+    
+    // 按状态字符串查询（用于向量化）
+    @Query("SELECT a FROM Article a WHERE a.status = :status")
+    List<Article> findByStatus(@Param("status") String status);
 }

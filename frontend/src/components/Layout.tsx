@@ -4,6 +4,7 @@ import { Box, Flex, Heading, Link as ChakraLink, Container, HStack, Button, Text
 import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX, FiMoon, FiSun } from 'react-icons/fi'
 import { useAuthStore } from '../stores'
 import { useColorMode, useColorModeValue } from '../components/ui/color-mode'
+import AIChat from './AIChat'
 
 const Layout = () => {
   const navigate = useNavigate()
@@ -399,6 +400,9 @@ const Layout = () => {
           </Flex>
         </Container>
       </Box>
+
+      {/* AI Chat Assistant */}
+      <AIChat />
     </Box>
   )
 }

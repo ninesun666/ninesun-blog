@@ -55,6 +55,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/comments/article/**").permitAll()
                 .requestMatchers("/api/likes/**").permitAll()
                 .requestMatchers("/api/seo/**").permitAll()
+                // AI chat endpoint
+                .requestMatchers("/api/ai/chat").permitAll()
+                .requestMatchers("/api/ai/status").permitAll()
                 // File upload/delete requires auth
                 .requestMatchers(HttpMethod.POST, "/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/files/**").authenticated()
