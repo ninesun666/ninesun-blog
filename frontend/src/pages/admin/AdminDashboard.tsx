@@ -21,12 +21,12 @@ function StatCard({ label, value, icon, color, helpText }: StatCardProps) {
 
   return (
     <Card.Root borderRadius="xl" shadow="card">
-      <Card.Body>
+      <Card.Body p={5}>
         <Flex justify="space-between" align="center">
           <Box>
-            <Text color={labelColor} fontSize="sm">{label}</Text>
+            <Text color={labelColor} fontSize="sm" mb={1}>{label}</Text>
             <Text fontSize="2xl" fontWeight="bold">{value.toLocaleString()}</Text>
-            {helpText && <Text fontSize="xs" color={helpColor}>{helpText}</Text>}
+            {helpText && <Text fontSize="xs" color={helpColor} mt={1}>{helpText}</Text>}
           </Box>
           <Box
             p={3}
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6} mb={8}>
         {/* 热门文章 */}
         <Card.Root borderRadius="xl" shadow="card">
-          <Card.Body>
+          <Card.Body p={5}>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiTrendingUp} color="orange.500" />
               <Heading size="lg">热门文章</Heading>
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
 
         {/* 最近文章 */}
         <Card.Root borderRadius="xl" shadow="card">
-          <Card.Body>
+          <Card.Body p={5}>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiClock} color="blue.500" />
               <Heading size="lg">最近文章</Heading>
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap={6}>
         {/* 分类统计 */}
         <Card.Root borderRadius="xl" shadow="card">
-          <Card.Body>
+          <Card.Body p={5}>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiFolder} color="teal.500" />
               <Heading size="lg">分类统计</Heading>
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
 
         {/* 标签统计 */}
         <Card.Root borderRadius="xl" shadow="card">
-          <Card.Body>
+          <Card.Body p={5}>
             <Flex align="center" gap={2} mb={4}>
               <Icon as={FiTag} color="cyan.500" />
               <Heading size="lg">标签统计</Heading>
