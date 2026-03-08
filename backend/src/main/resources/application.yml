@@ -46,6 +46,10 @@ app:
   upload:
     dir: ${UPLOAD_DIR:uploads}
 
+geoip:
+  database:
+    path: ${GEOIP_DATABASE_PATH:data/GeoLite2-City.mmdb}
+
 github:
   client-id: ${GITHUB_CLIENT_ID:}
   client-secret: ${GITHUB_CLIENT_SECRET:}

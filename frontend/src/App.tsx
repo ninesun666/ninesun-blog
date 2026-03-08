@@ -18,6 +18,7 @@ import {
   AdminUsers,
   AdminSettings
 } from './pages/admin'
+import AdminVisits from './pages/admin/AdminVisits'
 import { useAuthStore } from './stores'
 
 // 管理员路由保护组件
@@ -49,6 +50,7 @@ function App() {
           }
         >
           <Route index element={<AdminDashboard />} />
+          <Route path="visits" element={<AdminVisits />} />
           <Route path="articles" element={<AdminArticles />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="tags" element={<AdminTags />} />
