@@ -1,6 +1,7 @@
 package com.ninesun.blog.service;
 
 import com.ninesun.blog.dto.*;
+import com.ninesun.blog.entity.SiteSettings;
 import com.ninesun.blog.entity.User;
 import com.ninesun.blog.repository.*;
 import com.ninesun.blog.security.JwtTokenProvider;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,24 +27,10 @@ public class UserService {
     private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
+    private final SiteSettingsRepository siteSettingsRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
-    
-    // 站点设置缓存（生产环境应该存数据库）
-    private static final ConcurrentHashMap<String, Object> siteSettings = new ConcurrentHashMap<>();
-    
-    static {
-        siteSettings.put("siteName", "NineSun Blog");
-        siteSettings.put("siteDescription", "技术博客，分享编程与生活");
-        siteSettings.put("siteKeywords", "技术,编程,博客");
-        siteSettings.put("footerText", "© 2026 NineSun Blog. All rights reserved.");
-        siteSettings.put("socialGithub", "https://github.com");
-        siteSettings.put("socialTwitter", "");
-        siteSettings.put("socialEmail", "admin@example.com");
-        siteSettings.put("allowGuestComment", true);
-        siteSettings.put("requireCommentApproval", true);
-    }
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -227,30 +213,33 @@ public class UserService {
     // ==================== Site Settings ====================
     
     public SiteSettingsDTO getSiteSettings() {
+        SiteSettings settings = siteSettingsRepository.getOrCreate();
         return new SiteSettingsDTO(
-                (String) siteSettings.getOrDefault("siteName", "NineSun Blog"),
-                (String) siteSettings.getOrDefault("siteDescription", ""),
-                (String) siteSettings.getOrDefault("siteKeywords", ""),
-                (String) siteSettings.getOrDefault("footerText", ""),
-                (String) siteSettings.getOrDefault("socialGithub", ""),
-                (String) siteSettings.getOrDefault("socialTwitter", ""),
-                (String) siteSettings.getOrDefault("socialEmail", ""),
-                (Boolean) siteSettings.getOrDefault("allowGuestComment", true),
-                (Boolean) siteSettings.getOrDefault("requireCommentApproval", true)
+                settings.getSiteName(),
+                settings.getSiteDescription(),
+                settings.getSiteKeywords(),
+                settings.getFooterText(),
+                settings.getSocialGithub(),
+                settings.getSocialTwitter(),
+                settings.getSocialEmail(),
+                settings.getAllowGuestComment(),
+                settings.getRequireCommentApproval()
         );
     }
     
     @Transactional
-    public SiteSettingsDTO updateSiteSettings(SiteSettingsDTO settings) {
-        siteSettings.put("siteName", settings.siteName());
-        siteSettings.put("siteDescription", settings.siteDescription());
-        siteSettings.put("siteKeywords", settings.siteKeywords());
-        siteSettings.put("footerText", settings.footerText());
-        siteSettings.put("socialGithub", settings.socialGithub());
-        siteSettings.put("socialTwitter", settings.socialTwitter());
-        siteSettings.put("socialEmail", settings.socialEmail());
-        siteSettings.put("allowGuestComment", settings.allowGuestComment());
-        siteSettings.put("requireCommentApproval", settings.requireCommentApproval());
+    public SiteSettingsDTO updateSiteSettings(SiteSettingsDTO dto) {
+        SiteSettings settings = siteSettingsRepository.getOrCreate();
+        settings.setSiteName(dto.siteName());
+        settings.setSiteDescription(dto.siteDescription());
+        settings.setSiteKeywords(dto.siteKeywords());
+        settings.setFooterText(dto.footerText());
+        settings.setSocialGithub(dto.socialGithub());
+        settings.setSocialTwitter(dto.socialTwitter());
+        settings.setSocialEmail(dto.socialEmail());
+        settings.setAllowGuestComment(dto.allowGuestComment());
+        settings.setRequireCommentApproval(dto.requireCommentApproval());
+        siteSettingsRepository.save(settings);
         return getSiteSettings();
     }
 }

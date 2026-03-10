@@ -45,6 +45,8 @@ public class SecurityConfig {
                 // Static files - must be first, no auth required
                 .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/api/files/**").permitAll()
+                // Public site settings (for footer display)
+                .requestMatchers("/api/settings/public").permitAll()
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/oauth/**").permitAll()
@@ -61,7 +63,7 @@ public class SecurityConfig {
                 // File upload/delete requires auth
                 .requestMatchers(HttpMethod.POST, "/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/files/**").authenticated()
-                // Admin endpoints
+                // Admin endpoints (after specific permitAll rules)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Write operations require authentication
                 .requestMatchers(HttpMethod.POST, "/api/comments/**").permitAll()

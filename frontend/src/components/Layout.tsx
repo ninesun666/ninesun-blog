@@ -1,16 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Box, Flex, Heading, Link as ChakraLink, Container, HStack, Button, Text, Icon, MenuRoot, MenuTrigger, MenuContent, MenuItem, VStack, IconButton } from '@chakra-ui/react'
-import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX, FiMoon, FiSun } from 'react-icons/fi'
+import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX, FiMoon, FiSun, FiGithub, FiMail } from 'react-icons/fi'
 import { useAuthStore } from '../stores'
 import { useColorMode, useColorModeValue } from '../components/ui/color-mode'
 import AIChat from './AIChat'
+import { getPublicSiteSettings } from '../api/admin'
+import type { SiteSettings } from '../types'
 
 const Layout = () => {
   const navigate = useNavigate()
   const { isAuthenticated, user, logout } = useAuthStore()
   const { colorMode, toggleColorMode } = useColorMode()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null)
+  
+  // 获取站点设置
+  useEffect(() => {
+    getPublicSiteSettings()
+      .then(setSiteSettings)
+      .catch(console.error)
+  }, [])
 
   // 使用语义化颜色
   const bgColor = useColorModeValue('white', 'gray.900')
@@ -391,11 +401,38 @@ const Layout = () => {
                 N
               </Box>
               <Text color="gray.400" fontWeight="500">
-                Ninesun Blog
+                {siteSettings?.siteName || 'Ninesun Blog'}
               </Text>
             </HStack>
+            
+            {/* 社交链接 */}
+            <HStack gap={4}>
+              {siteSettings?.socialGithub && (
+                <ChakraLink
+                  href={siteSettings.socialGithub}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="gray.400"
+                  _hover={{ color: 'purple.400' }}
+                  transition="color 0.2s"
+                >
+                  <Icon as={FiGithub} boxSize={5} />
+                </ChakraLink>
+              )}
+              {siteSettings?.socialEmail && (
+                <ChakraLink
+                  href={`mailto:${siteSettings.socialEmail}`}
+                  color="gray.400"
+                  _hover={{ color: 'purple.400' }}
+                  transition="color 0.2s"
+                >
+                  <Icon as={FiMail} boxSize={5} />
+                </ChakraLink>
+              )}
+            </HStack>
+            
             <Text color="gray.500" fontSize="sm">
-              © {new Date().getFullYear()} All rights reserved. Made with ❤️
+              {siteSettings?.footerText || `© ${new Date().getFullYear()} All rights reserved. Made with ❤️`}
             </Text>
           </Flex>
         </Container>

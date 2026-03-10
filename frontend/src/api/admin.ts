@@ -141,6 +141,11 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
   return response.data
 }
 
+export const getPublicSiteSettings = async (): Promise<SiteSettings> => {
+  const response = await api.get<SiteSettings>('/settings/public')
+  return response.data
+}
+
 export const updateSiteSettings = async (settings: SiteSettings): Promise<SiteSettings> => {
   const response = await api.put<SiteSettings>('/admin/settings', settings)
   return response.data
