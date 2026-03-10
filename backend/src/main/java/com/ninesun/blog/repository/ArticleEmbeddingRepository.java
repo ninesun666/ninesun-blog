@@ -21,11 +21,12 @@ public interface ArticleEmbeddingRepository extends JpaRepository<ArticleEmbeddi
     /**
      * 向量相似度搜索（余弦距离）
      * 使用 pgvector 的 <=> 操作符（余弦距离）
+     * 注意：需要将字符串参数显式转换为 vector 类型
      */
     @Query(value = """
-        SELECT ae.article_id, ae.embedding <=> :queryVector AS distance
+        SELECT ae.article_id, ae.embedding <=> :queryVector::vector AS distance
         FROM article_embeddings ae
-        ORDER BY ae.embedding <=> :queryVector
+        ORDER BY ae.embedding <=> :queryVector::vector
         LIMIT :limit
         """, nativeQuery = true)
     List<Object[]> findSimilarArticles(@Param("queryVector") String queryVector, @Param("limit") int limit);
@@ -35,9 +36,9 @@ public interface ArticleEmbeddingRepository extends JpaRepository<ArticleEmbeddi
      */
     @Query(value = """
         SELECT ae.id, ae.article_id, ae.content_hash, ae.embedding, ae.created_at, ae.updated_at,
-               ae.embedding <=> :queryVector AS distance
+               ae.embedding <=> :queryVector::vector AS distance
         FROM article_embeddings ae
-        ORDER BY ae.embedding <=> :queryVector
+        ORDER BY ae.embedding <=> :queryVector::vector
         LIMIT :limit
         """, nativeQuery = true)
     List<Object[]> findSimilarWithDistance(@Param("queryVector") String queryVector, @Param("limit") int limit);
