@@ -1,0 +1,146 @@
+.comment-thread {
+  margin: 1rem 0;
+  padding-left: 0;
+}
+
+.comment-main {
+  background: var(--comment-bg, #f9f9f9);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.comment-date {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+}
+
+.comment-content {
+  line-height: 1.6;
+  color: var(--text-primary, #333);
+}
+
+.reply-button {
+  background: none;
+  border: none;
+  color: var(--primary-color, #0066cc);
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  padding: 0;
+}
+
+.reply-button:hover {
+  text-decoration: underline;
+}
+
+.reply-form-container {
+  margin-left: 2rem;
+  margin-top: 0.5rem;
+}
+
+.reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reply-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.reply-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color, #0066cc);
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+}
+
+.reply-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reply-submit-btn {
+  background: var(--primary-color, #0066cc);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.reply-submit-btn:hover:not(:disabled) {
+  background: var(--primary-hover, #0055aa);
+}
+
+.reply-submit-btn:disabled {
+  background: var(--disabled-bg, #ccc);
+  cursor: not-allowed;
+}
+
+.replies-list {
+  margin-left: 2rem;
+  border-left: 2px solid var(--border-color, #eee);
+  padding-left: 1rem;
+}
+
+.reply-item {
+  background: var(--reply-bg, #fff);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.reply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.reply-author {
+  font-weight: 500;
+  color: var(--text-primary, #333);
+}
+
+.reply-date {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #888);
+}
+
+.reply-content {
+  font-size: 0.95rem;
+  color: var(--text-primary, #333);
+}
+
+@media (max-width: 768px) {
+  .replies-list {
+    margin-left: 1rem;
+    padding-left: 0.75rem;
+  }
+  
+  .reply-form-container {
+    margin-left: 1rem;
+  }
+}
