@@ -35,7 +35,7 @@ public class EmbeddingService {
     @Value("${openai.base-url:https://api.openai.com/v1}")
     private String baseUrl;
     
-    @Value("${openai.embedding-model:text-embedding-3-small}")
+    @Value("${openai.embedding-model:text-embedding-v4}")
     private String embeddingModel;
     
     private static final int MAX_CONTENT_LENGTH = 8000;
