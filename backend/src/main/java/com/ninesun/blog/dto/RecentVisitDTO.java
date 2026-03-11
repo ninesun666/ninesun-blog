@@ -6,5 +6,6 @@ public record RecentVisitDTO(
     String city,
     String path,
     String userAgent,
-    String createdAt
+    String createdAt,
+    Boolean isAdmin
 ) {}

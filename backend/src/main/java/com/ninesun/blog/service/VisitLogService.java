@@ -4,7 +4,9 @@ import com.ninesun.blog.dto.CountryVisitDTO;
 import com.ninesun.blog.dto.MapDataDTO;
 import com.ninesun.blog.dto.RecentVisitDTO;
 import com.ninesun.blog.dto.VisitStatsDTO;
+import com.ninesun.blog.entity.User;
 import com.ninesun.blog.entity.VisitLog;
+import com.ninesun.blog.repository.UserRepository;
 import com.ninesun.blog.repository.VisitLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class VisitLogService {
     
     private final VisitLogRepository visitLogRepository;
     private final GeoIpService geoIpService;
+    private final UserRepository userRepository;
     
     // 国家代码到国家名的映射（用于缺失的情况）
     private static final Map<String, String> COUNTRY_NAMES = Map.ofEntries(
@@ -54,13 +57,14 @@ public class VisitLogService {
     
     @Async
     @Transactional
-    public void logVisit(String ipAddress, String userAgent, String path, Long articleId) {
+    public void logVisit(String ipAddress, String userAgent, String path, Long articleId, Long userId) {
         try {
             VisitLog.VisitLogBuilder builder = VisitLog.builder()
                 .ipAddress(ipAddress)
                 .userAgent(truncate(userAgent, 500))
                 .path(truncate(path, 500))
-                .articleId(articleId);
+                .articleId(articleId)
+                .userId(userId);
             
             // 解析IP地理位置
             geoIpService.getLocation(ipAddress).ifPresent(loc -> {
@@ -135,14 +139,23 @@ public class VisitLogService {
     public List<RecentVisitDTO> getRecentVisits() {
         List<VisitLog> logs = visitLogRepository.findTop100ByOrderByCreatedAtDesc();
         return logs.stream()
-            .map(v -> new RecentVisitDTO(
-                maskIp(v.getIpAddress()),
-                v.getCountry() != null ? v.getCountry() : "Unknown",
-                v.getCity() != null ? v.getCity() : "-",
-                v.getPath(),
-                truncate(v.getUserAgent(), 50),
-                v.getCreatedAt() != null ? v.getCreatedAt().toString() : "-"
-            ))
+            .map(v -> {
+                boolean isAdmin = false;
+                if (v.getUserId() != null) {
+                    isAdmin = userRepository.findById(v.getUserId())
+                        .map(u -> u.getRole() == User.UserRole.ADMIN)
+                        .orElse(false);
+                }
+                return new RecentVisitDTO(
+                    maskIp(v.getIpAddress()),
+                    v.getCountry() != null ? v.getCountry() : "Unknown",
+                    v.getCity() != null ? v.getCity() : "-",
+                    v.getPath(),
+                    truncate(v.getUserAgent(), 50),
+                    v.getCreatedAt() != null ? v.getCreatedAt().toString() : "-",
+                    isAdmin
+                );
+            })
             .collect(Collectors.toList());
     }
     

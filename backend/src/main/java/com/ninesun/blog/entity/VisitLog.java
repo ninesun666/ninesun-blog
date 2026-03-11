@@ -51,6 +51,9 @@ public class VisitLog {
     @Column(name = "article_id")
     private Long articleId;
     
+    @Column(name = "user_id")
+    private Long userId;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     

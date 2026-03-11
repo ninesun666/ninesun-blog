@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -52,9 +54,20 @@ public class VisitLogInterceptor implements HandlerInterceptor {
         // 获取真实IP
         String ip = getClientIp(request);
         
+        // 获取当前登录用户ID
+        Long userId = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            try {
+                userId = Long.parseLong(auth.getName());
+            } catch (NumberFormatException ignored) {
+                // 用户名不是数字ID，忽略
+            }
+        }
+        
         // 异步记录访问
         Long articleId = extractArticleId(path);
-        visitLogService.logVisit(ip, request.getHeader("User-Agent"), path, articleId);
+        visitLogService.logVisit(ip, request.getHeader("User-Agent"), path, articleId, userId);
     }
     
     private boolean shouldExclude(String path, String userAgent) {

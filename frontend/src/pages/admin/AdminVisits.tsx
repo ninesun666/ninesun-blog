@@ -133,14 +133,21 @@ function RecentVisitsTable({ visits }: { visits: any[] }) {
         <Table.Body>
           {visits.slice(0, 20).map((visit, index) => (
             <Table.Row key={index} _hover={{ bg: hoverBg }}>
-              <Table.Cell fontFamily="mono" fontSize="sm">{visit.ipAddress}</Table.Cell>
+              <Table.Cell fontFamily="mono" fontSize="sm">
+                <HStack gap={2}>
+                  {visit.ipAddress}
+                  {visit.isAdmin && (
+                    <Badge colorPalette="green" size="sm">自己</Badge>
+                  )}
+                </HStack>
+              </Table.Cell>
               <Table.Cell>
                 <HStack gap={1}>
                   <Icon as={FiMapPin} boxSize={3} />
                   <Text fontSize="sm">{visit.country} {visit.city !== '-' ? visit.city : ''}</Text>
                 </HStack>
               </Table.Cell>
-              <Table.Cell fontSize="sm" truncate maxW="200px">{visit.path}</Table.Cell>
+              <Table.Cell fontSize="sm" truncate maxW="200px">{decodeURIComponent(visit.path)}</Table.Cell>
               <Table.Cell fontSize="sm" color={textColor}>
                 {new Date(visit.createdAt).toLocaleString('zh-CN')}
               </Table.Cell>

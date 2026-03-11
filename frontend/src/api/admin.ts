@@ -185,6 +185,7 @@ export interface RecentVisit {
   city: string
   path: string
   createdAt: string
+  isAdmin: boolean
 }
 
 export const getVisitStats = async (): Promise<VisitStats> => {
