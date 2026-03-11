@@ -1,0 +1,29 @@
+{
+  "project": {
+    "source_issue": 119
+  },
+  "features": [
+    {
+      "id": "T001",
+      "title": "Implement solution for issue #119",
+      "description": "Fix automated AI Harness system to handle duplicate PR scenarios. The system failed to process issue #115 because it attempted to create a PR for a branch that already has an existing PR.",
+      "details": {
+        "summary": "The automated AI Harness system failed to process issue #115 because it attempted to create a pull request for a branch that already has an existing PR. This requires manual investigation and potential automation improvements to handle duplicate PR scenarios.",
+        "root_cause": "Automation does not check for existing PRs before attempting to create new ones",
+        "solution": "Implement PR existence check and proper error handling in the automation workflow"
+      },
+      "priority": "medium",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "medium",
+      "passes": true,
+      "status": "completed"
+    }
+  ],
+  "overall_approach": "1. First investigate the existing PR for issue #115 to understand the current state. 2. Determine if the existing PR is valid and can be used, or if it needs to be closed/replaced. 3. Update the automation logic to check for existing PRs before attempting to create new ones, preventing this error in the future.",
+  "potential_risks": [
+    "Losing work if the existing PR is closed prematurely",
+    "Automation creating duplicate branches or PRs in the future",
+    "Inconsistent state between issues and PRs if not handled properly"
+  ]
+}
