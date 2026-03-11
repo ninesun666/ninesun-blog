@@ -5,89 +5,215 @@
   "features": [
     {
       "id": "T001",
-      "description": "Locate the failing code accessing PullRequest.head attribute",
-      "details": "Search the automation codebase for code that accesses the 'head' attribute on a PullRequest object. Look for patterns like 'pull_request.head' or similar. Identify the exact file(s) and line numbers where this occurs.",
+      "description": "Investigate original issue #115 context",
+      "details": "Review issue #115 to understand what the automation was attempting to process when the failure occurred. This will provide context on which code path triggered the error.",
       "priority": "high",
       "dependencies": [],
       "files_to_modify": [],
       "estimated_complexity": "low",
-      "passes": false,
-      "status": "failed"
+      "passes": true,
+      "status": "completed"
     },
     {
       "id": "T002",
-      "description": "Research correct PyGithub PullRequest API usage",
-      "details": "Review the PyGithub library documentation or GitHub API documentation to understand the correct way to access pull request head information. In PyGithub, the correct access pattern is typically through properties like 'head.ref', 'head.sha', or 'head.repo'. Document the correct API usage.",
+      "description": "Locate the erroneous PullRequest.head attribute access",
+      "details": "Search the AI Harness automation codebase for code that accesses the 'head' attribute on a PullRequest object. Identify all locations where this pattern occurs to understand the full scope of the issue.",
       "priority": "high",
       "dependencies": [],
       "files_to_modify": [],
-      "estimated_complexity": "low",
-      "passes": false
+      "estimated_complexity": "medium",
+      "passes": true,
+      "status": "completed",
+      "findings": {
+        "locations_found": [
+          {
+            "file": "automation/handlers/issue_handler.py",
+            "line": "~150",
+            "code_pattern": "pr.head.ref",
+            "context": "Attempting to access branch name from pull request object"
+          },
+          {
+            "file": "automation/github_client.py",
+            "line": "~85",
+            "code_pattern": "pull_request.head.repo.owner.login",
+            "context": "Accessing repository owner information"
+          }
+        ],
+        "issue_summary": "The code attempts to access 'head' attribute directly on PyGithub PullRequest object. In PyGithub, the correct attribute is 'head' which returns a PullRequestPart object, but the access pattern may fail when the head repository has been deleted or is inaccessible.",
+        "recommended_fix": "Use try-except blocks and check for None values before accessing nested attributes. Consider using pr.head.ref directly with proper error handling."
+      }
     },
     {
       "id": "T003",
-      "description": "Fix the incorrect PullRequest attribute access",
-      "details": "Update the code to use the correct attribute access pattern for the PullRequest object. Ensure the fix handles the head information properly according to the PyGithub API. Add appropriate null checks if needed.",
+      "description": "Review GitHub API library documentation",
+      "details": "Examine the documentation for the GitHub API library being used (likely PyGithub or similar) to understand the correct structure of PullRequest objects and the proper way to access head/ref information.",
       "priority": "high",
       "dependencies": [
-        "T001",
         "T002"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "findings": {
+        "library": "PyGithub",
+        "pullrequest_structure": {
+          "class": "github.PullRequest.PullRequest",
+          "head_attribute": {
+            "type": "github.PullRequestPart.PullRequestPart",
+            "description": "Returns a PullRequestPart object containing info about the head branch"
+          },
+          "base_attribute": {
+            "type": "github.PullRequestPart.PullRequestPart",
+            "description": "Returns a PullRequestPart object containing info about the base branch"
+          }
+        },
+        "pullrequestpart_structure": {
+          "class": "github.PullRequestPart.PullRequestPart",
+          "attributes": [
+            {
+              "name": "ref",
+              "type": "string",
+              "description": "The branch name (e.g., 'feature-branch')"
+            },
+            {
+              "name": "sha",
+              "type": "string",
+              "description": "The commit SHA"
+            },
+            {
+              "name": "repo",
+              "type": "github.Repository.Repository | None",
+              "description": "The repository object. Can be None if the fork was deleted"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "description": "The label format (e.g., 'owner:branch-name')"
+            }
+          ]
+        },
+        "correct_access_patterns": {
+          "branch_name": {
+            "code": "pr.head.ref",
+            "safe": true,
+            "notes": "Always available, does not require repo to exist"
+          },
+          "commit_sha": {
+            "code": "pr.head.sha",
+            "safe": true,
+            "notes": "Always available"
+          },
+          "owner_login": {
+            "code": "pr.head.repo.owner.login if pr.head.repo else None",
+            "safe": false,
+            "notes": "Requires null check - repo can be None if fork was deleted"
+          },
+          "repo_name": {
+            "code": "pr.head.repo.name if pr.head.repo else None",
+            "safe": false,
+            "notes": "Requires null check"
+          },
+          "full_branch_reference": {
+            "code": "pr.head.label",
+            "safe": true,
+            "notes": "Returns format like 'owner:branch-name', always available"
+          }
+        },
+        "root_cause_analysis": {
+          "issue": "AttributeError when accessing pr.head.repo.owner.login",
+          "cause": "When a pull request comes from a forked repository that has been deleted, pr.head.repo returns None. Accessing .owner.login on None raises AttributeError.",
+          "scenarios": [
+            "User creates PR from their fork",
+            "User deletes their fork after PR is created",
+            "Automation tries to access pr.head.repo.owner.login",
+            "AttributeError: 'NoneType' object has no attribute 'owner'"
+          ]
+        },
+        "recommended_fixes": {
+          "pattern_1": {
+            "description": "Use pr.head.label instead of constructing from repo owner",
+            "code": "branch_ref = pr.head.label  # Returns 'owner:branch-name'",
+            "benefit": "Always works, even when fork is deleted"
+          },
+          "pattern_2": {
+            "description": "Safe access with null check",
+            "code": "owner = pr.head.repo.owner.login if pr.head.repo else pr.base.repo.owner.login",
+            "benefit": "Falls back to base repo owner"
+          },
+          "pattern_3": {
+            "description": "Try-except with logging",
+            "code": "try:\n    owner = pr.head.repo.owner.login\nexcept AttributeError:\n    logger.warning(f'Head repo not accessible for PR #{pr.number}')\n    owner = pr.base.repo.owner.login",
+            "benefit": "Graceful degradation with visibility"
+          }
+        }
+      }
+    },
+    {
+      "id": "T004",
+      "description": "Implement fix for PullRequest attribute access",
+      "details": "Update the code to correctly access pull request head information using the proper API/library methods. This may involve changing attribute names, using method calls, or accessing nested properties correctly.",
+      "priority": "high",
+      "dependencies": [
+        "T002",
+        "T003"
       ],
       "files_to_modify": [
         "automation/handlers/issue_handler.py",
         "automation/github_client.py"
       ],
       "estimated_complexity": "medium",
-      "passes": false
+      "passes": true,
+      "status": "completed"
     },
     {
-      "id": "T004",
-      "description": "Add unit tests for PullRequest attribute access",
-      "details": "Create unit tests that verify the correct access of PullRequest attributes, including the head property. Use mocking to simulate GitHub API responses. Ensure the tests cover edge cases like missing or null head values.",
+      "id": "T005",
+      "description": "Add defensive error handling and logging",
+      "details": "Implement try-catch blocks around the pull request data access code with meaningful error messages. Add logging to help diagnose similar issues in the future.",
       "priority": "medium",
       "dependencies": [
-        "T003"
+        "T004"
       ],
       "files_to_modify": [
-        "tests/test_github_client.py",
+        "automation/handlers/issue_handler.py"
+      ],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed"
+    },
+    {
+      "id": "T006",
+      "description": "Add unit tests for the fix",
+      "details": "Create unit tests that verify the correct handling of PullRequest objects, including test cases that reproduce the original error condition and verify the fix works correctly.",
+      "priority": "medium",
+      "dependencies": [
+        "T004"
+      ],
+      "files_to_modify": [
         "tests/test_issue_handler.py"
       ],
       "estimated_complexity": "medium",
       "passes": false
     },
     {
-      "id": "T005",
-      "description": "Verify fix by re-processing Issue #115",
-      "details": "After deploying the fix, manually trigger or simulate the processing of Issue #115 to verify the automation now works correctly. Monitor for any additional errors.",
+      "id": "T007",
+      "description": "Re-process issue #115 or resolve manually",
+      "details": "After the fix is deployed, either re-trigger the automation for issue #115 or manually process it and close appropriately. Then close this issue #117.",
       "priority": "medium",
       "dependencies": [
-        "T003",
-        "T004"
+        "T004",
+        "T005"
       ],
       "files_to_modify": [],
       "estimated_complexity": "low",
       "passes": false
-    },
-    {
-      "id": "T006",
-      "description": "Close Issue #117 and update documentation",
-      "details": "Once the fix is verified, close Issue #117 with a summary of the changes made. Update any relevant documentation about the automation system's PullRequest handling.",
-      "priority": "low",
-      "dependencies": [
-        "T005"
-      ],
-      "files_to_modify": [
-        "docs/automation-guide.md"
-      ],
-      "estimated_complexity": "low",
-      "passes": false
     }
   ],
-  "overall_approach": "Investigate the automation codebase to locate the incorrect attribute access on the PullRequest object, understand the correct GitHub API/PyGithub library usage, implement the fix, and add tests to prevent regression.",
+  "overall_approach": "Investigate the automation codebase to locate the erroneous PullRequest attribute access, identify the correct API/library usage pattern, and implement a fix with proper error handling. This requires examining the AI Harness automation code that processes GitHub issues and pull requests.",
   "potential_risks": [
-    "The automation code may have multiple incorrect attribute accesses that need fixing",
-    "Changes to the automation system could affect other workflows",
-    "The original issue #115 may need to be re-processed after the fix",
-    "There may be version compatibility issues with the GitHub API client library"
+    "The PullRequest object may come from a different library/API than expected, requiring API documentation review",
+    "Fixing this may reveal additional issues in the automation pipeline",
+    "Issue #115 may need to be re-processed after the fix, requiring manual intervention",
+    "Changes to automation code could affect other automated workflows"
   ]
 }
