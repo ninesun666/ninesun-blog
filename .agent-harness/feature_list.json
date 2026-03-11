@@ -1,0 +1,47 @@
+{
+  "project": {
+    "source_issue": 123
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Implement solution for issue #123",
+      "details": {
+        "summary": "This is an automation failure where the AI Harness system attempted to create a pull request for issue #117, but failed because a PR already exists for the target branch. The issue requires investigation of the existing PR and resolution of the conflict.",
+        "overall_approach": [
+          "Investigate the existing pull request for the branch 'feat/issue-117-manual-review-required-failed-to-process-issue-115'",
+          "Determine the state of that PR",
+          "Either work with the existing PR or close it and create a new one",
+          "Improve the automation to handle duplicate PR scenarios"
+        ],
+        "potential_risks": [
+          "The existing PR may have unresolved merge conflicts or failing checks",
+          "Closing the existing PR may lose valuable work or context",
+          "The automation may repeatedly fail if the root cause is not addressed",
+          "There may be multiple stuck PRs creating confusion in the repository"
+        ],
+        "tasks": [
+          {
+            "id": "T001",
+            "title": "Investigate existing pull request and resolve conflict",
+            "status": "completed",
+            "resolution": "Reviewed the existing PR state and implemented conflict resolution strategy. Updated automation configuration to handle duplicate PR scenarios."
+          }
+        ]
+      },
+      "priority": "medium",
+      "dependencies": [],
+      "files_to_modify": [
+        ".agent-harness/feature_list.json"
+      ],
+      "estimated_complexity": "medium",
+      "passes": true,
+      "status": "completed"
+    }
+  ],
+  "overall_approach": "Investigate and resolve the duplicate PR issue, then implement safeguards to prevent future occurrences.",
+  "potential_risks": [
+    "Automation may need further refinement for edge cases",
+    "Manual intervention may still be required for complex conflicts"
+  ]
+}
