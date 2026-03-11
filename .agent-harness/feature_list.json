@@ -1,0 +1,20 @@
+{
+  "project": {
+    "source_issue": 122
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Implement solution for issue #122",
+      "details": "```json\n{\n  \"summary\": \"This is a meta-issue created by AI automation when it failed to process issue #117. The failure occurred because a pull request already exists for the branch 'feat/issue-117-manual-review-required-failed-to-process-issue-115'. The task is to investigate, resolve the conflict, and ensure proper handling of the original issue.\",\n  \"overall_approach\":1. First investigate the existing PR and the original issue #117 to understand the current state. 2. Determine if the existing PR adequately addresses issue #117. 3. Either close this meta-issue as resolved or take corrective action. 4. Consider improving automation to handle duplicate PR scenarios.\",\n  \"potential_risks\": [\n    \"The existing PR may be stale or incomplete\",\n    \"There may be a cascade of related issues (#115, #117, #122) that need coordinated resolution\",\n    \"Branch naming conflicts may recur if automation isn't improved\",\n    \"Work may be duplicated across multiple PRs\"\n  ],\n  \"tasks\": [\n    {\n      \"",
+      "priority": "medium",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "medium",
+      "passes": true,
+      "status": "completed"
+    }
+  ],
+  "overall_approach": "",
+  "potential_risks": []
+}
