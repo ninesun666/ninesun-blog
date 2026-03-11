@@ -1,0 +1,7 @@
+{
+  "task_id": "T001",
+  "status": "pending_execution",
+  "message": "Investigation script has been created. Please run 'python scripts/investigate_pr.py' to populate this file with actual PR data.",
+  "branch_name": "feat/issue-115-",
+  "note": "The branch name contains a trailing dash which may indicate a naming convention issue (see Task T004)."
+}
