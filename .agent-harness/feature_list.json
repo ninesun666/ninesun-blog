@@ -1,0 +1,94 @@
+{
+  "project": {
+    "source_issue": 118
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Investigate existing PR for issue #115",
+      "details": "Search for and review the existing pull request associated with branch 'feat/issue-115-'. Determine its current status (open, closed, merged, draft), review state, and whether it properly addresses issue #115. Document findings.",
+      "priority": "high",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false,
+      "status": "failed"
+    },
+    {
+      "id": "T002",
+      "description": "Determine resolution path for issue #115",
+      "details": "Based on T001 findings, decide the appropriate action: if PR is valid and progressing, no action needed; if PR is stale/incomplete, either update it or close it and create a new one; if PR was merged but issue remains open, close the issue.",
+      "priority": "high",
+      "dependencies": [
+        "T001"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false
+    },
+    {
+      "id": "T003",
+      "description": "Update automation to check for existing PRs before creation",
+      "details": "Modify the automation code that creates pull requests to first query GitHub API for existing open PRs on the target branch. If a PR already exists, either update the existing PR or skip creation with appropriate logging.",
+      "priority": "medium",
+      "dependencies": [],
+      "files_to_modify": [
+        "automation/pr-creator.py",
+        "automation/github-client.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false
+    },
+    {
+      "id": "T004",
+      "description": "Add error handling for PR creation validation errors",
+      "details": "Implement proper try-catch handling for GitHub API validation errors (422 status). When a 'pull request already exists' error occurs, log a warning, retrieve the existing PR details, and continue workflow gracefully instead of failing.",
+      "priority": "medium",
+      "dependencies": [
+        "T003"
+      ],
+      "files_to_modify": [
+        "automation/pr-creator.py",
+        "automation/error-handler.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false
+    },
+    {
+      "id": "T005",
+      "description": "Add unit tests for duplicate PR scenarios",
+      "details": "Create unit tests that verify the automation handles duplicate PR scenarios correctly. Test cases should include: existing open PR, existing merged PR, existing closed PR, and concurrent PR creation attempts.",
+      "priority": "medium",
+      "dependencies": [
+        "T003",
+        "T004"
+      ],
+      "files_to_modify": [
+        "tests/test-pr-creator.py",
+        "tests/test-github-client.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false
+    },
+    {
+      "id": "T006",
+      "description": "Close or resolve issue #118",
+      "details": "Once the investigation is complete and automation improvements are in place, close this tracking issue with a comment explaining the resolution. Include reference to any PRs created or automation changes made.",
+      "priority": "low",
+      "dependencies": [
+        "T002",
+        "T005"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false
+    }
+  ],
+  "overall_approach": "1) Investigate the existing pull request for issue #115 to determine its status. 2) Update the automation system to gracefully handle scenarios where a PR already exists. 3) Add proper error handling and recovery logic to prevent similar failures in the future. 4) Close the tracking issue once resolved.",
+  "potential_risks": [
+    "The existing PR for issue #115 may be stale or in an inconsistent state",
+    "Automation changes could affect other workflows if not properly tested",
+    "Race conditions in automation could still cause duplicate PR attempts",
+    "Manual intervention might be needed for other similar failed automations"
+  ]
+}
