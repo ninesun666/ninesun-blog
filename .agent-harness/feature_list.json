@@ -5,38 +5,102 @@
   "features": [
     {
       "id": "T001",
-      "description": "Implement solution for issue #125",
-      "details": "Fixed PullRequest 'head' attribute access error by creating safe accessor utilities",
-      "priority": "medium",
+      "description": "Investigate the AttributeError root cause",
+      "details": "Search the automation codebase for all occurrences of '.head' attribute access on PullRequest objects. Identify the exact location in the code where this error occurs and determine if it's a PyGithub API misuse, incorrect object type, or missing null check.",
+      "priority": "high",
       "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "medium",
+      "passes": false,
+      "status": "failed"
+    },
+    {
+      "id": "T002",
+      "description": "Review original issue #118 for context",
+      "details": "Examine issue #118 to understand what type of processing was being attempted. This will help identify if the issue had unique characteristics (e.g., draft PR, merged PR, or cross-repo PR) that caused the 'head' attribute to be unavailable.",
+      "priority": "high",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false
+    },
+    {
+      "id": "T003",
+      "description": "Fix the PullRequest attribute access",
+      "details": "Implement the fix for the 'head' attribute error. This may involve: using the correct PyGithub property name (possibly 'head' needs to be accessed via a different path like 'pull_request.head.ref'), adding null/None checks, or handling the case where the PR object is not fully populated.",
+      "priority": "high",
+      "dependencies": [
+        "T001",
+        "T002"
+      ],
       "files_to_modify": [
-        ".agent-harness/utils/pr_utils.py",
-        ".agent-harness/tests/test_pr_utils.py"
+        "automation/handlers/issue_handler.py",
+        "automation/services/github_service.py"
       ],
       "estimated_complexity": "medium",
-      "passes": true,
-      "status": "completed",
-      "solution": {
-        "problem": "PullRequest object missing 'head' attribute causing AttributeError",
-        "approach": "Created safe accessor utilities with proper error handling and fallback mechanisms",
-        "files_created": [
-          ".agent-harness/utils/pr_utils.py",
-          ".agent-harness/tests/test_pr_utils.py"
-        ],
-        "key_functions": [
-          "safe_get_pr_attr - Safe attribute access for objects and dicts",
-          "get_pr_head - Safe head attribute extraction",
-          "get_pr_head_ref - Safe head ref extraction",
-          "get_pr_head_sha - Safe head SHA extraction",
-          "validate_pr_object - Full PR validation",
-          "safe_pr_operation - Safe operation wrapper"
-        ]
-      }
+      "passes": false
+    },
+    {
+      "id": "T004",
+      "description": "Add defensive error handling",
+      "details": "Add try-except blocks around PullRequest attribute access to gracefully handle cases where attributes may not be available. Log meaningful error messages that help with debugging while allowing the automation to continue or fail gracefully.",
+      "priority": "medium",
+      "dependencies": [
+        "T003"
+      ],
+      "files_to_modify": [
+        "automation/handlers/issue_handler.py"
+      ],
+      "estimated_complexity": "low",
+      "passes": false
+    },
+    {
+      "id": "T005",
+      "description": "Add unit tests for PullRequest handling",
+      "details": "Create unit tests that cover various PullRequest states: normal PR, draft PR, merged PR, cross-repository PR, and PRs with missing data. Mock the GitHub API responses to ensure the code handles all edge cases correctly.",
+      "priority": "medium",
+      "dependencies": [
+        "T003"
+      ],
+      "files_to_modify": [
+        "tests/test_issue_handler.py",
+        "tests/test_github_service.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false
+    },
+    {
+      "id": "T006",
+      "description": "Audit codebase for similar patterns",
+      "details": "Search the entire automation codebase for similar direct attribute access patterns on GitHub objects (Issue, PullRequest, Repository, etc.) that might cause similar AttributeErrors. Add appropriate safeguards.",
+      "priority": "medium",
+      "dependencies": [
+        "T001"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false
+    },
+    {
+      "id": "T007",
+      "description": "Re-process issue #118 and close this issue",
+      "details": "After the fix is deployed, manually re-trigger the automation for issue #118 to verify the fix works. If successful, close issue #125 and ensure issue #118 is properly processed.",
+      "priority": "high",
+      "dependencies": [
+        "T003",
+        "T004",
+        "T005"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false
     }
   ],
-  "overall_approach": "Created utility module with safe accessor functions for PullRequest objects, handling both object and dict access patterns with proper error handling",
+  "overall_approach": "1) Investigate the automation code to locate where the 'head' attribute is being accessed on a PullRequest object, 2) Determine if this is a library API misuse or incorrect object type, 3) Implement the fix with proper error handling, 4) Add tests to prevent regression, and 5) Verify the fix resolves the original issue #118 processing.",
   "potential_risks": [
-    "Existing code may need to be updated to use the new safe accessors",
-    "Tests need to be run to verify all edge cases are covered"
+    "The fix may require changes to core automation logic that affects other workflows",
+    "Issue #118 may have unique characteristics that triggered this edge case",
+    "The PullRequest object structure may vary depending on the GitHub API version or library used",
+    "Other similar attribute access patterns may exist elsewhere in the codebase"
   ]
 }
