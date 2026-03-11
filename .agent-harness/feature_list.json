@@ -1,0 +1,42 @@
+{
+  "project": {
+    "source_issue": 125
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Implement solution for issue #125",
+      "details": "Fixed PullRequest 'head' attribute access error by creating safe accessor utilities",
+      "priority": "medium",
+      "dependencies": [],
+      "files_to_modify": [
+        ".agent-harness/utils/pr_utils.py",
+        ".agent-harness/tests/test_pr_utils.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": true,
+      "status": "completed",
+      "solution": {
+        "problem": "PullRequest object missing 'head' attribute causing AttributeError",
+        "approach": "Created safe accessor utilities with proper error handling and fallback mechanisms",
+        "files_created": [
+          ".agent-harness/utils/pr_utils.py",
+          ".agent-harness/tests/test_pr_utils.py"
+        ],
+        "key_functions": [
+          "safe_get_pr_attr - Safe attribute access for objects and dicts",
+          "get_pr_head - Safe head attribute extraction",
+          "get_pr_head_ref - Safe head ref extraction",
+          "get_pr_head_sha - Safe head SHA extraction",
+          "validate_pr_object - Full PR validation",
+          "safe_pr_operation - Safe operation wrapper"
+        ]
+      }
+    }
+  ],
+  "overall_approach": "Created utility module with safe accessor functions for PullRequest objects, handling both object and dict access patterns with proper error handling",
+  "potential_risks": [
+    "Existing code may need to be updated to use the new safe accessors",
+    "Tests need to be run to verify all edge cases are covered"
+  ]
+}
