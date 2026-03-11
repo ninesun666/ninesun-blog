@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ninesun.blog.dto.ArticleDTO;
 import com.ninesun.blog.entity.Article;
-import com.ninesun.blog.repository.ArticleEmbeddingRepository;
+import com.ninesun.blog.repository.ArticleEmbeddingCustomRepository;
 import com.ninesun.blog.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class RagService {
     
     private final EmbeddingService embeddingService;
-    private final ArticleEmbeddingRepository embeddingRepository;
+    private final ArticleEmbeddingCustomRepository embeddingRepository;
     private final ArticleRepository articleRepository;
     private final WebClient.Builder webClientBuilder;
     private final ObjectMapper objectMapper;
