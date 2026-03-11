@@ -6,49 +6,48 @@
     {
       "id": "T001",
       "description": "Investigate original issue #117 and automation failure context",
-      "details": "Review issue #117 to understand what the automation was attempting to process when the failure occurred. Document the expected workflow and identify what operation triggered the 'head' attribute access.",
+      "details": "Examine issue #117 to understand what type of processing was being attempted when the failure occurred. Review any logs or stack traces that show the full error context and identify the specific code path that triggered the AttributeError.",
       "priority": "high",
       "dependencies": [],
       "files_to_modify": [],
       "estimated_complexity": "low",
-      "passes": true,
-      "status": "completed"
+      "passes": false,
+      "status": "failed"
     },
     {
       "id": "T002",
-      "description": "Locate the code accessing PullRequest.head attribute",
-      "details": "Located the problematic code in 'automation/pull_request_handler.py'. The code attempts to access the 'head' attribute directly on a PullRequest object, which is the source of the AttributeError.",
+      "description": "Locate the failing code accessing 'head' attribute",
+      "details": "Search the automation codebase for all instances where '.head' is accessed on a PullRequest object. Identify the exact file(s) and line numbers where the AttributeError originates.",
       "priority": "high",
-      "dependencies": [],
+      "dependencies": [
+        "T001"
+      ],
       "files_to_modify": [],
       "estimated_complexity": "low",
-      "passes": true,
-      "status": "completed"
+      "passes": false
     },
     {
       "id": "T003",
-      "description": "Analyze PullRequest class/object structure",
-      "details": "Examine the PullRequest class definition or the GitHub API response structure to determine the correct attribute name for accessing head branch information. This may be 'head_ref', 'head_branch', or require accessing a nested object.",
+      "description": "Determine correct PullRequest API usage",
+      "details": "Review the GitHub API library documentation (likely PyGithub or similar) to identify the correct way to access the head/ref information from a PullRequest object. This may be 'head_ref', 'head.sha', or require a different access pattern.",
       "priority": "high",
       "dependencies": [
         "T002"
       ],
       "files_to_modify": [],
-      "estimated_complexity": "medium",
-      "passes": false,
-      "status": "failed"
+      "estimated_complexity": "low",
+      "passes": false
     },
     {
       "id": "T004",
-      "description": "Implement the attribute access fix",
-      "details": "Update the code to use the correct attribute name or proper object structure for accessing the pull request head information. Ensure the fix handles the data correctly.",
+      "description": "Fix the incorrect attribute access",
+      "details": "Update the code to use the correct property/method to access PullRequest head information. Ensure the fix handles cases where the attribute may be None or unavailable.",
       "priority": "high",
       "dependencies": [
-        "T002",
         "T003"
       ],
       "files_to_modify": [
-        "automation/pull_request_handler.py",
+        "automation/handlers/issue_handler.py",
         "automation/github_client.py"
       ],
       "estimated_complexity": "low",
@@ -56,14 +55,14 @@
     },
     {
       "id": "T005",
-      "description": "Add defensive error handling for attribute access",
-      "details": "Implement try-except blocks or hasattr() checks around attribute access on PullRequest objects to provide more informative error messages and prevent similar crashes in the future.",
+      "description": "Add defensive error handling",
+      "details": "Add try-except blocks and proper error handling around PullRequest attribute access to provide more informative error messages and prevent similar failures in the future.",
       "priority": "medium",
       "dependencies": [
         "T004"
       ],
       "files_to_modify": [
-        "automation/pull_request_handler.py"
+        "automation/handlers/issue_handler.py"
       ],
       "estimated_complexity": "low",
       "passes": false
@@ -71,23 +70,35 @@
     {
       "id": "T006",
       "description": "Add unit tests for PullRequest attribute access",
-      "details": "Create unit tests that verify correct handling of PullRequest objects, including tests for the head attribute access and edge cases where attributes may be missing.",
+      "details": "Create unit tests that mock PullRequest objects and verify the correct access patterns. Include tests for edge cases like missing attributes or None values.",
       "priority": "medium",
       "dependencies": [
-        "T004",
-        "T005"
+        "T004"
       ],
       "files_to_modify": [
-        "tests/test_pull_request_handler.py"
+        "tests/test_issue_handler.py",
+        "tests/test_github_client.py"
       ],
       "estimated_complexity": "medium",
       "passes": false
     },
     {
       "id": "T007",
-      "description": "Reprocess issue #117 and close the failure report",
-      "details": "After the fix is deployed, manually trigger reprocessing of issue #117 to verify the fix works correctly. Close this issue #121 once successful processing is confirmed.",
+      "description": "Audit codebase for similar attribute access issues",
+      "details": "Search the entire codebase for similar patterns where GitHub API objects may have incorrect attribute access. Look for other PullRequest, Issue, or Repository attribute accesses that may be using outdated or incorrect property names.",
       "priority": "medium",
+      "dependencies": [
+        "T004"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "medium",
+      "passes": false
+    },
+    {
+      "id": "T008",
+      "description": "Re-process issue #117 and verify fix",
+      "details": "After implementing the fix, manually trigger or simulate the processing of issue #117 to verify the automation now works correctly. Close issue #121 once confirmed working.",
+      "priority": "high",
       "dependencies": [
         "T004",
         "T005",
@@ -98,11 +109,11 @@
       "passes": false
     }
   ],
-  "overall_approach": "Investigate the automation codebase to locate where the 'head' attribute is being accessed on a PullRequest object, determine the correct attribute name or data structure, implement the fix, and add proper error handling to prevent similar failures",
+  "overall_approach": "Investigate the automation codebase to locate where the 'head' attribute is being accessed on a PullRequest object, determine the correct API/property to use (likely 'head_ref' or accessing via the GitHub API differently), implement the fix, and add regression tests.",
   "potential_risks": [
-    "The PullRequest object structure may vary depending on GitHub API version or context",
-    "Other parts of the automation may have similar attribute access issues",
-    "Fixing this may reveal additional underlying issues with issue #117 processing",
-    "Without access to the original issue #117, the full scope of the problem may not be apparent"
+    "The fix may require changes to multiple files if the incorrect attribute access is used in multiple places",
+    "GitHub API version or library differences may affect the correct property name",
+    "Other similar attribute access issues may exist elsewhere in the codebase",
+    "The original issue #117 may have specific requirements that need separate handling after the fix"
   ]
 }
