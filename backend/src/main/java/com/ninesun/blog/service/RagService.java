@@ -36,7 +36,7 @@ public class RagService {
     @Value("${openai.base-url:https://api.openai.com/v1}")
     private String baseUrl;
     
-    @Value("${openai.chat-model:gpt-4o-mini}")
+    @Value("${openai.chat-model:glm-5}")
     private String chatModel;
     
     @Value("${rag.max-context-articles:5}")
