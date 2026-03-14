@@ -98,6 +98,7 @@ export interface Todo {
   title: string
   description?: string
   todoDate: string
+  timeSlot?: number  // 时间阶段（小时）
   completed: boolean
   completedAt?: string
   createdAt: string

@@ -21,4 +21,6 @@ public class TodoCreateRequest {
     
     @NotNull(message = "待办日期不能为空")
     private LocalDate todoDate;
+    
+    private Integer timeSlot = 1;  // 时间阶段（小时），默认1小时
 }

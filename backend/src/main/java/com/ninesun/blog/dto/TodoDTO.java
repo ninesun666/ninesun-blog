@@ -17,6 +17,7 @@ public class TodoDTO {
     private String title;
     private String description;
     private LocalDate todoDate;
+    private Integer timeSlot;
     private Boolean completed;
     private LocalDateTime completedAt;
     private LocalDateTime createdAt;

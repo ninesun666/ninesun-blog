@@ -75,6 +75,7 @@ public class TodoService {
         todo.setTitle(request.getTitle());
         todo.setDescription(request.getDescription());
         todo.setTodoDate(request.getTodoDate());
+        todo.setTimeSlot(request.getTimeSlot() != null ? request.getTimeSlot() : 1);
         todo.setCompleted(false);
         
         Todo saved = todoRepository.save(todo);
@@ -94,6 +95,9 @@ public class TodoService {
         }
         if (request.getTodoDate() != null) {
             todo.setTodoDate(request.getTodoDate());
+        }
+        if (request.getTimeSlot() != null) {
+            todo.setTimeSlot(request.getTimeSlot());
         }
         
         Todo saved = todoRepository.save(todo);
@@ -127,6 +131,7 @@ public class TodoService {
                 .title(todo.getTitle())
                 .description(todo.getDescription())
                 .todoDate(todo.getTodoDate())
+                .timeSlot(todo.getTimeSlot())
                 .completed(todo.getCompleted())
                 .completedAt(todo.getCompletedAt())
                 .createdAt(todo.getCreatedAt())

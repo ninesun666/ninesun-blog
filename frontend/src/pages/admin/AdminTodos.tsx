@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react'
 import {
   Box, Heading, VStack, Text, HStack, Icon, Spinner, Center, Flex,
-  Button, Input, Textarea, CloseButton, Dialog, Portal, Menu
+  Button, Input, Textarea, CloseButton, Dialog, Portal, Menu, Badge, NativeSelect
 } from '@chakra-ui/react'
-import { FiCheckCircle, FiCircle, FiPlus, FiTrash2, FiEdit2, FiMoreVertical, FiCalendar, FiList } from 'react-icons/fi'
+import { FiCheckCircle, FiCircle, FiPlus, FiTrash2, FiEdit2, FiMoreVertical, FiCalendar, FiList, FiClock } from 'react-icons/fi'
 import TodoCalendar from '../../components/TodoCalendar'
 import { todosApi } from '../../api/todos'
 import type { Todo, TodoStats } from '../../types'
+
+// 时间阶段选项
+const TIME_SLOT_OPTIONS = [
+  { value: 0.5, label: '30分钟' },
+  { value: 1, label: '1小时' },
+  { value: 1.5, label: '1.5小时' },
+  { value: 2, label: '2小时' },
+  { value: 3, label: '3小时' },
+  { value: 4, label: '4小时' },
+  { value: 6, label: '半天' },
+  { value: 8, label: '全天' },
+]
 
 const AdminTodos = () => {
   const today = new Date()
@@ -30,6 +42,7 @@ const AdminTodos = () => {
   const [formTitle, setFormTitle] = useState('')
   const [formDescription, setFormDescription] = useState('')
   const [formDate, setFormDate] = useState(today.toISOString().split('T')[0])
+  const [formTimeSlot, setFormTimeSlot] = useState(1)  // 时间阶段（小时）
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -75,6 +88,7 @@ const AdminTodos = () => {
     setFormTitle('')
     setFormDescription('')
     setFormDate(selectedDate)
+    setFormTimeSlot(1)  // 默认1小时
     setIsCreateOpen(true)
   }
 
@@ -83,6 +97,7 @@ const AdminTodos = () => {
     setFormTitle(todo.title)
     setFormDescription(todo.description || '')
     setFormDate(todo.todoDate)
+    setFormTimeSlot(todo.timeSlot || 1)
     setIsEditOpen(true)
   }
 
@@ -98,7 +113,8 @@ const AdminTodos = () => {
       await todosApi.createTodo({
         title: formTitle,
         description: formDescription || undefined,
-        todoDate: formDate
+        todoDate: formDate,
+        timeSlot: formTimeSlot
       })
       setIsCreateOpen(false)
       loadTodos()
@@ -117,7 +133,8 @@ const AdminTodos = () => {
       await todosApi.updateTodo(editingTodo.id, {
         title: formTitle,
         description: formDescription || undefined,
-        todoDate: formDate
+        todoDate: formDate,
+        timeSlot: formTimeSlot
       })
       setIsEditOpen(false)
       setEditingTodo(null)
@@ -248,13 +265,29 @@ const AdminTodos = () => {
                       />
                       <VStack align="stretch" gap={1} flex="1">
                         <HStack justify="space-between">
-                          <Text
-                            fontWeight="600"
-                            color={todo.completed ? 'gray.500' : 'gray.800'}
-                            textDecoration={todo.completed ? 'line-through' : 'none'}
-                          >
-                            {todo.title}
-                          </Text>
+                          <HStack gap={2}>
+                            <Text
+                              fontWeight="600"
+                              color={todo.completed ? 'gray.500' : 'gray.800'}
+                              textDecoration={todo.completed ? 'line-through' : 'none'}
+                              textDecorationColor="green.400"
+                              textDecorationThickness="2px"
+                            >
+                              {todo.title}
+                            </Text>
+                            {todo.timeSlot && (
+                              <Badge 
+                                size="sm" 
+                                colorPalette={todo.completed ? 'green' : 'purple'}
+                                variant="subtle"
+                              >
+                                <HStack gap={1}>
+                                  <Icon as={FiClock} boxSize={3} />
+                                  {TIME_SLOT_OPTIONS.find(o => o.value === todo.timeSlot)?.label || `${todo.timeSlot}小时`}
+                                </HStack>
+                              </Badge>
+                            )}
+                          </HStack>
                           <Menu.Root>
                             <Menu.Trigger asChild>
                               <Button variant="ghost" size="sm" p={1}>
@@ -286,6 +319,7 @@ const AdminTodos = () => {
                             fontSize="sm"
                             color="gray.500"
                             textDecoration={todo.completed ? 'line-through' : 'none'}
+                            textDecorationColor="green.400"
                           >
                             {todo.description}
                           </Text>
@@ -328,14 +362,29 @@ const AdminTodos = () => {
                       rows={3}
                     />
                   </Box>
-                  <Box w="full">
-                    <Text fontSize="sm" fontWeight="500" mb={2}>日期</Text>
-                    <Input
-                      type="date"
-                      value={formDate}
-                      onChange={(e) => setFormDate(e.target.value)}
-                    />
-                  </Box>
+                  <HStack w="full" gap={4}>
+                    <Box flex="1">
+                      <Text fontSize="sm" fontWeight="500" mb={2}>日期</Text>
+                      <Input
+                        type="date"
+                        value={formDate}
+                        onChange={(e) => setFormDate(e.target.value)}
+                      />
+                    </Box>
+                    <Box flex="1">
+                      <Text fontSize="sm" fontWeight="500" mb={2}>时间阶段</Text>
+                      <NativeSelect.Root>
+                        <NativeSelect.Field 
+                          value={formTimeSlot} 
+                          onChange={(e) => setFormTimeSlot(Number(e.target.value))}
+                        >
+                          {TIME_SLOT_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </NativeSelect.Field>
+                      </NativeSelect.Root>
+                    </Box>
+                  </HStack>
                 </VStack>
               </Dialog.Body>
               <Dialog.Footer>
@@ -380,14 +429,29 @@ const AdminTodos = () => {
                       rows={3}
                     />
                   </Box>
-                  <Box w="full">
-                    <Text fontSize="sm" fontWeight="500" mb={2}>日期</Text>
-                    <Input
-                      type="date"
-                      value={formDate}
-                      onChange={(e) => setFormDate(e.target.value)}
-                    />
-                  </Box>
+                  <HStack w="full" gap={4}>
+                    <Box flex="1">
+                      <Text fontSize="sm" fontWeight="500" mb={2}>日期</Text>
+                      <Input
+                        type="date"
+                        value={formDate}
+                        onChange={(e) => setFormDate(e.target.value)}
+                      />
+                    </Box>
+                    <Box flex="1">
+                      <Text fontSize="sm" fontWeight="500" mb={2}>时间阶段</Text>
+                      <NativeSelect.Root>
+                        <NativeSelect.Field 
+                          value={formTimeSlot} 
+                          onChange={(e) => setFormTimeSlot(Number(e.target.value))}
+                        >
+                          {TIME_SLOT_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </NativeSelect.Field>
+                      </NativeSelect.Root>
+                    </Box>
+                  </HStack>
                 </VStack>
               </Dialog.Body>
               <Dialog.Footer>

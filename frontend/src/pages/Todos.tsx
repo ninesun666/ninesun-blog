@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Box, Heading, VStack, Text, HStack, Icon, Spinner, Center, Badge, Flex, Container, Button } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
-import { FiCheckCircle, FiCircle, FiCalendar, FiList, FiSettings } from 'react-icons/fi'
+import { FiCheckCircle, FiCircle, FiCalendar, FiList, FiSettings, FiClock } from 'react-icons/fi'
 import TodoCalendar from '../components/TodoCalendar'
 import { todosApi } from '../api/todos'
 import { useAuthStore } from '../stores'
 import type { Todo, TodoStats } from '../types'
 import { SEO } from '../components/SEO'
+
+// 时间阶段选项
+const TIME_SLOT_OPTIONS = [
+  { value: 0.5, label: '30分钟' },
+  { value: 1, label: '1小时' },
+  { value: 1.5, label: '1.5小时' },
+  { value: 2, label: '2小时' },
+  { value: 3, label: '3小时' },
+  { value: 4, label: '4小时' },
+  { value: 6, label: '半天' },
+  { value: 8, label: '全天' },
+]
 
 const Todos = () => {
   const today = new Date()
@@ -158,26 +170,43 @@ const Todos = () => {
                           mt={0.5}
                         />
                         <VStack align="stretch" gap={1} flex="1">
-                          <HStack justify="space-between">
+                          <HStack justify="space-between" flexWrap="wrap" gap={2}>
                             <Text
                               fontWeight="600"
                               color={todo.completed ? 'gray.500' : 'gray.800'}
-                              textDecoration={todo.completed ? 'line-through' : 'none'}
                               fontSize="md"
+                              textDecoration={todo.completed ? 'line-through' : 'none'}
+                              textDecorationColor="green.400"
+                              textDecorationThickness="2px"
                             >
                               {todo.title}
                             </Text>
-                            {todo.completed && (
-                              <Badge colorPalette="green" variant="subtle" fontSize="xs">
-                                已完成
-                              </Badge>
-                            )}
+                            <HStack gap={2}>
+                              {todo.timeSlot && (
+                                <Badge 
+                                  size="sm" 
+                                  colorPalette={todo.completed ? 'green' : 'purple'} 
+                                  variant="subtle"
+                                >
+                                  <HStack gap={1}>
+                                    <Icon as={FiClock} boxSize={3} />
+                                    {TIME_SLOT_OPTIONS.find(o => o.value === todo.timeSlot)?.label || `${todo.timeSlot}小时`}
+                                  </HStack>
+                                </Badge>
+                              )}
+                              {todo.completed && (
+                                <Badge colorPalette="green" variant="subtle" fontSize="xs">
+                                  已完成
+                                </Badge>
+                              )}
+                            </HStack>
                           </HStack>
                           {todo.description && (
                             <Text
                               fontSize="sm"
                               color="gray.500"
                               textDecoration={todo.completed ? 'line-through' : 'none'}
+                              textDecorationColor="green.400"
                             >
                               {todo.description}
                             </Text>

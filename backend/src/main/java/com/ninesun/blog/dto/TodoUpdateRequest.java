@@ -17,4 +17,6 @@ public class TodoUpdateRequest {
     private String description;
     
     private LocalDate todoDate;
+    
+    private Integer timeSlot;
 }

@@ -5,12 +5,14 @@ export interface TodoCreateRequest {
   title: string
   description?: string
   todoDate: string
+  timeSlot?: number  // 时间阶段（小时），默认1
 }
 
 export interface TodoUpdateRequest {
   title?: string
   description?: string
   todoDate?: string
+  timeSlot?: number
 }
 
 export const todosApi = {

@@ -26,6 +26,9 @@ public class Todo {
     @Column(name = "todo_date", nullable = false)
     private LocalDate todoDate;
     
+    @Column(name = "time_slot")
+    private Integer timeSlot = 1;  // 时间阶段（小时），默认1小时
+    
     @Column(nullable = false)
     private Boolean completed = false;
     
