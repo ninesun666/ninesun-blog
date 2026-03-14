@@ -67,7 +67,7 @@ const Layout = () => {
         borderBottom="1px solid"
         borderColor={borderColor}
       >
-        <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
+        <Container maxW={{ base: "100%", md: "container.xl", "2xl": "1600px" }} px={{ base: 4, md: 6 }}>
           <Flex justify="space-between" align="center" py={4}>
             {/* Logo */}
             <HStack gap={3}>
@@ -379,7 +379,7 @@ const Layout = () => {
         py={8}
         mt="auto"
       >
-        <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
+        <Container maxW={{ base: "100%", md: "container.xl", "2xl": "1600px" }} px={{ base: 4, md: 6 }}>
           <Flex 
             direction={{ base: 'column', md: 'row' }}
             justify="space-between" 
