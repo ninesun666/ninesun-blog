@@ -68,9 +68,9 @@ const Layout = () => {
         borderColor={borderColor}
       >
         <Container maxW={{ base: "100%", md: "container.xl", "2xl": "1600px" }} px={{ base: 4, md: 6 }}>
-          <Flex justify="space-between" align="center" py={4}>
+          <Flex justify="space-between" align="center" py={4} gap={8}>
             {/* Logo */}
-            <HStack gap={3}>
+            <HStack gap={3} flexShrink={0}>
               <Box
                 w={10}
                 h={10}
@@ -97,8 +97,9 @@ const Layout = () => {
               </Heading>
             </HStack>
 
-            {/* Desktop Navigation */}
-            <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
+            {/* Desktop Right Section: Navigation + Actions */}
+            <HStack gap={2} display={{ base: 'none', md: 'flex' }}>
+              {/* Navigation */}
               {navItems.map((item) => (
                 <ChakraLink
                   key={item.to}
@@ -123,10 +124,10 @@ const Layout = () => {
                   </Link>
                 </ChakraLink>
               ))}
-            </HStack>
-
-            {/* Desktop Right Section */}
-            <HStack gap={3} display={{ base: 'none', md: 'flex' }}>
+              
+              {/* Divider */}
+              <Box w="1px" h={6} bg={borderColor} mx={2} />
+              
               {/* Theme Toggle */}
               <IconButton
                 aria-label={colorMode === 'light' ? '切换到暗色模式' : '切换到亮色模式'}
