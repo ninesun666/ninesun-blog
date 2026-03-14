@@ -22,11 +22,23 @@ const config = defineConfig({
         },
       },
       shadows: {
-        card: { value: '0 2px 8px rgba(0, 0, 0, 0.08)' },
+        card: { value: '0 2px 12px rgba(0, 0, 0, 0.08)' },
         'card-hover': { value: '0 8px 24px rgba(0, 0, 0, 0.12)' },
+        dialog: { value: '0 8px 32px rgba(0, 0, 0, 0.16)' },
+        menu: { value: '0 4px 16px rgba(0, 0, 0, 0.12)' },
       },
       radii: {
-        card: { value: '12px' },
+        card: { value: '16px' },
+        button: { value: '12px' },
+        'button-sm': { value: '8px' },
+        dialog: { value: '16px' },
+        input: { value: '10px' },
+      },
+      spacing: {
+        'button-x': { value: '24px' },
+        'button-y': { value: '12px' },
+        'dialog': { value: '24px' },
+        'card': { value: '20px' },
       },
     },
     semanticTokens: {
@@ -64,11 +76,11 @@ const config = defineConfig({
   },
   globalCss: {
     '.chakra-card': {
-      borderRadius: '12px',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+      borderRadius: '16px',
+      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
     },
     '.dark .chakra-card': {
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.2)',
     },
   },
 })

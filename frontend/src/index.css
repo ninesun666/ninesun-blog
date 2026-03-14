@@ -29,7 +29,9 @@ body {
   min-height: 100vh;
 }
 
-/* 滚动条样式 */
+/* ========================================
+   滚动条样式
+   ======================================== */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -56,7 +58,9 @@ body {
   background: #5b21b6;
 }
 
-/* 动画 */
+/* ========================================
+   动画
+   ======================================== */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -72,7 +76,9 @@ body {
   animation: fadeInUp 0.5s ease-out forwards;
 }
 
-/* 卡片悬停效果 */
+/* ========================================
+   卡片效果
+   ======================================== */
 .card-hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -88,6 +94,245 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ========================================
+   按钮规范 (iOS 风格)
+   ======================================== */
+
+/* 主要按钮 */
+.chakra-button {
+  border-radius: 12px !important;
+  padding: 12px 24px !important;
+  min-height: 44px;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chakra-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* 小按钮 */
+.chakra-button[data-size="sm"] {
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  min-height: 32px;
+  font-size: 13px;
+}
+
+/* 大按钮 */
+.chakra-button[data-size="lg"] {
+  border-radius: 12px !important;
+  padding: 14px 28px !important;
+  min-height: 48px;
+  font-size: 16px;
+}
+
+/* 图标按钮 */
+.chakra-button[data-type="icon"],
+.chakra-iconbutton {
+  border-radius: 10px !important;
+  padding: 8px !important;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+/* 图标按钮小尺寸 */
+.chakra-iconbutton[data-size="sm"] {
+  border-radius: 8px !important;
+  padding: 6px !important;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+/* 圆形按钮保持圆形 */
+.chakra-button[data-shape="full"],
+.chakra-button[style*="border-radius: 9999px"],
+.chakra-button[style*="border-radius: 50%"] {
+  border-radius: 9999px !important;
+}
+
+/* ========================================
+   弹窗规范 (iOS 风格)
+   ======================================== */
+
+/* 弹窗容器 */
+.chakra-dialog__content,
+[role="dialog"] {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16) !important;
+  max-width: 480px;
+}
+
+/* 弹窗标题 */
+.chakra-dialog__header,
+[role="dialog"] header,
+[role="dialog"] .chakra-dialog__header {
+  padding: 24px 24px 8px !important;
+}
+
+/* 弹窗内容 */
+.chakra-dialog__body,
+[role="dialog"] .chakra-dialog__body {
+  padding: 8px 24px 24px !important;
+}
+
+/* 弹窗底部按钮区 */
+.chakra-dialog__footer,
+[role="dialog"] .chakra-dialog__footer {
+  padding: 0 24px 24px !important;
+  gap: 12px;
+}
+
+/* 确认弹窗 */
+.chakra-alertdialog__content,
+[role="alertdialog"] {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16) !important;
+}
+
+.chakra-alertdialog__header,
+[role="alertdialog"] header {
+  padding: 24px 24px 8px !important;
+}
+
+.chakra-alertdialog__body,
+[role="alertdialog"] .chakra-alertdialog__body {
+  padding: 8px 24px 24px !important;
+}
+
+.chakra-alertdialog__footer,
+[role="alertdialog"] footer {
+  padding: 0 24px 24px !important;
+  gap: 12px;
+}
+
+/* ========================================
+   输入框规范
+   ======================================== */
+
+/* 输入框 */
+.chakra-input {
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  min-height: 44px;
+  transition: all 0.2s;
+}
+
+.chakra-input:focus {
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* 文本域 */
+.chakra-textarea {
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  transition: all 0.2s;
+}
+
+.chakra-textarea:focus {
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* 选择框 */
+.chakra-select {
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  min-height: 44px;
+}
+
+/* ========================================
+   下拉菜单规范
+   ======================================== */
+
+.chakra-menu__content,
+[role="menu"] {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  padding: 8px !important;
+}
+
+.chakra-menu__item,
+[role="menuitem"] {
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  margin: 2px 0;
+  transition: all 0.15s;
+}
+
+.chakra-menu__item:hover,
+[role="menuitem"]:hover {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+/* ========================================
+   表格规范
+   ======================================== */
+
+.chakra-table-container {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chakra-table th {
+  padding: 16px !important;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.chakra-table td {
+  padding: 16px !important;
+}
+
+.dark .chakra-table th {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* 紧凑表格 */
+.chakra-table[data-size="sm"] th,
+.chakra-table[data-size="sm"] td {
+  padding: 12px !important;
+}
+
+/* ========================================
+   Badge 规范
+   ======================================== */
+
+.chakra-badge {
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* ========================================
+   卡片规范
+   ======================================== */
+
+.chakra-card {
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chakra-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.dark .chakra-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark .chakra-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 卡片内容 */
+.chakra-card-body {
+  padding: 20px !important;
 }
 
 /* ========================================
