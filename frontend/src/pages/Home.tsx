@@ -66,7 +66,7 @@ const Home = () => {
       </Box>
 
       {/* Latest Articles */}
-      <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
+      <Container maxW={{ base: "100%", md: "container.xl", "2xl": "1600px" }} px={{ base: 4, md: 6 }}>
         <Flex align="center" justify="space-between" mb={8}>
           <HStack gap={3}>
             <Icon as={FiBookOpen} color="brand.600" boxSize={6} />
@@ -100,7 +100,7 @@ const Home = () => {
             </VStack>
           </Center>
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, "2xl": 4 }} gap={6}>
             {articles.map((article: any, index: number) => (
               <Card.Root 
                 key={article.id} 
@@ -189,7 +189,7 @@ const Home = () => {
         )}
 
         {/* Categories & Tags Section */}
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={8} mt={16}>
+        <SimpleGrid columns={{ base: 1, md: 2, "2xl": 2 }} gap={8} mt={16}>
           {/* Categories */}
           <Box 
             bg="white" 

@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { Box, Flex, VStack, HStack, Text, Button, Container, Icon, Avatar } from '@chakra-ui/react'
+import { Box, Flex, VStack, HStack, Text, Button, Container, Icon, Avatar, IconButton, useBreakpointValue } from '@chakra-ui/react'
 import { useAuthStore } from '../../stores'
 import { useColorModeValue } from '../../components/ui/color-mode'
-import { FiHome, FiFileText, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiBarChart2, FiFolder, FiTag, FiGlobe, FiCalendar } from 'react-icons/fi'
+import { FiHome, FiFileText, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiBarChart2, FiFolder, FiTag, FiGlobe, FiCalendar, FiMenu, FiX } from 'react-icons/fi'
 
 const navItems = [
   { to: '/admin', label: '仪表盘', icon: FiBarChart2, end: true },
@@ -19,6 +20,8 @@ const navItems = [
 export default function AdminLayout() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   // 颜色适配
   const sidebarBg = useColorModeValue('gray.800', 'gray.900')
@@ -31,8 +34,24 @@ export default function AdminLayout() {
     navigate('/login')
   }
 
+  const closeSidebar = () => setSidebarOpen(false)
+
   return (
     <Flex minH="100vh">
+      {/* Mobile Overlay */}
+      {sidebarOpen && isMobile && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          bg="blackAlpha.600"
+          zIndex={20}
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar */}
       <Box
         w="240px"
@@ -42,21 +61,39 @@ export default function AdminLayout() {
         position="fixed"
         h="100vh"
         overflowY="auto"
+        zIndex={30}
+        transform={isMobile ? (sidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none'}
+        transition="transform 0.3s ease-in-out"
       >
         <VStack align="stretch" gap={1}>
           {/* Logo */}
           <Box px={6} py={4} mb={4}>
-            <Text fontSize="xl" fontWeight="bold">
-              Admin Panel
-            </Text>
-            <Text fontSize="xs" color="gray.400" mt={1}>
-              ninesun-blog-v2
-            </Text>
+            <HStack justify="space-between">
+              <Box>
+                <Text fontSize="xl" fontWeight="bold">
+                  Admin Panel
+                </Text>
+                <Text fontSize="xs" color="gray.400" mt={1}>
+                  ninesun-blog-v2
+                </Text>
+              </Box>
+              {isMobile && (
+                <IconButton
+                  aria-label="关闭菜单"
+                  variant="ghost"
+                  size="sm"
+                  color="white"
+                  onClick={closeSidebar}
+                >
+                  <FiX />
+                </IconButton>
+              )}
+            </HStack>
           </Box>
 
           {/* Nav Items */}
           {navItems.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end}>
+            <NavLink key={item.to} to={item.to} end={item.end} onClick={isMobile ? closeSidebar : undefined}>
               {({ isActive }) => (
                 <Flex
                   align="center"
@@ -84,7 +121,7 @@ export default function AdminLayout() {
           </Box>
 
           {/* Back to site */}
-          <NavLink to="/">
+          <NavLink to="/" onClick={isMobile ? closeSidebar : undefined}>
             <Flex
               align="center"
               gap={3}
@@ -105,7 +142,7 @@ export default function AdminLayout() {
       </Box>
 
       {/* Main Content */}
-      <Box ml="240px" flex={1} bg={mainBg}>
+      <Box ml={{ base: 0, md: "240px" }} flex={1} bg={mainBg} minH="100vh">
         {/* Header */}
         <Box
           bg={headerBg}
@@ -119,18 +156,28 @@ export default function AdminLayout() {
         >
           <Flex justify="space-between" align="center">
             <HStack gap={3}>
+              {isMobile && (
+                <IconButton
+                  aria-label="打开菜单"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <FiMenu />
+                </IconButton>
+              )}
               <Avatar.Root size="sm">
                 <Avatar.Fallback name={user?.nickname || user?.username} />
               </Avatar.Root>
-              <Text fontWeight="medium">欢迎, {user?.nickname || user?.username}</Text>
+              <Text fontWeight="medium" display={{ base: 'none', sm: 'block' }}>欢迎, {user?.nickname || user?.username}</Text>
             </HStack>
             <HStack gap={4}>
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" color="gray.500" display={{ base: 'none', sm: 'block' }}>
                 {user?.role}
               </Text>
               <Button size="sm" variant="outline" onClick={handleLogout}>
-                <Icon as={FiLogOut} mr={2} />
-                退出登录
+                <Icon as={FiLogOut} mr={{ base: 0, sm: 2 }} />
+                <Text display={{ base: 'none', sm: 'block' }}>退出登录</Text>
               </Button>
             </HStack>
           </Flex>
