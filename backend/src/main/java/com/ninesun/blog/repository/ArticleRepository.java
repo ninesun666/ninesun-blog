@@ -69,4 +69,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // 按状态字符串查询（用于向量化）
     @Query("SELECT a FROM Article a WHERE a.status = :status")
     List<Article> findByStatus(@Param("status") String status);
+    
+    // 获取所有已发布文章（用于侧边栏目录）
+    @Query("SELECT a FROM Article a LEFT JOIN FETCH a.category WHERE a.status = 'PUBLISHED' ORDER BY a.category.id, a.createdAt DESC")
+    List<Article> findAllPublishedWithCategory();
 }

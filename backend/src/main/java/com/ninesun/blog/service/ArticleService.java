@@ -2,6 +2,7 @@ package com.ninesun.blog.service;
 
 import com.ninesun.blog.dto.ArticleCreateRequest;
 import com.ninesun.blog.dto.ArticleDTO;
+import com.ninesun.blog.dto.ArticleListDTO;
 import com.ninesun.blog.dto.ArticleUpdateRequest;
 import com.ninesun.blog.dto.PageResponse;
 import com.ninesun.blog.entity.Article;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,6 +65,27 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Article> articles = articleRepository.findByTagSlugAndStatus(tagSlug, Article.ArticleStatus.PUBLISHED, pageable);
         return PageResponse.of(articles.map(this::toDTO));
+    }
+    
+    /**
+     * 获取所有已发布文章列表（用于侧边栏目录）
+     */
+    public List<ArticleListDTO> getAllPublishedArticles() {
+        return articleRepository.findAllPublishedWithCategory().stream()
+                .map(this::toListDTO)
+                .collect(Collectors.toList());
+    }
+    
+    private ArticleListDTO toListDTO(Article article) {
+        return ArticleListDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .slug(article.getSlug())
+                .categoryId(article.getCategory() != null ? article.getCategory().getId() : null)
+                .categoryName(article.getCategory() != null ? article.getCategory().getName() : null)
+                .categorySlug(article.getCategory() != null ? article.getCategory().getSlug() : null)
+                .createdAt(article.getCreatedAt().toLocalDate())
+                .build();
     }
     
     public ArticleDTO getArticleBySlug(String slug) {

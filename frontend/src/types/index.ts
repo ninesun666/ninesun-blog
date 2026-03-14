@@ -16,6 +16,16 @@ export interface Article {
   updatedAt: string
 }
 
+export interface ArticleListItem {
+  id: number
+  title: string
+  slug: string
+  categoryId?: number
+  categoryName?: string
+  categorySlug?: string
+  createdAt: string
+}
+
 export interface Category {
   id: number
   name: string

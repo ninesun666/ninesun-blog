@@ -1,5 +1,5 @@
 import api from './client'
-import type { Article, Category, Tag, PageResponse, User, Comment } from '../types'
+import type { Article, ArticleListItem, Category, Tag, PageResponse, User, Comment } from '../types'
 
 export interface LoginRequest {
   username: string
@@ -99,6 +99,11 @@ export const likeApi = {
 export const articleApi = {
   getArticles: async (page = 0, size = 10): Promise<PageResponse<Article>> => {
     const { data } = await api.get(`/articles?page=${page}&size=${size}`)
+    return data
+  },
+
+  getAllArticles: async (): Promise<ArticleListItem[]> => {
+    const { data } = await api.get('/articles/all')
     return data
   },
 

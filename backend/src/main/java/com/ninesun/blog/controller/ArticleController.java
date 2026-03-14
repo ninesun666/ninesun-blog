@@ -2,6 +2,7 @@ package com.ninesun.blog.controller;
 
 import com.ninesun.blog.dto.ArticleCreateRequest;
 import com.ninesun.blog.dto.ArticleDTO;
+import com.ninesun.blog.dto.ArticleListDTO;
 import com.ninesun.blog.dto.ArticleUpdateRequest;
 import com.ninesun.blog.dto.PageResponse;
 import com.ninesun.blog.service.ArticleService;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -24,6 +27,14 @@ public class ArticleController {
         @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(articleService.getPublishedArticles(page, size));
+    }
+    
+    /**
+     * 获取所有已发布文章列表（用于侧边栏目录）
+     */
+    @GetMapping("/all")
+    public ResponseEntity<List<ArticleListDTO>> getAllArticles() {
+        return ResponseEntity.ok(articleService.getAllPublishedArticles());
     }
     
     @GetMapping("/category/{slug}")

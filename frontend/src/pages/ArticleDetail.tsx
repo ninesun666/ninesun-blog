@@ -1,7 +1,7 @@
-import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center, Button, Flex } from '@chakra-ui/react'
+import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center, Button, Flex, Container, useBreakpointValue } from '@chakra-ui/react'
 import { useParams, Link } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
-import { FiEdit2 } from 'react-icons/fi'
+import { useEffect, useRef, useState } from 'react'
+import { FiEdit2, FiMenu, FiX } from 'react-icons/fi'
 import { useArticle } from '../api/hooks'
 import { articleApi } from '../api'
 import { useAuthStore } from '../stores'
@@ -10,6 +10,7 @@ import remarkGfm from 'remark-gfm'
 import hljs from 'highlight.js'
 import LikeButton from '../components/LikeButton'
 import CommentSection from '../components/CommentSection'
+import ArticleSidebar from '../components/ArticleSidebar'
 import { SEO, generateArticleJsonLd } from '../components/SEO'
 
 const ArticleDetail = () => {
@@ -18,6 +19,9 @@ const ArticleDetail = () => {
   const codeRef = useRef<HTMLDivElement>(null)
   const { user, isAuthenticated } = useAuthStore()
   const isAdmin = isAuthenticated && user?.role === 'ADMIN'
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  
+  const isMobile = useBreakpointValue({ base: true, lg: false })
 
   // 文章加载完成后增加浏览次数
   useEffect(() => {
@@ -34,6 +38,11 @@ const ArticleDetail = () => {
       })
     }
   }, [article?.content])
+
+  // 切换文章时关闭移动端侧边栏
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [slug])
 
   if (isLoading) {
     return (
@@ -54,26 +63,23 @@ const ArticleDetail = () => {
   const siteUrl = import.meta.env.VITE_SITE_URL || 'http://localhost:8999'
   const canonicalUrl = `${siteUrl}/article/${article.slug}`
 
-  return (
-    <Box maxW="800px" mx="auto" px={{ base: 4, md: 6 }}>
-      <SEO
-        title={article.title}
-        description={article.summary || article.content?.slice(0, 160)}
-        keywords={article.tags?.map((t: any) => t.name) || []}
-        canonicalUrl={canonicalUrl}
-        ogType="article"
-        ogTitle={article.title}
-        ogDescription={article.summary || article.content?.slice(0, 160)}
-        ogImage={article.coverImage}
-        articlePublishedTime={article.createdAt}
-        articleModifiedTime={article.updatedAt}
-        articleSection={article.category?.name}
-        articleTags={article.tags?.map((t: any) => t.name)}
-        jsonLd={generateArticleJsonLd(article)}
-      />
+  const ArticleContent = () => (
+    <Box>
       <VStack gap={4} align="start" mb={6}>
         <Flex justify="space-between" w="full" align="flex-start">
-          <Heading size="3xl">{article.title}</Heading>
+          <HStack gap={3}>
+            {isMobile && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                p={1}
+              >
+                {sidebarOpen ? <FiX /> : <FiMenu />}
+              </Button>
+            )}
+            <Heading size="2xl">{article.title}</Heading>
+          </HStack>
           {isAdmin && (
             <Button
               size="sm"
@@ -117,6 +123,81 @@ const ArticleDetail = () => {
       </Box>
 
       <CommentSection articleId={article.id} />
+    </Box>
+  )
+
+  return (
+    <Box position="relative">
+      <SEO
+        title={article.title}
+        description={article.summary || article.content?.slice(0, 160)}
+        keywords={article.tags?.map((t: any) => t.name) || []}
+        canonicalUrl={canonicalUrl}
+        ogType="article"
+        ogTitle={article.title}
+        ogDescription={article.summary || article.content?.slice(0, 160)}
+        ogImage={article.coverImage}
+        articlePublishedTime={article.createdAt}
+        articleModifiedTime={article.updatedAt}
+        articleSection={article.category?.name}
+        articleTags={article.tags?.map((t: any) => t.name)}
+        jsonLd={generateArticleJsonLd(article)}
+      />
+      
+      <Flex gap={0} minH="calc(100vh - 200px)">
+        {/* 左侧边栏 - 桌面端 */}
+        {!isMobile && (
+          <Box
+            w="280px"
+            minW="280px"
+            borderRight="1px solid"
+            borderColor="gray.100"
+            bg="gray.50"
+            position="sticky"
+            top="80px"
+            h="calc(100vh - 80px)"
+          >
+            <ArticleSidebar />
+          </Box>
+        )}
+        
+        {/* 左侧边栏 - 移动端 */}
+        {isMobile && sidebarOpen && (
+          <Box
+            position="fixed"
+            top="0"
+            left="0"
+            w="280px"
+            h="100vh"
+            bg="white"
+            zIndex={1000}
+            boxShadow="lg"
+          >
+            <ArticleSidebar />
+          </Box>
+        )}
+        
+        {/* 移动端遮罩 */}
+        {isMobile && sidebarOpen && (
+          <Box
+            position="fixed"
+            top="0"
+            left="0"
+            right="0"
+            bottom="0"
+            bg="blackAlpha.500"
+            zIndex={999}
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        
+        {/* 右侧内容区 */}
+        <Box flex="1" overflow="hidden">
+          <Container maxW="800px" px={{ base: 4, md: 6 }} py={6}>
+            <ArticleContent />
+          </Container>
+        </Box>
+      </Flex>
     </Box>
   )
 }
