@@ -6,5 +6,7 @@ public record VisitStatsDTO(
     long weekVisits,
     long monthVisits,
     long uniqueVisitors,
-    long todayUniqueVisitors
+    long todayUniqueVisitors,
+    long weekUniqueVisitors,
+    long monthUniqueVisitors
 ) {}

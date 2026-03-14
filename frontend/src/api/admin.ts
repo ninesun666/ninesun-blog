@@ -165,6 +165,8 @@ export interface VisitStats {
   monthVisits: number
   uniqueVisitors: number
   todayUniqueVisitors: number
+  weekUniqueVisitors: number
+  monthUniqueVisitors: number
 }
 
 export interface CountryVisit {

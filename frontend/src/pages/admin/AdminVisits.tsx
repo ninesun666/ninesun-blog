@@ -227,13 +227,15 @@ export default function AdminVisits() {
       <Heading size="2xl" mb={6}>访问统计</Heading>
 
       {/* 统计卡片 */}
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 6 }} gap={4} mb={8}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4, xl: 4 }} gap={4} mb={8}>
         <StatCard label="总访问量" value={stats?.totalVisits || 0} icon={FiEye} color="blue" />
-        <StatCard label="今日访问" value={stats?.todayVisits || 0} icon={FiTrendingUp} color="green" />
-        <StatCard label="本周访问" value={stats?.weekVisits || 0} icon={FiClock} color="orange" />
-        <StatCard label="本月访问" value={stats?.monthVisits || 0} icon={FiCalendar} color="pink" />
         <StatCard label="独立访客" value={stats?.uniqueVisitors || 0} icon={FiUsers} color="purple" />
+        <StatCard label="今日访问" value={stats?.todayVisits || 0} icon={FiTrendingUp} color="green" />
         <StatCard label="今日独立访客" value={stats?.todayUniqueVisitors || 0} icon={FiGlobe} color="cyan" />
+        <StatCard label="本周访问" value={stats?.weekVisits || 0} icon={FiClock} color="orange" />
+        <StatCard label="本周独立访客" value={stats?.weekUniqueVisitors || 0} icon={FiUsers} color="teal" />
+        <StatCard label="本月访问" value={stats?.monthVisits || 0} icon={FiCalendar} color="pink" />
+        <StatCard label="本月独立访客" value={stats?.monthUniqueVisitors || 0} icon={FiGlobe} color="indigo" />
       </SimpleGrid>
 
       {/* 世界地图 + 国家排行 */}

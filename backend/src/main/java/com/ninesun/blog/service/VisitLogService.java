@@ -93,8 +93,10 @@ public class VisitLogService {
         long monthVisits = visitLogRepository.countSince(monthStart);
         long uniqueVisitors = visitLogRepository.countUniqueIp();
         long todayUniqueVisitors = visitLogRepository.countUniqueIpSince(todayStart);
+        long weekUniqueVisitors = visitLogRepository.countUniqueIpSince(weekStart);
+        long monthUniqueVisitors = visitLogRepository.countUniqueIpSince(monthStart);
         
-        return new VisitStatsDTO(totalVisits, todayVisits, weekVisits, monthVisits, uniqueVisitors, todayUniqueVisitors);
+        return new VisitStatsDTO(totalVisits, todayVisits, weekVisits, monthVisits, uniqueVisitors, todayUniqueVisitors, weekUniqueVisitors, monthUniqueVisitors);
     }
     
     public List<CountryVisitDTO> getCountryStats() {
