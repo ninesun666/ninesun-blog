@@ -1,8 +1,10 @@
-import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center } from '@chakra-ui/react'
-import { useParams } from 'react-router-dom'
+import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center, Button, Flex } from '@chakra-ui/react'
+import { useParams, Link } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
+import { FiEdit2 } from 'react-icons/fi'
 import { useArticle } from '../api/hooks'
 import { articleApi } from '../api'
+import { useAuthStore } from '../stores'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import hljs from 'highlight.js'
@@ -14,6 +16,8 @@ const ArticleDetail = () => {
   const { slug } = useParams()
   const { data: article, isLoading, error } = useArticle(slug || '')
   const codeRef = useRef<HTMLDivElement>(null)
+  const { user, isAuthenticated } = useAuthStore()
+  const isAdmin = isAuthenticated && user?.role === 'ADMIN'
 
   // 文章加载完成后增加浏览次数
   useEffect(() => {
@@ -68,7 +72,22 @@ const ArticleDetail = () => {
         jsonLd={generateArticleJsonLd(article)}
       />
       <VStack gap={4} align="start" mb={6}>
-        <Heading size="3xl">{article.title}</Heading>
+        <Flex justify="space-between" w="full" align="flex-start">
+          <Heading size="3xl">{article.title}</Heading>
+          {isAdmin && (
+            <Button
+              size="sm"
+              variant="outline"
+              colorPalette="purple"
+              asChild
+            >
+              <Link to={`/admin/articles/edit/${article.id}`}>
+                <FiEdit2 />
+                编辑
+              </Link>
+            </Button>
+          )}
+        </Flex>
         <HStack gap={4} color="fg.muted" fontSize="sm">
           <Text>{new Date(article.createdAt).toLocaleDateString('zh-CN')}</Text>
           <Text>阅读 {article.viewCount}</Text>

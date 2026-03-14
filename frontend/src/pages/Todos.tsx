@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, VStack, Text, HStack, Icon, Spinner, Center, Badge, Flex, Container } from '@chakra-ui/react'
-import { FiCheckCircle, FiCircle, FiCalendar, FiList } from 'react-icons/fi'
+import { Box, Heading, VStack, Text, HStack, Icon, Spinner, Center, Badge, Flex, Container, Button } from '@chakra-ui/react'
+import { Link } from 'react-router-dom'
+import { FiCheckCircle, FiCircle, FiCalendar, FiList, FiSettings } from 'react-icons/fi'
 import TodoCalendar from '../components/TodoCalendar'
 import { todosApi } from '../api/todos'
+import { useAuthStore } from '../stores'
 import type { Todo, TodoStats } from '../types'
 import { SEO } from '../components/SEO'
 
 const Todos = () => {
   const today = new Date()
+  const { user, isAuthenticated } = useAuthStore()
+  const isAdmin = isAuthenticated && user?.role === 'ADMIN'
   const [year, setYear] = useState(today.getFullYear())
   const [month, setMonth] = useState(today.getMonth() + 1)
   const [selectedDate, setSelectedDate] = useState<string>(() => {
@@ -73,10 +77,25 @@ const Todos = () => {
       />
       
       <Container maxW="container.xl" px={{ base: 4, md: 6 }} py={8}>
-        <HStack gap={3} mb={8}>
-          <Icon as={FiCalendar} color="brand.600" boxSize={6} />
-          <Heading size="xl" fontWeight="700" color="gray.800">每日待办</Heading>
-        </HStack>
+        <Flex justify="space-between" align="center" mb={8}>
+          <HStack gap={3}>
+            <Icon as={FiCalendar} color="brand.600" boxSize={6} />
+            <Heading size="xl" fontWeight="700" color="gray.800">每日待办</Heading>
+          </HStack>
+          {isAdmin && (
+            <Button
+              size="sm"
+              variant="outline"
+              colorPalette="purple"
+              asChild
+            >
+              <Link to="/admin/todos">
+                <FiSettings />
+                管理待办
+              </Link>
+            </Button>
+          )}
+        </Flex>
 
         <Flex gap={8} direction={{ base: 'column', lg: 'row' }}>
           {/* Calendar */}
