@@ -60,6 +60,12 @@ public class SecurityConfig {
                 // AI chat endpoint
                 .requestMatchers("/api/ai/chat").permitAll()
                 .requestMatchers("/api/ai/status").permitAll()
+                // Todos - public read, admin write
+                .requestMatchers(HttpMethod.GET, "/api/todos/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/todos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/todos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/todos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/todos/**").hasRole("ADMIN")
                 // File upload/delete requires auth
                 .requestMatchers(HttpMethod.POST, "/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/files/**").authenticated()

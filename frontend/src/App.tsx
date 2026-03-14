@@ -16,9 +16,11 @@ import {
   AdminTags,
   AdminComments,
   AdminUsers,
-  AdminSettings
+  AdminSettings,
+  AdminTodos
 } from './pages/admin'
 import AdminVisits from './pages/admin/AdminVisits'
+import Todos from './pages/Todos'
 import { useAuthStore } from './stores'
 
 // 管理员路由保护组件
@@ -41,8 +43,7 @@ function App() {
     <Box minH="100vh">
       <Routes>
         {/* Admin Routes */}
-        <Route
-          path="/admin"
+        <Route path="/admin"
           element={
             <AdminRoute>
               <AdminLayout />
@@ -51,6 +52,7 @@ function App() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="visits" element={<AdminVisits />} />
+          <Route path="todos" element={<AdminTodos />} />
           <Route path="articles" element={<AdminArticles />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="tags" element={<AdminTags />} />
@@ -66,6 +68,7 @@ function App() {
           <Route path="article/:slug" element={<ArticleDetail />} />
           <Route path="category/:slug" element={<CategoryPage />} />
           <Route path="tag/:slug" element={<TagPage />} />
+          <Route path="todos" element={<Todos />} />
           <Route path="login" element={<Login />} />
         </Route>
 

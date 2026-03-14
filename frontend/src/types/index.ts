@@ -92,3 +92,19 @@ export interface SiteSettings {
   allowGuestComment: boolean
   requireCommentApproval: boolean
 }
+
+export interface Todo {
+  id: number
+  title: string
+  description?: string
+  todoDate: string
+  completed: boolean
+  completedAt?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TodoStats {
+  total: number
+  completed: number
+}
