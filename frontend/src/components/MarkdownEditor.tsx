@@ -1,6 +1,6 @@
-import { Box, Text, HStack, Icon, Progress } from '@chakra-ui/react'
+import { Box, Text, HStack, Icon, Progress, Button } from '@chakra-ui/react'
 import MDEditor from '@uiw/react-md-editor'
-import { FiImage } from 'react-icons/fi'
+import { FiImage, FiUpload } from 'react-icons/fi'
 import api from '../api/client'
 import { useState, useRef, useCallback, useEffect } from 'react'
 
@@ -156,6 +156,24 @@ const MarkdownEditor = ({
 
   return (
     <Box data-color-mode="light" ref={containerRef}>
+      {/* 工具栏 - 上传按钮 */}
+      <HStack gap={2} mb={2} flexWrap="wrap">
+        <Button
+          size="sm"
+          variant="outline"
+          colorPalette="purple"
+          onClick={() => fileInputRef.current?.click()}
+          loading={uploading}
+          loadingText="上传中..."
+        >
+          <Icon as={FiUpload} />
+          上传图片
+        </Button>
+        <Text fontSize="xs" color="gray.500">
+          或直接粘贴/拖拽图片
+        </Text>
+      </HStack>
+
       {/* 上传进度提示 */}
       {uploading && (
         <Box mb={2} p={3} bg="purple.50" borderRadius="md">
@@ -176,6 +194,7 @@ const MarkdownEditor = ({
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        capture="environment"
         style={{ display: 'none' }}
         onChange={handleFileSelect}
       />
@@ -187,11 +206,6 @@ const MarkdownEditor = ({
         preview={preview}
         visibleDragbar={false}
       />
-
-      {/* 操作提示 */}
-      <Text fontSize="xs" color="gray.500" mt={2}>
-        💡 支持直接粘贴图片、拖拽图片上传
-      </Text>
     </Box>
   )
 }
