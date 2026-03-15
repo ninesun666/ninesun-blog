@@ -4,6 +4,7 @@ import com.ninesun.blog.dto.TwitterSyncResultDTO;
 import com.ninesun.blog.entity.Article;
 import com.ninesun.blog.entity.ArticleSocialPost;
 import com.ninesun.blog.entity.SiteSettings;
+import com.ninesun.blog.entity.SocialAccountToken;
 import com.ninesun.blog.repository.ArticleRepository;
 import com.ninesun.blog.repository.ArticleSocialPostRepository;
 import com.ninesun.blog.repository.SiteSettingsRepository;
