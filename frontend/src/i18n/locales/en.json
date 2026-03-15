@@ -1,0 +1,436 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "submit": "Submit",
+    "search": "Search",
+    "all": "All",
+    "optional": "Optional",
+    "noData": "No data",
+    "success": "Success",
+    "error": "Error",
+    "back": "Back",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{current}} of {{total}}"
+  },
+  "nav": {
+    "home": "Home",
+    "articles": "Articles",
+    "todos": "Todos",
+    "writeArticle": "Write",
+    "login": "Login",
+    "logout": "Logout",
+    "menu": "Menu",
+    "currentUser": "Current user"
+  },
+  "theme": {
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  },
+  "footer": {
+    "rights": "All rights reserved"
+  },
+  "home": {
+    "welcome": "Welcome to Ninesun Blog",
+    "subtitle": "Sharing technology, recording growth",
+    "latestArticles": "Latest Articles",
+    "viewAll": "View All",
+    "noArticles": "No articles yet",
+    "categories": "Categories",
+    "noCategories": "No categories",
+    "tags": "Tags",
+    "noTags": "No tags",
+    "more": "{{count}} more {{type}}"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "usernameOrEmail": "Username / Email",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "nickname": "Nickname",
+    "enterUsername": "Enter username or email",
+    "enterPassword": "Enter password",
+    "enterEmail": "Enter email address",
+    "enterNickname": "Enter nickname (optional)",
+    "usernameLength": "3-50 characters",
+    "passwordMinLength": "At least 6 characters",
+    "confirmPassword": "Confirm Password",
+    "enterConfirmPassword": "Re-enter new password",
+    "thirdParty": "Third-party Login",
+    "loginWithGithub": "Sign in with GitHub",
+    "backToHome": "Back to Home",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "error": {
+      "required": "Please enter username and password",
+      "loginFailed": "Login failed, please check your credentials",
+      "fillRequired": "Please fill in all required fields",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match",
+      "registerFailed": "Registration failed, please try again",
+      "githubFailed": "GitHub login failed, please try again",
+      "githubLinkFailed": "Unable to get GitHub login link",
+      "passwordChangeFailed": "Password change failed",
+      "passwordChangeSuccess": "Password changed successfully"
+    }
+  },
+  "article": {
+    "notFound": "Article not found",
+    "edit": "Edit",
+    "views": "views",
+    "attachments": "Attachments",
+    "download": "Download",
+    "loginToDownload": "Login to download",
+    "times": "times",
+    "noAttachments": "No attachments",
+    "error": {
+      "loginRequired": "Please login to download attachments"
+    }
+  },
+  "editor": {
+    "newArticle": "New Article",
+    "editArticle": "Edit Article",
+    "title": "Title",
+    "slug": "Slug (URL Path)",
+    "summary": "Summary",
+    "category": "Category",
+    "tags": "Tags",
+    "content": "Content (Markdown)",
+    "selectCategory": "Select category",
+    "enterTitle": "Enter article title",
+    "summaryPlaceholder": "Article summary (optional)",
+    "attachments": "Attachments",
+    "uploadAttachment": "Upload Attachment",
+    "attachmentFormats": "Supports pdf, zip, doc, xls, ppt, txt, etc. Max 20MB",
+    "downloadCount": "{{count}} downloads",
+    "error": {
+      "titleRequired": "Please enter a title",
+      "saveFailed": "Save failed, please try again",
+      "uploadFailed": "Upload failed",
+      "deleteFailed": "Delete failed"
+    },
+    "success": {
+      "updated": "Article updated",
+      "created": "Article created",
+      "attachmentUploaded": "Attachment uploaded",
+      "attachmentDeleted": "Attachment deleted"
+    },
+    "confirm": {
+      "deleteAttachment": "Are you sure you want to delete this attachment?",
+      "deleteTitle": "Delete Attachment"
+    }
+  },
+  "todos": {
+    "title": "Daily Todos",
+    "manage": "Manage Todos",
+    "noTodos": "No todos for today",
+    "completed": "Completed",
+    "add": "Add Todo",
+    "editTodo": "Edit Todo",
+    "title_field": "Title",
+    "description": "Description",
+    "date": "Date",
+    "timeSlot": "Time Slot",
+    "timeSlots": {
+      "30min": "30 min",
+      "1h": "1 hour",
+      "1.5h": "1.5 hours",
+      "2h": "2 hours",
+      "3h": "3 hours",
+      "4h": "4 hours",
+      "halfDay": "Half day",
+      "allDay": "All day"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this todo?"
+    },
+    "stats": {
+      "total": "Total",
+      "completedCount": "Completed"
+    }
+  },
+  "comments": {
+    "title": "Comments",
+    "nickname": "Nickname",
+    "email": "Email",
+    "yourNickname": "Your nickname",
+    "commentingAs": "Commenting as {{name}}",
+    "placeholder": "Write your comment...",
+    "needApproval": "Comments need approval before showing",
+    "submit": "Submit Comment",
+    "noComments": "No comments yet, say something~",
+    "loggedIn": "Logged in",
+    "anonymous": "Anonymous",
+    "error": {
+      "fillRequired": "Please fill in nickname and email",
+      "failed": "Comment failed"
+    },
+    "success": {
+      "submitted": "Comment submitted, waiting for approval"
+    }
+  },
+  "ai": {
+    "title": "AI Assistant",
+    "subtitle": "Intelligent Q&A based on blog content",
+    "welcome": "Hello! I'm the AI assistant for Ninesun Blog. I can help answer questions about the blog articles. What would you like to know?",
+    "placeholder": "Enter your question...",
+    "references": "References:",
+    "error": {
+      "processing": "Sorry, there was an error processing your request",
+      "network": "Network connection failed, please try again"
+    }
+  },
+  "like": {
+    "like": "Like",
+    "liked": "Liked",
+    "peopleFoundUseful": "people found this useful",
+    "error": {
+      "failed": "Operation failed"
+    }
+  },
+  "category": {
+    "title": "Category",
+    "all": "All Categories",
+    "unknown": "Unknown Category",
+    "noArticles": "No articles in this category"
+  },
+  "tag": {
+    "title": "Tag",
+    "all": "All Tags",
+    "unknown": "Unknown Tag",
+    "noArticles": "No articles with this tag"
+  },
+  "calendar": {
+    "weekdays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "monthYear": "{{month}} {{year}}"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "visits": "Analytics",
+    "todos": "Todos",
+    "articles": "Articles",
+    "categories": "Categories",
+    "tags": "Tags",
+    "comments": "Comments",
+    "users": "Users",
+    "settings": "Settings",
+    "backToFrontend": "Back to Site",
+    "welcome": "Welcome",
+    "logout": "Logout",
+    "stats": {
+      "totalArticles": "Total Articles",
+      "published": "Published",
+      "draft": "Draft",
+      "totalComments": "Total Comments",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "totalUsers": "Total Users",
+      "admins": "Admins",
+      "totalViews": "Total Views",
+      "totalLikes": "Likes",
+      "totalCategories": "Categories",
+      "totalTags": "Tags",
+      "pendingComments": "Pending Comments",
+      "popularArticles": "Popular Articles",
+      "recentArticles": "Recent Articles",
+      "categoryStats": "Category Stats",
+      "tagStats": "Tag Stats",
+      "moreItems": "{{count}} more {{type}}",
+      "noItems": "No {{type}}",
+      "views": "views",
+      "likes": "likes",
+      "comments": "comments"
+    },
+    "articles": {
+      "title": "Article Management",
+      "new": "New Article",
+      "search": "Search articles...",
+      "allStatus": "All Status",
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "table": {
+        "title": "Title",
+        "category": "Category",
+        "status": "Status",
+        "views": "Views",
+        "likes": "Likes",
+        "comments": "Comments",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "noArticles": "No articles",
+      "confirm": {
+        "delete": "Are you sure you want to delete this article?"
+      }
+    },
+    "comments": {
+      "title": "Comment Moderation",
+      "refresh": "Refresh",
+      "status": {
+        "all": "All Status",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "selected": "{{count}} selected",
+      "batchApprove": "Batch Approve",
+      "batchReject": "Batch Reject",
+      "pendingAlert": "{{count}} comments pending review",
+      "table": {
+        "content": "Content",
+        "user": "User",
+        "ip": "IP",
+        "status": "Status",
+        "time": "Time",
+        "actions": "Actions"
+      },
+      "guest": "Guest",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "categories": {
+      "title": "Category Management",
+      "subtitle": "Manage article categories...",
+      "new": "New Category",
+      "form": {
+        "name": "Category Name",
+        "slugHelper": "Used for URL, leave empty to auto-generate from name",
+        "description": "Description",
+        "icon": "Icon"
+      },
+      "articleCount": "{{count}} articles",
+      "createFirst": "Create your first category",
+      "confirm": {
+        "title": "Confirm Delete",
+        "message": "This action cannot be undone"
+      }
+    },
+    "tags": {
+      "title": "Tag Management",
+      "subtitle": "Manage article tags...",
+      "new": "New Tag",
+      "articleCount": "{{count}} articles",
+      "createFirst": "Create your first tag"
+    },
+    "settings": {
+      "title": "Site Settings",
+      "basicInfo": "Basic Info",
+      "form": {
+        "siteName": "Site Name",
+        "siteDescription": "Site Description",
+        "siteKeywords": "Site Keywords",
+        "footerText": "Footer Text",
+        "socialGithub": "GitHub",
+        "socialTwitter": "Twitter",
+        "socialEmail": "Email",
+        "allowGuestComment": "Allow Guest Comments",
+        "requireCommentApproval": "Require Comment Approval"
+      },
+      "socialLinks": "Social Links",
+      "features": "Features",
+      "save": "Save Settings",
+      "changePassword": "Change Password",
+      "password": {
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm New Password",
+        "minLength": "At least 6 characters",
+        "reenter": "Re-enter new password"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "stats": {
+        "total": "Total Users",
+        "admins": "Admins"
+      },
+      "table": {
+        "username": "Username",
+        "nickname": "Nickname",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "createdAt": "Joined",
+        "actions": "Actions"
+      },
+      "roles": {
+        "user": "User",
+        "admin": "Admin"
+      },
+      "status": {
+        "enabled": "Active",
+        "disabled": "Disabled"
+      },
+      "confirm": {
+        "delete": "Are you sure you want to delete user {{name}}? This cannot be undone"
+      }
+    },
+    "visits": {
+      "title": "Visit Analytics",
+      "stats": {
+        "totalVisits": "Total Visits",
+        "uniqueVisitors": "Unique Visitors",
+        "todayVisits": "Today's Visits",
+        "todayUniqueVisitors": "Today's Unique Visitors",
+        "weekVisits": "This Week",
+        "weekUniqueVisitors": "Week Unique Visitors",
+        "monthVisits": "This Month",
+        "monthUniqueVisitors": "Month Unique Visitors"
+      },
+      "distribution": "Visit Distribution",
+      "countryRanking": "Country Ranking",
+      "recent": "Recent Visits",
+      "table": {
+        "ip": "IP Address",
+        "location": "Location",
+        "path": "Path",
+        "time": "Time"
+      },
+      "isAdmin": "Admin",
+      "visitCount": "Visits",
+      "high": "High",
+      "low": "Low",
+      "noData": "No data",
+      "noRecords": "No visit records"
+    },
+    "todos": {
+      "title": "Todo Management",
+      "add": "Add Todo",
+      "edit": "Edit Todo",
+      "form": {
+        "title": "Title",
+        "description": "Description",
+        "date": "Date",
+        "timeSlot": "Time Slot",
+        "completed": "Completed"
+      },
+      "confirm": {
+        "delete": "Are you sure you want to delete this todo?"
+      }
+    }
+  },
+  "lang": {
+    "switch": "Switch Language",
+    "zh": "中文",
+    "en": "English"
+  }
+}

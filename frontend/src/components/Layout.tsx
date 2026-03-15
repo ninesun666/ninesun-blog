@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Box, Flex, Heading, Link as ChakraLink, Container, HStack, Button, Text, Icon, MenuRoot, MenuTrigger, MenuContent, MenuItem, VStack, IconButton } from '@chakra-ui/react'
 import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiMenu, FiX, FiMoon, FiSun, FiGithub, FiMail, FiCalendar } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores'
 import { useColorMode, useColorModeValue } from '../components/ui/color-mode'
 import AIChat from './AIChat'
+import LanguageSwitcher from './LanguageSwitcher'
 import { getPublicSiteSettings } from '../api/admin'
 import type { SiteSettings } from '../types'
 
 const Layout = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { isAuthenticated, user, logout } = useAuthStore()
   const { colorMode, toggleColorMode } = useColorMode()
@@ -47,9 +50,9 @@ const Layout = () => {
   }
 
   const navItems = [
-    { to: '/', label: '首页', icon: FiHome },
-    { to: '/articles', label: '文章', icon: FiBookOpen },
-    { to: '/todos', label: '待办', icon: FiCalendar },
+    { to: '/', labelKey: 'nav.home', icon: FiHome },
+    { to: '/articles', labelKey: 'nav.articles', icon: FiBookOpen },
+    { to: '/todos', labelKey: 'nav.todos', icon: FiCalendar },
   ]
 
   return (
@@ -117,7 +120,7 @@ const Layout = () => {
                   <Link to={item.to}>
                     <HStack gap={2}>
                       <Icon as={item.icon} boxSize={4} />
-                      <Text>{item.label}</Text>
+                      <Text>{t(item.labelKey)}</Text>
                     </HStack>
                   </Link>
                 </ChakraLink>
@@ -126,9 +129,12 @@ const Layout = () => {
               {/* Divider */}
               <Box w="1px" h={6} bg={borderColor} mx={2} />
               
+              {/* Language Switcher */}
+              <LanguageSwitcher />
+              
               {/* Theme Toggle */}
               <IconButton
-                aria-label={colorMode === 'light' ? '切换到暗色模式' : '切换到亮色模式'}
+                aria-label={colorMode === 'light' ? t('theme.darkMode') : t('theme.lightMode')}
                 variant="ghost"
                 size="sm"
                 onClick={toggleColorMode}
@@ -151,7 +157,7 @@ const Layout = () => {
                       <Link to="/admin/articles/new">
                         <HStack gap={2}>
                           <Icon as={FiEdit3} />
-                          <Text>写文章</Text>
+                          <Text>{t('nav.writeArticle')}</Text>
                         </HStack>
                       </Link>
                     </Button>
@@ -176,7 +182,7 @@ const Layout = () => {
                           <Link to="/admin/articles/new">
                             <HStack gap={2}>
                               <Icon as={FiEdit3} />
-                              <Text>写文章</Text>
+                              <Text>{t('nav.writeArticle')}</Text>
                             </HStack>
                           </Link>
                         </MenuItem>
@@ -184,7 +190,7 @@ const Layout = () => {
                       <MenuItem value="logout" onClick={handleLogout}>
                         <HStack gap={2}>
                           <Icon as={FiLogOut} />
-                          <Text>退出登录</Text>
+                          <Text>{t('nav.logout')}</Text>
                         </HStack>
                       </MenuItem>
                     </MenuContent>
@@ -205,7 +211,7 @@ const Layout = () => {
                   transition="all 0.2s"
                   asChild
                 >
-                  <Link to="/login">登录</Link>
+                  <Link to="/login">{t('nav.login')}</Link>
                 </Button>
               )}
             </HStack>
@@ -213,7 +219,7 @@ const Layout = () => {
             {/* Mobile Menu Button */}
             <IconButton
               display={{ base: 'flex', md: 'none' }}
-              aria-label="菜单"
+              aria-label={t('nav.menu')}
               variant="ghost"
               size="sm"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -226,31 +232,32 @@ const Layout = () => {
           {mobileMenuOpen && (
             <Box py={4} borderTop="1px solid" borderColor={menuBorderColor} bg={menuBg}>
               <VStack align="stretch" gap={1}>
-                {/* Theme Toggle */}
-                <Box
-                  as="button"
-                  onClick={toggleColorMode}
-                  w="100%"
-                  textAlign="left"
-                  px={4}
-                  py={3}
-                  borderRadius="lg"
-                  fontWeight="600"
-                  fontSize="md"
-                  color={mobileTextColor}
-                  bg="transparent"
-                  _hover={{ 
-                    bg: hoverBg, 
-                    color: hoverColor
-                  }}
-                  transition="all 0.2s"
-                  cursor="pointer"
-                >
-                  <HStack gap={3}>
-                    <Icon as={colorMode === 'light' ? FiMoon : FiSun} boxSize={5} />
-                    <Text>{colorMode === 'light' ? '暗色模式' : '亮色模式'}</Text>
-                  </HStack>
-                </Box>
+                {/* Language & Theme Toggle */}
+                <HStack px={4} py={2} gap={2}>
+                  <LanguageSwitcher />
+                  <Box
+                    as="button"
+                    onClick={toggleColorMode}
+                    px={3}
+                    py={2}
+                    borderRadius="lg"
+                    fontWeight="600"
+                    fontSize="sm"
+                    color={mobileTextColor}
+                    bg="transparent"
+                    _hover={{ 
+                      bg: hoverBg, 
+                      color: hoverColor
+                    }}
+                    transition="all 0.2s"
+                    cursor="pointer"
+                  >
+                    <HStack gap={2}>
+                      <Icon as={colorMode === 'light' ? FiMoon : FiSun} boxSize={4} />
+                      <Text>{colorMode === 'light' ? t('theme.darkMode') : t('theme.lightMode')}</Text>
+                    </HStack>
+                  </Box>
+                </HStack>
 
                 {/* Navigation Links */}
                 {navItems.map((item) => (
@@ -276,7 +283,7 @@ const Layout = () => {
                   >
                     <HStack gap={3}>
                       <Icon as={item.icon} boxSize={5} />
-                      <Text>{item.label}</Text>
+                      <Text>{t(item.labelKey)}</Text>
                     </HStack>
                   </Box>
                 ))}
@@ -288,7 +295,7 @@ const Layout = () => {
                 {isAuthenticated ? (
                   <>
                     <Box px={4} py={2}>
-                      <Text color={mobileSubTextColor} fontSize="sm">当前用户</Text>
+                      <Text color={mobileSubTextColor} fontSize="sm">{t('nav.currentUser')}</Text>
                       <Text fontWeight="600" color={mobileTextColor}>
                         {user?.nickname || user?.username}
                       </Text>
@@ -315,7 +322,7 @@ const Layout = () => {
                       >
                         <HStack gap={3}>
                           <Icon as={FiEdit3} boxSize={5} />
-                          <Text>写文章</Text>
+                          <Text>{t('nav.writeArticle')}</Text>
                         </HStack>
                       </Box>
                     )}
@@ -337,7 +344,7 @@ const Layout = () => {
                     >
                       <HStack gap={3}>
                         <Icon as={FiLogOut} boxSize={5} />
-                        <Text>退出登录</Text>
+                        <Text>{t('nav.logout')}</Text>
                       </HStack>
                     </Box>
                   </>
@@ -356,7 +363,7 @@ const Layout = () => {
                     mt={2}
                   >
                     <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                      登录
+                      {t('nav.login')}
                     </Link>
                   </Button>
                 )}
@@ -432,7 +439,7 @@ const Layout = () => {
             </HStack>
             
             <Text color="gray.500" fontSize="sm">
-              {siteSettings?.footerText || `© ${new Date().getFullYear()} All rights reserved. Made with ❤️`}
+              {siteSettings?.footerText || `© ${new Date().getFullYear()} ${t('footer.rights')}. Made with ❤️`}
             </Text>
           </Flex>
         </Container>

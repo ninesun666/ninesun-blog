@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import theme from './theme'
 import { ColorModeProvider } from './components/ui/color-mode'
+import './i18n' // Initialize i18n
 import 'highlight.js/styles/github.css'
 import './index.css'
 

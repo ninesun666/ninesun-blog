@@ -1,0 +1,436 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "confirm": "确认",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "save": "保存",
+    "submit": "提交",
+    "search": "搜索",
+    "all": "全部",
+    "optional": "可选",
+    "noData": "暂无数据",
+    "success": "操作成功",
+    "error": "操作失败",
+    "back": "返回",
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第 {{current}} / {{total}} 页"
+  },
+  "nav": {
+    "home": "首页",
+    "articles": "文章",
+    "todos": "待办",
+    "writeArticle": "写文章",
+    "login": "登录",
+    "logout": "退出登录",
+    "menu": "菜单",
+    "currentUser": "当前用户"
+  },
+  "theme": {
+    "darkMode": "暗色模式",
+    "lightMode": "亮色模式"
+  },
+  "footer": {
+    "rights": "保留所有权利"
+  },
+  "home": {
+    "welcome": "欢迎来到 Ninesun Blog",
+    "subtitle": "分享技术，记录成长",
+    "latestArticles": "最新文章",
+    "viewAll": "查看全部",
+    "noArticles": "暂无文章",
+    "categories": "分类",
+    "noCategories": "暂无分类",
+    "tags": "标签",
+    "noTags": "暂无标签",
+    "more": "还有 {{count}} 个{{type}}"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "usernameOrEmail": "用户名 / 邮箱",
+    "username": "用户名",
+    "email": "邮箱",
+    "password": "密码",
+    "nickname": "昵称",
+    "enterUsername": "输入用户名或邮箱",
+    "enterPassword": "输入密码",
+    "enterEmail": "输入邮箱地址",
+    "enterNickname": "输入昵称（可选）",
+    "usernameLength": "3-50个字符",
+    "passwordMinLength": "至少6个字符",
+    "confirmPassword": "确认密码",
+    "enterConfirmPassword": "再次输入新密码",
+    "thirdParty": "第三方登录",
+    "loginWithGithub": "使用 GitHub 登录",
+    "backToHome": "返回首页",
+    "changePassword": "修改密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "error": {
+      "required": "请输入用户名和密码",
+      "loginFailed": "登录失败，请检查用户名和密码",
+      "fillRequired": "请填写所有必填字段",
+      "passwordTooShort": "密码至少需要6个字符",
+      "passwordMismatch": "两次输入的密码不一致",
+      "registerFailed": "注册失败，请稍后重试",
+      "githubFailed": "GitHub 登录失败，请稍后重试",
+      "githubLinkFailed": "无法获取 GitHub 登录链接",
+      "passwordChangeFailed": "密码修改失败",
+      "passwordChangeSuccess": "密码修改成功"
+    }
+  },
+  "article": {
+    "notFound": "文章不存在",
+    "edit": "编辑",
+    "views": "阅读",
+    "attachments": "附件下载",
+    "download": "下载",
+    "loginToDownload": "登录下载",
+    "times": "次",
+    "noAttachments": "暂无附件",
+    "error": {
+      "loginRequired": "请先登录后再下载附件"
+    }
+  },
+  "editor": {
+    "newArticle": "新建文章",
+    "editArticle": "编辑文章",
+    "title": "标题",
+    "slug": "Slug (URL 路径)",
+    "summary": "摘要",
+    "category": "分类",
+    "tags": "标签",
+    "content": "内容 (Markdown)",
+    "selectCategory": "选择分类",
+    "enterTitle": "输入文章标题",
+    "summaryPlaceholder": "文章摘要（可选）",
+    "attachments": "附件",
+    "uploadAttachment": "上传附件",
+    "attachmentFormats": "支持 pdf, zip, doc, xls, ppt, txt 等格式，最大 20MB",
+    "downloadCount": "下载 {{count}} 次",
+    "error": {
+      "titleRequired": "请输入标题",
+      "saveFailed": "保存失败，请稍后重试",
+      "uploadFailed": "上传失败",
+      "deleteFailed": "删除失败"
+    },
+    "success": {
+      "updated": "文章已更新",
+      "created": "文章已创建",
+      "attachmentUploaded": "附件上传成功",
+      "attachmentDeleted": "附件已删除"
+    },
+    "confirm": {
+      "deleteAttachment": "确定删除此附件？",
+      "deleteTitle": "删除附件"
+    }
+  },
+  "todos": {
+    "title": "每日待办",
+    "manage": "管理待办",
+    "noTodos": "当日暂无待办事项",
+    "completed": "已完成",
+    "add": "添加待办",
+    "editTodo": "编辑待办",
+    "title_field": "标题",
+    "description": "描述",
+    "date": "日期",
+    "timeSlot": "时间阶段",
+    "timeSlots": {
+      "30min": "30分钟",
+      "1h": "1小时",
+      "1.5h": "1.5小时",
+      "2h": "2小时",
+      "3h": "3小时",
+      "4h": "4小时",
+      "halfDay": "半天",
+      "allDay": "全天"
+    },
+    "confirm": {
+      "delete": "确定删除此待办？"
+    },
+    "stats": {
+      "total": "总计",
+      "completedCount": "已完成"
+    }
+  },
+  "comments": {
+    "title": "评论",
+    "nickname": "昵称",
+    "email": "邮箱",
+    "yourNickname": "您的昵称",
+    "commentingAs": "以 {{name}} 身份评论",
+    "placeholder": "写下你的评论...",
+    "needApproval": "评论需要审核后才会显示",
+    "submit": "提交评论",
+    "noComments": "暂无评论，来说点什么吧~",
+    "loggedIn": "已登录",
+    "anonymous": "匿名用户",
+    "error": {
+      "fillRequired": "请填写昵称和邮箱",
+      "failed": "评论失败"
+    },
+    "success": {
+      "submitted": "评论已提交，等待审核"
+    }
+  },
+  "ai": {
+    "title": "AI 助手",
+    "subtitle": "基于博客内容的智能问答",
+    "welcome": "你好！我是 Ninesun Blog 的 AI 助手，可以帮你解答关于博客文章的问题。有什么想了解的吗？",
+    "placeholder": "输入问题...",
+    "references": "参考：",
+    "error": {
+      "processing": "抱歉，处理请求时出现问题",
+      "network": "网络连接失败，请稍后重试"
+    }
+  },
+  "like": {
+    "like": "点赞",
+    "liked": "已赞",
+    "peopleFoundUseful": "人觉得有用",
+    "error": {
+      "failed": "操作失败"
+    }
+  },
+  "category": {
+    "title": "分类",
+    "all": "全部分类",
+    "unknown": "未知分类",
+    "noArticles": "该分类下暂无文章"
+  },
+  "tag": {
+    "title": "标签",
+    "all": "全部标签",
+    "unknown": "未知标签",
+    "noArticles": "该标签下暂无文章"
+  },
+  "calendar": {
+    "weekdays": {
+      "sun": "日",
+      "mon": "一",
+      "tue": "二",
+      "wed": "三",
+      "thu": "四",
+      "fri": "五",
+      "sat": "六"
+    },
+    "monthYear": "{{year}}年{{month}}月"
+  },
+  "admin": {
+    "dashboard": "仪表盘",
+    "visits": "访问统计",
+    "todos": "待办管理",
+    "articles": "文章管理",
+    "categories": "分类管理",
+    "tags": "标签管理",
+    "comments": "评论审核",
+    "users": "用户管理",
+    "settings": "站点设置",
+    "backToFrontend": "返回前台",
+    "welcome": "欢迎",
+    "logout": "退出登录",
+    "stats": {
+      "totalArticles": "文章总数",
+      "published": "已发布",
+      "draft": "草稿",
+      "totalComments": "评论总数",
+      "pending": "待审核",
+      "approved": "已通过",
+      "rejected": "已拒绝",
+      "totalUsers": "用户总数",
+      "admins": "管理员",
+      "totalViews": "总浏览量",
+      "totalLikes": "点赞数",
+      "totalCategories": "分类数",
+      "totalTags": "标签数",
+      "pendingComments": "待审核评论",
+      "popularArticles": "热门文章",
+      "recentArticles": "最近文章",
+      "categoryStats": "分类统计",
+      "tagStats": "标签统计",
+      "moreItems": "还有 {{count}} 个{{type}}",
+      "noItems": "暂无{{type}}",
+      "views": "浏览",
+      "likes": "点赞",
+      "comments": "评论"
+    },
+    "articles": {
+      "title": "文章管理",
+      "new": "新建文章",
+      "search": "搜索文章...",
+      "allStatus": "全部状态",
+      "status": {
+        "published": "已发布",
+        "draft": "草稿"
+      },
+      "table": {
+        "title": "标题",
+        "category": "分类",
+        "status": "状态",
+        "views": "浏览",
+        "likes": "点赞",
+        "comments": "评论",
+        "createdAt": "创建时间",
+        "actions": "操作"
+      },
+      "noArticles": "暂无文章",
+      "confirm": {
+        "delete": "确定要删除这篇文章吗？"
+      }
+    },
+    "comments": {
+      "title": "评论审核",
+      "refresh": "刷新",
+      "status": {
+        "all": "全部状态",
+        "pending": "待审核",
+        "approved": "已通过",
+        "rejected": "已拒绝"
+      },
+      "selected": "已选择 {{count}} 条",
+      "batchApprove": "批量通过",
+      "batchReject": "批量拒绝",
+      "pendingAlert": "有 {{count}} 条评论等待审核",
+      "table": {
+        "content": "内容",
+        "user": "用户",
+        "ip": "IP",
+        "status": "状态",
+        "time": "时间",
+        "actions": "操作"
+      },
+      "guest": "游客",
+      "approve": "通过",
+      "reject": "拒绝"
+    },
+    "categories": {
+      "title": "分类管理",
+      "subtitle": "管理文章分类...",
+      "new": "新建分类",
+      "form": {
+        "name": "分类名称",
+        "slugHelper": "用于 URL，留空将根据名称自动生成",
+        "description": "描述",
+        "icon": "图标"
+      },
+      "articleCount": "{{count}} 篇文章",
+      "createFirst": "创建第一个分类",
+      "confirm": {
+        "title": "确认删除",
+        "message": "此操作不可恢复"
+      }
+    },
+    "tags": {
+      "title": "标签管理",
+      "subtitle": "管理文章标签...",
+      "new": "新建标签",
+      "articleCount": "{{count}} 篇文章",
+      "createFirst": "创建第一个标签"
+    },
+    "settings": {
+      "title": "站点设置",
+      "basicInfo": "基本信息",
+      "form": {
+        "siteName": "站点名称",
+        "siteDescription": "站点描述",
+        "siteKeywords": "站点关键词",
+        "footerText": "页脚文字",
+        "socialGithub": "GitHub",
+        "socialTwitter": "Twitter",
+        "socialEmail": "邮箱",
+        "allowGuestComment": "允许游客评论",
+        "requireCommentApproval": "评论需要审核"
+      },
+      "socialLinks": "社交链接",
+      "features": "功能设置",
+      "save": "保存设置",
+      "changePassword": "修改密码",
+      "password": {
+        "current": "当前密码",
+        "new": "新密码",
+        "confirm": "确认新密码",
+        "minLength": "至少6个字符",
+        "reenter": "再次输入新密码"
+      }
+    },
+    "users": {
+      "title": "用户管理",
+      "stats": {
+        "total": "总用户数",
+        "admins": "管理员数"
+      },
+      "table": {
+        "username": "用户名",
+        "nickname": "昵称",
+        "email": "邮箱",
+        "role": "角色",
+        "status": "状态",
+        "createdAt": "注册时间",
+        "actions": "操作"
+      },
+      "roles": {
+        "user": "用户",
+        "admin": "管理员"
+      },
+      "status": {
+        "enabled": "正常",
+        "disabled": "禁用"
+      },
+      "confirm": {
+        "delete": "确定要删除用户 {{name}} 吗？此操作不可撤销"
+      }
+    },
+    "visits": {
+      "title": "访问统计",
+      "stats": {
+        "totalVisits": "总访问量",
+        "uniqueVisitors": "独立访客",
+        "todayVisits": "今日访问",
+        "todayUniqueVisitors": "今日独立访客",
+        "weekVisits": "本周访问",
+        "weekUniqueVisitors": "本周独立访客",
+        "monthVisits": "本月访问",
+        "monthUniqueVisitors": "本月独立访客"
+      },
+      "distribution": "访问分布",
+      "countryRanking": "国家/地区排行",
+      "recent": "最近访问",
+      "table": {
+        "ip": "IP地址",
+        "location": "位置",
+        "path": "路径",
+        "time": "时间"
+      },
+      "isAdmin": "自己",
+      "visitCount": "访问量",
+      "high": "高",
+      "low": "低",
+      "noData": "暂无数据",
+      "noRecords": "暂无访问记录"
+    },
+    "todos": {
+      "title": "待办管理",
+      "add": "添加待办",
+      "edit": "编辑待办",
+      "form": {
+        "title": "标题",
+        "description": "描述",
+        "date": "日期",
+        "timeSlot": "时间阶段",
+        "completed": "已完成"
+      },
+      "confirm": {
+        "delete": "确定删除此待办？"
+      }
+    }
+  },
+  "lang": {
+    "switch": "切换语言",
+    "zh": "中文",
+    "en": "English"
+  }
+}
