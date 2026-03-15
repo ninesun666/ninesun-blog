@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { Box, Flex, Heading, Link as ChakraLink, Container, HStack, Button, Text, Icon, MenuRoot, MenuTrigger, MenuContent, MenuItem, VStack, IconButton } from '@chakra-ui/react'
-import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiFolder, FiTag, FiMenu, FiX, FiMoon, FiSun, FiGithub, FiMail, FiCalendar } from 'react-icons/fi'
+import { FiUser, FiLogOut, FiEdit3, FiHome, FiBookOpen, FiMenu, FiX, FiMoon, FiSun, FiGithub, FiMail, FiCalendar } from 'react-icons/fi'
 import { useAuthStore } from '../stores'
 import { useColorMode, useColorModeValue } from '../components/ui/color-mode'
 import AIChat from './AIChat'
@@ -50,8 +50,6 @@ const Layout = () => {
     { to: '/', label: '首页', icon: FiHome },
     { to: '/articles', label: '文章', icon: FiBookOpen },
     { to: '/todos', label: '待办', icon: FiCalendar },
-    { to: '/category/all', label: '分类', icon: FiFolder },
-    { to: '/tag/all', label: '标签', icon: FiTag },
   ]
 
   return (
