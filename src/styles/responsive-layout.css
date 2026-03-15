@@ -1,0 +1,116 @@
+/* Responsive Layout Fixes for Large Screens */
+/* Issue #115: Fix homepage layout whitespace on large screens */
+
+/* Root container with responsive max-width */
+.container,
+.main-container,
+.page-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+/* Homepage specific layout */
+.homepage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+}
+
+/* Content area with sidebar support */
+.content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  width: 100%;
+}
+
+/* For pages without sidebar */
+.content-wrapper.full-width {
+  grid-template-columns: 1fr;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .container,
+  .main-container,
+  .page-container {
+    max-width: 100%;
+    padding: 0 1.5rem;
+  }
+  
+  .content-wrapper {
+    grid-template-columns: 1fr 280px;
+  }
+}
+
+@media (max-width: 992px) {
+  .content-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container,
+  .main-container,
+  .page-container {
+    padding: 0 1rem;
+  }
+}
+
+/* Very large screens - prevent over-stretching */
+@media (min-width: 1920px) {
+  .container,
+  .main-container,
+  .page-container {
+    max-width: 1600px;
+  }
+}
+
+/* Hero section responsive */
+.hero-section {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Article list responsive grid */
+.article-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Card component responsive */
+.card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix for flex layouts */
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.flex-container > * {
+  flex: 1 1 300px;
+  max-width: calc(50% - 0.75rem);
+}
+
+@media (max-width: 768px) {
+  .flex-container > * {
+    max-width: 100%;
+  }
+}
