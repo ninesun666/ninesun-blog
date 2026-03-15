@@ -3,6 +3,7 @@ import MDEditor from '@uiw/react-md-editor'
 import { FiImage, FiUpload } from 'react-icons/fi'
 import api from '../api/client'
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { toast } from '../utils/notify'
 
 interface MarkdownEditorProps {
   value: string
@@ -96,7 +97,7 @@ const MarkdownEditor = ({
       insertImageMarkdown(url, file.name.replace(/\.[^/.]+$/, ''))
     } catch (err) {
       console.error('图片上传失败:', err)
-      alert('图片上传失败，请重试')
+      toast.error('图片上传失败，请重试')
     }
   }
 

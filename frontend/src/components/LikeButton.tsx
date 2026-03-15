@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button, HStack, Text, Spinner } from '@chakra-ui/react'
 import { likeApi, type LikeDTO } from '../api'
+import { toast } from '../utils/notify'
 
 interface LikeButtonProps {
   articleId: number
@@ -33,7 +34,7 @@ const LikeButton = ({ articleId }: LikeButtonProps) => {
       setLikeInfo(data)
     } catch (error: any) {
       console.error('Failed to toggle like:', error)
-      alert(error.response?.data?.message || '操作失败')
+      toast.error(error.response?.data?.message || '操作失败')
     } finally {
       setToggling(false)
     }

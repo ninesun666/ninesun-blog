@@ -6,6 +6,7 @@ import { useArticle } from '../api/hooks'
 import { articleApi, attachmentApi } from '../api'
 import { useAuthStore } from '../stores'
 import type { Attachment } from '../types'
+import { toast } from '../utils/notify'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import hljs from 'highlight.js'
@@ -45,7 +46,7 @@ const ArticleDetail = () => {
 
   const handleDownload = (attachment: Attachment) => {
     if (!isAuthenticated) {
-      alert('请先登录后再下载附件')
+      toast.warning('请先登录后再下载附件')
       return
     }
     // 直接打开下载链接

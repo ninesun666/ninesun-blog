@@ -20,6 +20,8 @@ import { FiPaperclip, FiTrash2 } from 'react-icons/fi'
 import MarkdownEditor from '../components/MarkdownEditor'
 import { articleApi, categoryApi, tagApi, attachmentApi } from '../api'
 import type { Attachment } from '../types'
+import { toast } from '../utils/notify'
+import { useConfirm } from '../components/ConfirmDialog'
 
 // Simple form field wrapper
 const FormField = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -41,16 +43,11 @@ interface Tag {
   slug: string
 }
 
-// Simple toast replacement for Chakra v3
-const showToast = (title: string, status: 'success' | 'error' | 'warning' = 'success') => {
-  console.log(`[${status.toUpperCase()}] ${title}`)
-  alert(title)
-}
-
 const ArticleEditor = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const isEdit = !!id
+  const { confirm, ConfirmDialog } = useConfirm()
 
   const [loading, setLoading] = useState(isEdit)
   const [saving, setSaving] = useState(false)
@@ -108,7 +105,7 @@ const ArticleEditor = () => {
       // 加载附件
       loadAttachments()
     } catch (error) {
-      showToast('加载失败：无法加载文章', 'error')
+      toast.error('加载失败：无法加载文章')
       navigate('/admin/articles')
     } finally {
       setLoading(false)
@@ -133,9 +130,9 @@ const ArticleEditor = () => {
     try {
       const newAttachment = await attachmentApi.upload(Number(id), file)
       setAttachments(prev => [...prev, newAttachment])
-      showToast('附件上传成功', 'success')
+      toast.success('附件上传成功')
     } catch (error) {
-      showToast('上传失败', 'error')
+      toast.error('上传失败')
     } finally {
       setUploading(false)
       if (fileInputRef.current) {
@@ -145,13 +142,15 @@ const ArticleEditor = () => {
   }
 
   const handleDeleteAttachment = async (attachmentId: number) => {
-    if (!confirm('确定删除此附件？')) return
+    const confirmed = await confirm('确定删除此附件？', '删除附件')
+    if (!confirmed) return
+    
     try {
       await attachmentApi.delete(attachmentId)
       setAttachments(prev => prev.filter(a => a.id !== attachmentId))
-      showToast('附件已删除', 'success')
+      toast.success('附件已删除')
     } catch (error) {
-      showToast('删除失败', 'error')
+      toast.error('删除失败')
     }
   }
 
@@ -163,7 +162,7 @@ const ArticleEditor = () => {
 
   const handleSubmit = async (status: 'DRAFT' | 'PUBLISHED') => {
     if (!formData.title.trim()) {
-      showToast('请输入标题', 'warning')
+      toast.warning('请输入标题')
       return
     }
 
@@ -178,15 +177,15 @@ const ArticleEditor = () => {
 
       if (isEdit) {
         await articleApi.update(Number(id), payload)
-        showToast('文章已更新', 'success')
+        toast.success('文章已更新')
       } else {
         const newArticle = await articleApi.create(payload)
-        showToast('文章已创建', 'success')
+        toast.success('文章已创建')
         navigate(`/admin/articles/edit/${newArticle.id}`)
         return
       }
     } catch (error) {
-      showToast('保存失败，请稍后重试', 'error')
+      toast.error('保存失败，请稍后重试')
     } finally {
       setSaving(false)
     }
@@ -372,6 +371,8 @@ const ArticleEditor = () => {
           </Button>
         </HStack>
       </VStack>
+      
+      <ConfirmDialog />
     </Box>
   )
 }

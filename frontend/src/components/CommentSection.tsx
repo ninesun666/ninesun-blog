@@ -14,6 +14,7 @@ import {
 import { commentApi } from '../api'
 import type { Comment } from '../types'
 import { useAuthStore } from '../stores'
+import { toast } from '../utils/notify'
 
 interface CommentSectionProps {
   articleId: number
@@ -48,7 +49,7 @@ const CommentSection = ({ articleId }: CommentSectionProps) => {
     if (!newComment.trim()) return
 
     if (!isAuthenticated && (!guestNickname.trim() || !guestEmail.trim())) {
-      alert('请填写昵称和邮箱')
+      toast.warning('请填写昵称和邮箱')
       return
     }
 
@@ -63,9 +64,9 @@ const CommentSection = ({ articleId }: CommentSectionProps) => {
       setNewComment('')
       setGuestNickname('')
       setGuestEmail('')
-      alert('评论已提交，等待审核')
+      toast.success('评论已提交，等待审核')
     } catch (error: any) {
-      alert(error.response?.data?.message || '评论失败')
+      toast.error(error.response?.data?.message || '评论失败')
     } finally {
       setSubmitting(false)
     }

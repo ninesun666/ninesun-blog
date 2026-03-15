@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Box } from '@chakra-ui/react'
+import { Toaster } from './components/ui/toaster'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import ArticleList from './pages/ArticleList'
@@ -41,6 +42,7 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <Box minH="100vh">
+      <Toaster />
       <Routes>
         {/* Admin Routes */}
         <Route path="/admin"
