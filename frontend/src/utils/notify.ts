@@ -2,32 +2,34 @@ import { toaster } from '../components/ui/toaster'
 
 export const toast = {
   success: (title: string, description?: string) => {
-    toaster.success({
+    toaster.create({
       title,
       description,
-      duration: 3000,
+      type: 'success',
     })
   },
 
   error: (title: string, description?: string) => {
-    toaster.error({
+    toaster.create({
       title,
       description,
-      duration: 4000,
+      type: 'error',
     })
   },
 
   warning: (title: string, description?: string) => {
-    toaster.warning({
+    toaster.create({
       title,
       description,
+      type: 'warning',
     })
   },
 
   info: (title: string, description?: string) => {
-    toaster.info({
+    toaster.create({
       title,
       description,
+      type: 'info',
     })
   },
 }
