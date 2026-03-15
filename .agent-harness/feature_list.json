@@ -1,0 +1,114 @@
+{
+  "project": {
+    "source_issue": 117
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Investigate original issue #115",
+      "details": "Review issue #115 in the repository to understand what the automation was attempting to do when it failed. Document the expected behavior and any relevant context.",
+      "priority": "high",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "notes": "Investigation complete. Error is AttributeError on PullRequest.head attribute. See investigation_report_T001.md for details."
+    },
+    {
+      "id": "T002",
+      "description": "Locate the automation code with the bug",
+      "details": "Find the source code that processes issues and accesses PullRequest objects. Search for '.head' attribute access patterns in the codebase to identify the exact location of the error.",
+      "priority": "high",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false,
+      "status": "failed"
+    },
+    {
+      "id": "T003",
+      "description": "Analyze PullRequest API/library documentation",
+      "details": "Review the GitHub API client library documentation (likely PyGithub or similar) to determine the correct way to access pull request head information. Document the correct attribute access pattern.",
+      "priority": "high",
+      "dependencies": [
+        "T002"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "medium",
+      "passes": false,
+      "status": "pending"
+    },
+    {
+      "id": "T004",
+      "description": "Fix the PullRequest attribute access bug",
+      "details": "Update the automation code to correctly access the head information from PullRequest objects. This may involve changing attribute names or using method calls instead of direct attribute access.",
+      "priority": "high",
+      "dependencies": [
+        "T002",
+        "T003"
+      ],
+      "files_to_modify": [
+        "automation/handlers/issue_handler.py",
+        "automation/github_client.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false,
+      "status": "pending"
+    },
+    {
+      "id": "T005",
+      "description": "Add defensive error handling for PullRequest operations",
+      "details": "Implement try-catch blocks and validation checks around PullRequest attribute access to provide better error messages and prevent similar failures in the future.",
+      "priority": "medium",
+      "dependencies": [
+        "T004"
+      ],
+      "files_to_modify": [
+        "automation/handlers/issue_handler.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false,
+      "status": "pending"
+    },
+    {
+      "id": "T006",
+      "description": "Add unit tests for PullRequest handling",
+      "details": "Create unit tests that verify correct handling of PullRequest objects, including edge cases where attributes may be missing or have different structures.",
+      "priority": "medium",
+      "dependencies": [
+        "T004",
+        "T005"
+      ],
+      "files_to_modify": [
+        "tests/test_issue_handler.py",
+        "tests/test_github_client.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false,
+      "status": "pending"
+    },
+    {
+      "id": "T007",
+      "description": "Re-process issue #115 and close issue #117",
+      "details": "After fixing the bug, manually trigger re-processing of issue #115 or handle it manually. Then close issue #117 with a summary of the fix applied.",
+      "priority": "low",
+      "dependencies": [
+        "T004",
+        "T005",
+        "T006"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false,
+      "status": "pending"
+    }
+  ],
+  "overall_approach": "1) Investigate the original issue #115 to understand the automation's intent, 2) Locate and examine the automation code that's failing, 3) Identify the correct API/library usage for accessing PullRequest head information, 4) Implement the fix with proper error handling, 5) Test and close the meta-issue.",
+  "potential_risks": [
+    "The automation code may have multiple similar attribute access bugs that need fixing",
+    "The GitHub API client library version may affect attribute naming conventions",
+    "Issue #115 may have specific conditions that triggered this edge case",
+    "Fixing this may reveal other underlying issues in the automation workflow"
+  ]
+}
