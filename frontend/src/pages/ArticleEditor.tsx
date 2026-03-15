@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   Box,
@@ -11,10 +11,15 @@ import {
   Spinner,
   Center,
   Text,
+  Icon,
+  Card,
+  Flex,
 } from '@chakra-ui/react'
 import { NativeSelectField, NativeSelectRoot } from '@chakra-ui/react/native-select'
+import { FiPaperclip, FiTrash2 } from 'react-icons/fi'
 import MarkdownEditor from '../components/MarkdownEditor'
-import { articleApi, categoryApi, tagApi } from '../api'
+import { articleApi, categoryApi, tagApi, attachmentApi } from '../api'
+import type { Attachment } from '../types'
 
 // Simple form field wrapper
 const FormField = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -63,6 +68,10 @@ const ArticleEditor = () => {
     allowComment: true,
   })
 
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     loadCategoriesAndTags()
     if (isEdit) {
@@ -96,12 +105,60 @@ const ArticleEditor = () => {
         status: article.status,
         allowComment: article.allowComment ?? true,
       })
+      // 加载附件
+      loadAttachments()
     } catch (error) {
       showToast('加载失败：无法加载文章', 'error')
       navigate('/admin/articles')
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadAttachments = async () => {
+    if (!id) return
+    try {
+      const data = await attachmentApi.getByArticle(Number(id))
+      setAttachments(data)
+    } catch (error) {
+      console.error('Failed to load attachments:', error)
+    }
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !id) return
+
+    setUploading(true)
+    try {
+      const newAttachment = await attachmentApi.upload(Number(id), file)
+      setAttachments(prev => [...prev, newAttachment])
+      showToast('附件上传成功', 'success')
+    } catch (error) {
+      showToast('上传失败', 'error')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const handleDeleteAttachment = async (attachmentId: number) => {
+    if (!confirm('确定删除此附件？')) return
+    try {
+      await attachmentApi.delete(attachmentId)
+      setAttachments(prev => prev.filter(a => a.id !== attachmentId))
+      showToast('附件已删除', 'success')
+    } catch (error) {
+      showToast('删除失败', 'error')
+    }
+  }
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
   const handleSubmit = async (status: 'DRAFT' | 'PUBLISHED') => {
@@ -233,6 +290,66 @@ const ArticleEditor = () => {
             height={500}
           />
         </FormField>
+
+        {/* 附件上传区域 - 仅编辑模式显示 */}
+        {isEdit && (
+          <FormField label="附件">
+            <VStack align="stretch" gap={3}>
+              <HStack>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  style={{ display: 'none' }}
+                  accept=".pdf,.zip,.rar,.7z,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.csv,.jpg,.jpeg,.png,.gif,.webp,.svg"
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  loading={uploading}
+                >
+                  <Icon as={FiPaperclip} mr={2} />
+                  上传附件
+                </Button>
+                <Text fontSize="sm" color="gray.500">
+                  支持 pdf, zip, doc, xls, ppt, txt 等格式，最大 20MB
+                </Text>
+              </HStack>
+
+              {/* 附件列表 */}
+              {attachments.length > 0 && (
+                <Card.Root>
+                  <Card.Body p={3}>
+                    <VStack align="stretch" gap={2}>
+                      {attachments.map((att) => (
+                        <Flex key={att.id} align="center" justify="space-between" p={2} bg="gray.50" _dark={{ bg: 'gray.700' }} borderRadius="md">
+                          <HStack gap={2}>
+                            <Icon as={FiPaperclip} />
+                            <Box>
+                              <Text fontSize="sm" fontWeight="medium">{att.filename}</Text>
+                              <Text fontSize="xs" color="gray.500">
+                                {formatFileSize(att.fileSize)} · 下载 {att.downloadCount} 次
+                              </Text>
+                            </Box>
+                          </HStack>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            colorPalette="red"
+                            onClick={() => handleDeleteAttachment(att.id)}
+                          >
+                            <Icon as={FiTrash2} />
+                          </Button>
+                        </Flex>
+                      ))}
+                    </VStack>
+                  </Card.Body>
+                </Card.Root>
+              )}
+            </VStack>
+          </FormField>
+        )}
 
         <HStack justify="flex-end" gap={4}>
           <Button variant="outline" onClick={() => navigate(-1)}>

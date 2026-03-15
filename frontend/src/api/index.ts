@@ -1,5 +1,5 @@
 import api from './client'
-import type { Article, ArticleListItem, Category, Tag, PageResponse, User, Comment } from '../types'
+import type { Article, ArticleListItem, Category, Tag, PageResponse, User, Comment, Attachment } from '../types'
 
 export interface LoginRequest {
   username: string
@@ -168,4 +168,28 @@ export const tagApi = {
     const { data } = await api.get(`/tags/${slug}`)
     return data
   },
+}
+
+export const attachmentApi = {
+  getByArticle: async (articleId: number): Promise<Attachment[]> => {
+    const { data } = await api.get(`/articles/${articleId}/attachments`)
+    return data
+  },
+
+  upload: async (articleId: number, file: File): Promise<Attachment> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const { data } = await api.post(`/articles/${articleId}/attachments`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    return data
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await api.delete(`/attachments/${id}`)
+  },
+
+  getDownloadUrl: (id: number): string => {
+    return `${api.defaults.baseURL}/attachments/${id}/download`
+  }
 }

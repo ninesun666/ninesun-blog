@@ -1,10 +1,11 @@
-import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center, Button, Flex, Container, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Heading, Text, Badge, HStack, VStack, Separator, Spinner, Center, Button, Flex, Container, useBreakpointValue, Icon, Card } from '@chakra-ui/react'
 import { useParams, Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { FiEdit2, FiMenu, FiX } from 'react-icons/fi'
+import { FiEdit2, FiMenu, FiX, FiPaperclip, FiDownload, FiLock } from 'react-icons/fi'
 import { useArticle } from '../api/hooks'
-import { articleApi } from '../api'
+import { articleApi, attachmentApi } from '../api'
 import { useAuthStore } from '../stores'
+import type { Attachment } from '../types'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import hljs from 'highlight.js'
@@ -20,6 +21,7 @@ const ArticleDetail = () => {
   const { user, isAuthenticated } = useAuthStore()
   const isAdmin = isAuthenticated && user?.role === 'ADMIN'
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
   
   const isMobile = useBreakpointValue({ base: true, lg: false })
 
@@ -27,8 +29,34 @@ const ArticleDetail = () => {
   useEffect(() => {
     if (article?.id) {
       articleApi.incrementViewCount(article.id).catch(() => {})
+      // 加载附件
+      loadAttachments(article.id)
     }
   }, [article?.id])
+
+  const loadAttachments = async (articleId: number) => {
+    try {
+      const data = await attachmentApi.getByArticle(articleId)
+      setAttachments(data)
+    } catch (error) {
+      console.error('Failed to load attachments:', error)
+    }
+  }
+
+  const handleDownload = (attachment: Attachment) => {
+    if (!isAuthenticated) {
+      alert('请先登录后再下载附件')
+      return
+    }
+    // 直接打开下载链接
+    window.open(attachmentApi.getDownloadUrl(attachment.id), '_blank')
+  }
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  }
 
   // 代码高亮
   useEffect(() => {
@@ -115,6 +143,62 @@ const ArticleDetail = () => {
           {article.content}
         </ReactMarkdown>
       </Box>
+
+      {/* 附件列表 */}
+      {attachments.length > 0 && (
+        <Box mt={8}>
+          <Heading size="md" mb={4}>
+            <Icon as={FiPaperclip} mr={2} />
+            附件下载
+          </Heading>
+          <Card.Root>
+            <Card.Body p={4}>
+              <VStack align="stretch" gap={3}>
+                {attachments.map((att) => (
+                  <Flex
+                    key={att.id}
+                    align="center"
+                    justify="space-between"
+                    p={3}
+                    bg="gray.50"
+                    _dark={{ bg: 'gray.700' }}
+                    borderRadius="lg"
+                  >
+                    <HStack gap={3}>
+                      <Icon as={FiPaperclip} color="brand.500" />
+                      <Box>
+                        <Text fontWeight="medium">{att.filename}</Text>
+                        <HStack gap={2} fontSize="sm" color="gray.500">
+                          <Text>{formatFileSize(att.fileSize)}</Text>
+                          <Text>·</Text>
+                          <Text>下载 {att.downloadCount} 次</Text>
+                        </HStack>
+                      </Box>
+                    </HStack>
+                    <Button
+                      size="sm"
+                      colorPalette="brand"
+                      onClick={() => handleDownload(att)}
+                    >
+                      {isAuthenticated ? (
+                        <>
+                          <Icon as={FiDownload} mr={1} />
+                          下载
+                        </>
+                      ) : (
+                        <>
+                          <Icon as={FiLock} mr={1} />
+                          登录下载
+                        </>
+                      )}
+                    </Button>
+                  </Flex>
+                ))}
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        </Box>
+      )}
 
       <Separator my={8} />
 

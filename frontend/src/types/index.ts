@@ -119,3 +119,16 @@ export interface TodoStats {
   total: number
   completed: number
 }
+
+export interface Attachment {
+  id: number
+  articleId: number
+  filename: string
+  storedFilename: string
+  filePath: string
+  fileSize: number
+  contentType?: string
+  downloadCount: number
+  createdAt: string
+  updatedAt: string
+}

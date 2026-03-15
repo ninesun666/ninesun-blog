@@ -66,6 +66,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/todos/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/todos/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/todos/**").hasRole("ADMIN")
+                // Attachments - list is public, download requires auth, upload/delete requires admin
+                .requestMatchers(HttpMethod.GET, "/api/articles/*/attachments").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/attachments/*/download").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/articles/*/attachments").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/attachments/*").hasRole("ADMIN")
                 // File upload/delete requires auth
                 .requestMatchers(HttpMethod.POST, "/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/files/**").authenticated()
