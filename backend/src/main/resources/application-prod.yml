@@ -11,3 +11,7 @@ logging:
   level:
     root: WARN
     com.ninesun.blog: INFO
+
+app:
+  upload:
+    dir: /app/uploads

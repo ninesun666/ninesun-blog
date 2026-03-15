@@ -68,15 +68,23 @@ public class AttachmentService {
         // 生成存储文件名
         String storedFilename = UUID.randomUUID().toString() + "." + extension;
         
-        // 创建附件目录
-        Path attachmentDir = Paths.get(uploadDir, "attachments");
+        // 创建附件目录（使用绝对路径）
+        Path baseDir = Paths.get(uploadDir).toAbsolutePath();
+        Path attachmentDir = baseDir.resolve("attachments");
+        
+        log.info("上传目录基础路径: {}", baseDir);
+        log.info("附件目录: {}", attachmentDir);
+        
         if (!Files.exists(attachmentDir)) {
+            log.info("创建附件目录: {}", attachmentDir);
             Files.createDirectories(attachmentDir);
         }
         
-        // 保存文件
+        // 保存文件（使用 Files.copy 避免 transferTo 的路径问题）
         Path filePath = attachmentDir.resolve(storedFilename);
-        file.transferTo(filePath.toFile());
+        log.info("保存文件到: {}", filePath);
+        
+        Files.copy(file.getInputStream(), filePath);
         
         // 创建附件记录
         Attachment attachment = Attachment.builder()
