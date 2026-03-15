@@ -1,0 +1,149 @@
+name: AI Harness
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to process'
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Get issue details
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ISSUE_NUMBER="${{ inputs.issue_number }}"
+          else
+            ISSUE_NUMBER="${{ github.event.issue.number }}"
+          fi
+          echo "number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          
+          # Get issue title and body
+          ISSUE_DATA=$(gh issue view $ISSUE_NUMBER --json title,body,labels)
+          ISSUE_TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
+          ISSUE_BODY=$(echo "$ISSUE_DATA" | jq -r '.body')
+          ISSUE_LABELS=$(echo "$ISSUE_DATA" | jq -r '.labels[].name' | tr '\n' ' ')
+          
+          echo "title<<EOF" >> $GITHUB_OUTPUT
+          echo "$ISSUE_TITLE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$ISSUE_BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "labels=$ISSUE_LABELS" >> $GITHUB_OUTPUT
+
+      - name: Determine branch type
+        id: branch-type
+        run: |
+          LABELS="${{ steps.issue.outputs.labels }}"
+          if echo "$LABELS" | grep -qi "bug"; then
+            echo "type=fix" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -qi "documentation"; then
+            echo "type=docs" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -qi "refactor"; then
+            echo "type=refactor" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -qi "test"; then
+            echo "type=test" >> $GITHUB_OUTPUT
+          elif echo "$LABELS" | grep -qi "chore"; then
+            echo "type=chore" >> $GITHUB_OUTPUT
+          else
+            echo "type=feat" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate branch name
+        id: branch
+        run: |
+          python automation/branch-naming.py \
+            "${{ steps.issue.outputs.number }}" \
+            "${{ steps.issue.outputs.title }}" \
+            "${{ steps.branch-type.outputs.type }}" > branch_name.txt
+          
+          BRANCH_NAME=$(cat branch_name.txt)
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "Generated branch name: $BRANCH_NAME"
+
+      - name: Validate branch name
+        run: |
+          python automation/branch-naming.py --validate "${{ steps.branch.outputs.name }}"
+
+      - name: Check for existing PR
+        id: existing-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER="${{ steps.issue.outputs.number }}"
+          
+          # Check if PR already exists for this issue
+          EXISTING_PR=$(gh pr list --state all --search "issue-$ISSUE_NUMBER" --json number,title,headRefName,state)
+          
+          if [ "$(echo "$EXISTING_PR" | jq 'length')" -gt 0 ]; then
+            echo "existing_pr=true" >> $GITHUB_OUTPUT
+            echo "pr_data=$EXISTING_PR" >> $GITHUB_OUTPUT
+            echo "Warning: Existing PR(s) found for this issue"
+            echo "$EXISTING_PR" | jq '.'
+          else
+            echo "existing_pr=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create branch
+        if: steps.existing-pr.outputs.existing_pr != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git checkout -b "${{ steps.branch.outputs.name }}"
+          
+          # Create a placeholder commit if needed
+          echo "<!-- Auto-generated for issue #${{ steps.issue.outputs.number }} -->" > .ai-harness-placeholder.md
+          git add .ai-harness-placeholder.md
+          git commit -m "feat: initialize branch for issue #${{ steps.issue.outputs.number }}"
+          
+          git push origin "${{ steps.branch.outputs.name }}"
+
+      - name: Create Pull Request
+        if: steps.existing-pr.outputs.existing_pr != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "${{ steps.issue.outputs.title }}" \
+            --body "Automated PR for issue #${{ steps.issue.outputs.number }}
+          
+          ## Original Issue
+          ${{ steps.issue.outputs.body }}
+          
+          ---
+          *This PR was automatically created by AI Harness for issue #${{ steps.issue.outputs.number }}*" \
+            --base main \
+            --head "${{ steps.branch.outputs.name }}"
+
+      - name: Skip - Existing PR Found
+        if: steps.existing-pr.outputs.existing_pr == 'true'
+        run: |
+          echo "Skipping PR creation - existing PR found for this issue"
+          echo "Existing PR data: ${{ steps.existing-pr.outputs.pr_data }}"

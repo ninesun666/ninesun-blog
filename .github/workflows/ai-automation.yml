@@ -1,0 +1,158 @@
+name: AI Automation
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  process-issue:
+    runs-on: ubuntu-latest
+    if: contains(github.event.label.name, 'ai-automate') || contains(github.event.comment.body, '/ai-automate')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check for existing PR
+        id: check-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          BRANCH_NAME="feat/issue-${ISSUE_NUMBER}"
+          
+          # Check if branch exists locally
+          if git show-ref --verify --quiet "refs/heads/${BRANCH_NAME}"; then
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+            echo "Branch ${BRANCH_NAME} already exists locally"
+          else
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check if branch exists remotely
+          if git ls-remote --heads origin "${BRANCH_NAME}" | grep -q "${BRANCH_NAME}"; then
+            echo "remote_branch_exists=true" >> $GITHUB_OUTPUT
+            echo "Branch ${BRANCH_NAME} already exists remotely"
+          else
+            echo "remote_branch_exists=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check for existing PR for this issue
+          EXISTING_PR=$(gh pr list --head "${BRANCH_NAME}" --state all --json number,state,title 2>/dev/null || echo "[]")
+          PR_COUNT=$(echo "${EXISTING_PR}" | jq 'length')
+          
+          if [ "${PR_COUNT}" -gt 0 ]; then
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+            echo "pr_data=${EXISTING_PR}" >> $GITHUB_OUTPUT
+            echo "Found existing PR(s) for branch ${BRANCH_NAME}:"
+            echo "${EXISTING_PR}" | jq '.'
+          else
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+            echo "No existing PR found for branch ${BRANCH_NAME}"
+          fi
+
+      - name: Handle existing PR scenario
+        if: steps.check-pr.outputs.pr_exists == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          BRANCH_NAME="feat/issue-${ISSUE_NUMBER}"
+          PR_DATA='${{ steps.check-pr.outputs.pr_data }}'
+          
+          # Get the most recent PR for this branch
+          PR_NUMBER=$(echo "${PR_DATA}" | jq -r '.[0].number')
+          PR_STATE=$(echo "${PR_DATA}" | jq -r '.[0].state')
+          
+          echo "Existing PR #${PR_NUMBER} is in state: ${PR_STATE}"
+          
+          if [ "${PR_STATE}" = "open" ]; then
+            echo "An open PR already exists for this issue: #${PR_NUMBER}"
+            echo "Adding comment to the existing PR"
+            gh pr comment ${PR_NUMBER} --body "⚠️ This PR is associated with issue #${ISSUE_NUMBER}. The automation detected an existing PR and will not create a duplicate."
+            echo "Skipping automation - existing PR found"
+            echo "skip_automation=true" >> $GITHUB_ENV
+          elif [ "${PR_STATE}" = "closed" ]; then
+            echo "A closed PR exists for this branch. Proceeding to create a new branch and PR."
+            # Delete the old branch if it exists
+            if [ "${{ steps.check-pr.outputs.remote_branch_exists }}" = "true" ]; then
+              echo "Deleting old remote branch ${BRANCH_NAME}"
+              git push origin --delete "${BRANCH_NAME}" || true
+            fi
+            if [ "${{ steps.check-pr.outputs.branch_exists }}" = "true" ]; then
+              echo "Deleting old local branch ${BRANCH_NAME}"
+              git branch -D "${BRANCH_NAME}" || true
+            fi
+          fi
+
+      - name: Create feature branch
+        if: env.skip_automation != 'true' && steps.check-pr.outputs.pr_exists != 'true'
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          BRANCH_NAME="feat/issue-${ISSUE_NUMBER}"
+          
+          # Create and checkout the branch
+          git checkout -b "${BRANCH_NAME}"
+          echo "Created branch: ${BRANCH_NAME}"
+
+      - name: Process issue with AI
+        if: env.skip_automation != 'true'
+        run: |
+          echo "Processing issue #${{ github.event.issue.number }} with AI..."
+          # Add your AI processing logic here
+          # This is a placeholder for the actual AI implementation
+
+      - name: Commit and push changes
+        if: env.skip_automation != 'true'
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          BRANCH_NAME="feat/issue-${ISSUE_NUMBER}"
+          
+          # Check if there are any changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit -m "feat: implement solution for issue #${ISSUE_NUMBER}"
+            git push origin "${BRANCH_NAME}"
+          fi
+
+      - name: Create Pull Request
+        if: env.skip_automation != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          BRANCH_NAME="feat/issue-${ISSUE_NUMBER}"
+          
+          # Check again if PR already exists (race condition protection)
+          EXISTING_PR=$(gh pr list --head "${BRANCH_NAME}" --state open --json number 2>/dev/null || echo "[]")
+          PR_COUNT=$(echo "${EXISTING_PR}" | jq 'length')
+          
+          if [ "${PR_COUNT}" -gt 0 ]; then
+            echo "PR already exists, skipping creation"
+            exit 0
+          fi
+          
+          # Create the PR
+          gh pr create \
+            --title "Fix: Issue #${ISSUE_NUMBER}" \
+            --body "This PR implements the solution for issue #${ISSUE_NUMBER}.\n\nCloses #${ISSUE_NUMBER}" \
+            --head "${BRANCH_NAME}" \
+            --base "main"
