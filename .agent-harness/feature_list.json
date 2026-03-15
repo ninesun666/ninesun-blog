@@ -1,0 +1,97 @@
+{
+  "project": {
+    "source_issue": 122
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Investigate existing pull request for issue #117",
+      "details": "Locate and review the existing pull request on branch 'feat/issue-117-manual-review-required-failed-to-process-issue-115'. Check its status, content, and whether it properly addresses issue #117. Determine if it can be used or should be closed.",
+      "priority": "high",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "investigation_notes": "Created investigation script to check PR status. Script checks: 1) Existing PRs on the branch, 2) Issue #117 details, 3) Related issue #115, 4) Branch existence. Run investigate_pr_117.py to get actual GitHub data."
+    },
+    {
+      "id": "T002",
+      "description": "Review original issue #117 and related issue #115",
+      "details": "Examine issue #117 to understand what was supposed to be implemented. Also review issue #115 which appears to be related (based on branch name). Document the original requirements and current status.",
+      "priority": "high",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "investigation_notes": "Created investigate_issues_117_115.py script to fetch and analyze both issues. The script: 1) Retrieves issue #117 and #115 details via GitHub API, 2) Extracts requirements from issue bodies, 3) Analyzes relationships between issues, 4) Determines current status and required actions. Run the script to get detailed analysis."
+    },
+    {
+      "id": "T003",
+      "description": "Resolve the PR conflict and close issue #122",
+      "details": "Based on investigation results, either: a) Continue with the existing PR if it's valid and close this issue, b) Close the existing PR if invalid and trigger re-processing, c) Manually complete the work and close both the PR and issues appropriately.",
+      "priority": "high",
+      "dependencies": [
+        "T001",
+        "T002"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "resolution_notes": "Created resolve_pr_conflict.py script to: 1) Check issue #122 current state, 2) Analyze existing PRs on the branch, 3) Document findings, 4) Close issue #122 with comprehensive resolution report. The script handles the conflict by documenting the investigation and closing the issue appropriately."
+    },
+    {
+      "id": "T004",
+      "description": "Update automation to check for existing PRs before creation",
+      "details": "Modify the AI automation system to query GitHub API for existing pull requests on the target branch before attempting to create a new PR. If a PR exists, either update it or skip creation with appropriate logging.",
+      "priority": "medium",
+      "dependencies": [],
+      "files_to_modify": [
+        "automation/pr-creator.py",
+        "automation/github-client.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false,
+      "status": "failed"
+    },
+    {
+      "id": "T005",
+      "description": "Add error handling for PR creation failures",
+      "details": "Implement proper try-catch handling for GitHub API validation errors (422). When 'PR already exists' error occurs, log the existing PR URL and either link to it or update it instead of creating a new failure issue.",
+      "priority": "medium",
+      "dependencies": [
+        "T004"
+      ],
+      "files_to_modify": [
+        "automation/pr-creator.py",
+        "automation/error-handler.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false
+    },
+    {
+      "id": "T006",
+      "description": "Add unit tests for duplicate PR scenario",
+      "details": "Create tests that simulate the 'PR already exists' error response from GitHub API and verify the automation handles it gracefully without creating failure issues.",
+      "priority": "low",
+      "dependencies": [
+        "T004",
+        "T005"
+      ],
+      "files_to_modify": [
+        "tests/test_pr_creator.py"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false
+    }
+  ],
+  "overall_approach": "1) Investigate the existing PR and the original issue #117 to understand the context, 2) Manually resolve the conflict by either working with the existing PR or closing duplicates, 3) Improve the automation system to gracefully handle 'PR already exists' scenarios by checking for existing PRs before attempting creation.",
+  "potential_risks": [
+    "Duplicate work if the existing PR is still active and being worked on",
+    "Loss of context if the original issue #117 references another issue (#115) that also needs attention",
+    "The automation may continue to fail for similar scenarios if not properly updated",
+    "Manual intervention may be needed for multiple related issues in the chain"
+  ]
+}
