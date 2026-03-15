@@ -49,6 +49,8 @@ app:
   site-url: ${SITE_URL:http://localhost:8999}
   upload:
     dir: ${UPLOAD_DIR:uploads}
+  encryption:
+    key: ${ENCRYPTION_KEY:}
 
 geoip:
   database:
@@ -71,10 +73,6 @@ github:
 twitter:
   client-id: ${TWITTER_CLIENT_ID:}
   client-secret: ${TWITTER_CLIENT_SECRET:}
-
-app:
-  encryption:
-    key: ${ENCRYPTION_KEY:}
 
 logging:
   level:
