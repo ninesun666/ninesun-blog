@@ -14,7 +14,8 @@ import {
   Icon,
   Card,
   Flex,
-  Checkbox,
+  CheckboxRoot,
+  CheckboxIndicator,
 } from '@chakra-ui/react'
 import { NativeSelectField, NativeSelectRoot } from '@chakra-ui/react/native-select'
 import { FiPaperclip, FiTrash2 } from 'react-icons/fi'
@@ -403,12 +404,14 @@ const ArticleEditor = () => {
             <Card.Body p={4}>
               <VStack align="stretch" gap={3}>
                 <HStack>
-                  <Checkbox
-                    checked={syncToTwitter}
+                  <CheckboxRoot
+                    defaultChecked={syncToTwitter}
                     onCheckedChange={(e: { checked: boolean }) => setSyncToTwitter(e.checked)}
                   >
-                    同步到 X (Twitter)
-                  </Checkbox>
+                    <CheckboxIndicator>
+                      同步到 X (Twitter)
+                    </CheckboxIndicator>
+                  </CheckboxRoot>
                   {siteSettings?.autoSyncToTwitter && (
                     <Text fontSize="xs" color="gray.500">(已启用自动同步)</Text>
                   )}

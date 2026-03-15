@@ -41,7 +41,7 @@ export default function AdminSettings() {
     queryFn: getSiteSettings,
   })
 
-  const { data: twitterAccount, refetch: refetchTwitter } = useQuery({
+  const { data: twitterAccount, refetch: refetchTwitter } = useQuery<TwitterAccount>({
     queryKey: ['twitter-account'],
     queryFn: getTwitterAccount,
   })
