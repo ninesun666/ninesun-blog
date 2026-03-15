@@ -1,0 +1,20 @@
+{
+  "project": {
+    "source_issue": 118
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Implement solution for issue #118",
+      "details": "```json\n{\n  \"summary\": \"This is an AI automation failure report indicating that the automated workflow failed to process issue #115 because a pull request already exists for the branch 'feat/issue-115-'. The task is to investigate, resolve the conflict, and improve the automation to prevent similar failures.\",\n  \"overall_approach\":1. Investigate the original issue #115 and the existing PR to understand the state of work. 2. Determine if the existing PR is valid and can be used, or if it needs to be closed. 3. Fix the automation workflow to handle duplicate PR scenarios gracefully. 4. Close this meta-issue after resolution.\",\n  \"potential_risks\": [\n    \"The existing PR may have incomplete or incorrect changes that need review\",\n    \"The branch naming convention (with trailing dash) may cause issues with automation scripts\",\n    \"Multiple automation attempts could create duplicate branches or PRs\",\n    \"The original issue #115 may have been resolved differently, making the PR obsolete\"\n ",
+      "priority": "medium",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "medium",
+      "passes": false,
+      "status": "failed"
+    }
+  ],
+  "overall_approach": "",
+  "potential_risks": []
+}

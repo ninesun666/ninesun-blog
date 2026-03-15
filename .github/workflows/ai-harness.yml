@@ -1,0 +1,337 @@
+name: AI Harness Automation
+
+on:
+  issues:
+    types: [opened, labeled, edited]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to process'
+        required: true
+        type: number
+      force_recreate:
+        description: 'Force recreate PR even if one exists'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  check-existing-pr:
+    name: Check for Existing PR
+    runs-on: ubuntu-latest
+    outputs:
+      has_existing_pr: ${{ steps.check-pr.outputs.has_existing_pr }}
+      existing_pr_number: ${{ steps.check-pr.outputs.pr_number }}
+      existing_pr_status: ${{ steps.check-pr.outputs.pr_status }}
+      existing_pr_branch: ${{ steps.check-pr.outputs.branch_name }}
+      should_proceed: ${{ steps.evaluate.outputs.should_proceed }}
+      action_to_take: ${{ steps.evaluate.outputs.action }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get issue number
+        id: get-issue
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "issue_number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "issues" ]; then
+            echo "issue_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "issue_comment" ]; then
+            echo "issue_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for existing PR
+        id: check-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER=${{ steps.get-issue.outputs.issue_number }}
+          echo "Checking for existing PR for issue #${ISSUE_NUMBER}..."
+          
+          # Search for PRs that reference this issue
+          EXISTING_PRS=$(gh pr list --state all --json number,headRefName,state,title,body --search "fixes #${ISSUE_NUMBER} OR closes #${ISSUE_NUMBER} OR issue-${ISSUE_NUMBER}" 2>/dev/null || echo "[]")
+          
+          # Also check for branches with issue number pattern
+          BRANCH_PATTERN="feat/issue-${ISSUE_NUMBER}"
+          BRANCH_PR=$(gh pr list --state all --json number,headRefName,state,title --head "${BRANCH_PATTERN}" 2>/dev/null || echo "[]")
+          
+          # Combine and deduplicate results
+          ALL_PRS=$(echo "${EXISTING_PRS} ${BRANCH_PR}" | jq -s 'add | unique_by(.number)')
+          
+          PR_COUNT=$(echo "${ALL_PRS}" | jq 'length')
+          
+          if [ "${PR_COUNT}" -gt 0 ]; then
+            # Get the most recent PR
+            PR_DATA=$(echo "${ALL_PRS}" | jq -r '.[0]')
+            PR_NUMBER=$(echo "${PR_DATA}" | jq -r '.number')
+            PR_STATE=$(echo "${PR_DATA}" | jq -r '.state')
+            PR_BRANCH=$(echo "${PR_DATA}" | jq -r '.headRefName')
+            
+            echo "has_existing_pr=true" >> $GITHUB_OUTPUT
+            echo "pr_number=${PR_NUMBER}" >> $GITHUB_OUTPUT
+            echo "pr_status=${PR_STATE}" >> $GITHUB_OUTPUT
+            echo "branch_name=${PR_BRANCH}" >> $GITHUB_OUTPUT
+            
+            echo "Found existing PR #${PR_NUMBER} (${PR_STATE}) on branch ${PR_BRANCH}"
+          else
+            echo "has_existing_pr=false" >> $GITHUB_OUTPUT
+            echo "pr_number=" >> $GITHUB_OUTPUT
+            echo "pr_status=" >> $GITHUB_OUTPUT
+            echo "branch_name=" >> $GITHUB_OUTPUT
+            
+            echo "No existing PR found for issue #${ISSUE_NUMBER}"
+          fi
+
+      - name: Evaluate action to take
+        id: evaluate
+        run: |
+          HAS_PR=${{ steps.check-pr.outputs.has_existing_pr }}
+          PR_STATUS=${{ steps.check-pr.outputs.pr_status }}
+          FORCE_RECREATE=${{ inputs.force_recreate || 'false' }}
+          
+          if [ "${HAS_PR}" = "true" ]; then
+            if [ "${FORCE_RECREATE}" = "true" ]; then
+              echo "Force recreate requested - will close existing PR and create new one"
+              echo "should_proceed=true" >> $GITHUB_OUTPUT
+              echo "action=recreate" >> $GITHUB_OUTPUT
+            elif [ "${PR_STATUS}" = "OPEN" ]; then
+              echo "Existing PR is open - will update existing PR"
+              echo "should_proceed=true" >> $GITHUB_OUTPUT
+              echo "action=update" >> $GITHUB_OUTPUT
+            elif [ "${PR_STATUS}" = "CLOSED" ]; then
+              echo "Existing PR is closed - checking if merged"
+              # If closed but not merged, we might want to reopen or create new
+              echo "should_proceed=true" >> $GITHUB_OUTPUT
+              echo "action=recreate" >> $GITHUB_OUTPUT
+            elif [ "${PR_STATUS}" = "MERGED" ]; then
+              echo "Existing PR is already merged - no action needed"
+              echo "should_proceed=false" >> $GITHUB_OUTPUT
+              echo "action=none" >> $GITHUB_OUTPUT
+            else
+              echo "Unknown PR status: ${PR_STATUS}"
+              echo "should_proceed=true" >> $GITHUB_OUTPUT
+              echo "action=create" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No existing PR - will create new one"
+            echo "should_proceed=true" >> $GITHUB_OUTPUT
+            echo "action=create" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log decision
+        run: |
+          echo "=== PR Handling Decision ==="
+          echo "Has existing PR: ${{ steps.check-pr.outputs.has_existing_pr }}"
+          echo "Existing PR number: ${{ steps.check-pr.outputs.pr_number }}"
+          echo "Existing PR status: ${{ steps.check-pr.outputs.pr_status }}"
+          echo "Action to take: ${{ steps.evaluate.outputs.action }}"
+          echo "Should proceed: ${{ steps.evaluate.outputs.should_proceed }}"
+
+  handle-existing-pr:
+    name: Handle Existing PR
+    needs: check-existing-pr
+    if: needs.check-existing-pr.outputs.has_existing_pr == 'true' && needs.check-existing-pr.outputs.should_proceed == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.handle.outputs.branch_name }}
+      pr_number: ${{ steps.handle.outputs.pr_number }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Handle existing PR
+        id: handle
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ACTION=${{ needs.check-existing-pr.outputs.action_to_take }}
+          PR_NUMBER=${{ needs.check-existing-pr.outputs.existing_pr_number }}
+          PR_BRANCH=${{ needs.check-existing-pr.outputs.existing_pr_branch }}
+          ISSUE_NUMBER=${{ github.event.issue.number || inputs.issue_number }}
+          
+          if [ "${ACTION}" = "update" ]; then
+            echo "Updating existing PR #${PR_NUMBER}..."
+            
+            # Fetch the existing branch
+            git fetch origin "${PR_BRANCH}"
+            git checkout "${PR_BRANCH}"
+            
+            # Rebase on main to ensure it's up to date
+            git fetch origin main
+            git rebase origin/main || true
+            
+            # Push updates if rebase succeeded
+            if [ $? -eq 0 ]; then
+              git push origin "${PR_BRANCH}" --force-with-lease
+              echo "Successfully updated PR #${PR_NUMBER}"
+            else
+              echo "Rebase had conflicts - PR may need manual intervention"
+              # Add a comment to the PR about conflicts
+              gh pr comment ${PR_NUMBER} --body "⚠️ Automated rebase detected conflicts. Manual resolution may be required."
+            fi
+            
+            echo "branch_name=${PR_BRANCH}" >> $GITHUB_OUTPUT
+            echo "pr_number=${PR_NUMBER}" >> $GITHUB_OUTPUT
+            
+          elif [ "${ACTION}" = "recreate" ]; then
+            echo "Recreating PR - closing existing PR #${PR_NUMBER}..."
+            
+            # Close the existing PR with a comment
+            gh pr close ${PR_NUMBER} --comment "Closing to allow automated recreation of this PR. Issue will be reprocessed." || true
+            
+            # Delete the old branch if it exists
+            git push origin --delete "${PR_BRANCH}" 2>/dev/null || true
+            
+            # Signal that a new PR should be created
+            echo "branch_name=" >> $GITHUB_OUTPUT
+            echo "pr_number=" >> $GITHUB_OUTPUT
+          fi
+
+  create-new-pr:
+    name: Create New PR
+    needs: [check-existing-pr, handle-existing-pr]
+    if: |
+      (needs.check-existing-pr.outputs.has_existing_pr == 'false' && needs.check-existing-pr.outputs.should_proceed == 'true') ||
+      (needs.handle-existing-pr.outputs.branch_name == '' && needs.check-existing-pr.outputs.should_proceed == 'true')
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.create-pr.outputs.pr_number }}
+      branch_name: ${{ steps.create-pr.outputs.branch_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get issue details
+        id: issue-details
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number || inputs.issue_number }}
+          ISSUE_DATA=$(gh issue view ${ISSUE_NUMBER} --json title,body,labels)
+          
+          echo "title=$(echo "${ISSUE_DATA}" | jq -r '.title')" >> $GITHUB_OUTPUT
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$(echo "${ISSUE_DATA}" | jq -r '.body')" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "issue_number=${ISSUE_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Create feature branch
+        id: create-branch
+        run: |
+          ISSUE_NUMBER=${{ steps.issue-details.outputs.issue_number }}
+          BRANCH_NAME="feat/issue-${ISSUE_NUMBER}-${RANDOM}"
+          
+          # Ensure we're on main
+          git checkout origin/main
+          
+          # Create and push new branch
+          git checkout -b "${BRANCH_NAME}"
+          git push origin "${BRANCH_NAME}"
+          
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Run AI implementation
+        id: ai-impl
+        run: |
+          echo "Running AI implementation for issue #${{ steps.issue-details.outputs.issue_number }}"
+          # Placeholder for AI implementation logic
+          # This would typically call an AI service to generate code
+          echo "implementation_status=success" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        id: create-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME=${{ steps.create-branch.outputs.branch_name }}
+          ISSUE_NUMBER=${{ steps.issue-details.outputs.issue_number }}
+          ISSUE_TITLE=${{ steps.issue-details.outputs.title }}
+          
+          # Create PR with proper formatting
+          PR_BODY=$(cat <<EOF
+          ## Summary
+          Automated implementation for issue #${ISSUE_NUMBER}
+          
+          ## Related Issue
+          Closes #${ISSUE_NUMBER}
+          
+          ## Changes
+          - Automated changes generated by AI Harness
+          
+          ## Checklist
+          - [ ] Code follows project style guidelines
+          - [ ] Tests have been added/updated
+          - [ ] Documentation has been updated if needed
+          EOF
+          )
+          
+          PR_URL=$(gh pr create \
+            --title "feat: ${ISSUE_TITLE}" \
+            --body "${PR_BODY}" \
+            --base main \
+            --head "${BRANCH_NAME}" \
+            --label "automated,ai-generated")
+          
+          PR_NUMBER=$(echo "${PR_URL}" | grep -oE '[0-9]+$')
+          
+          echo "pr_number=${PR_NUMBER}" >> $GITHUB_OUTPUT
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          
+          echo "Created PR #${PR_NUMBER}: ${PR_URL}"
+
+  log-summary:
+    name: Log Summary
+    needs: [check-existing-pr, handle-existing-pr, create-new-pr]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Summary
+        run: |
+          echo "## AI Harness Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          HAS_PR=${{ needs.check-existing-pr.outputs.has_existing_pr }}
+          ACTION=${{ needs.check-existing-pr.outputs.action_to_take }}
+          NEW_PR=${{ needs.create-new-pr.outputs.pr_number }}
+          EXISTING_PR=${{ needs.check-existing-pr.outputs.existing_pr_number }}
+          
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Had Existing PR | ${HAS_PR} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Action Taken | ${ACTION} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Existing PR Number | ${EXISTING_PR:-N/A} |" >> $GITHUB_STEP_SUMMARY
+          echo "| New PR Created | ${NEW_PR:-N/A} |" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${HAS_PR}" = "true" ] && [ "${ACTION}" = "none" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Issue already resolved by merged PR" >> $GITHUB_STEP_SUMMARY
+          elif [ "${NEW_PR}" != "" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ New PR created successfully" >> $GITHUB_STEP_SUMMARY
+          elif [ "${ACTION}" = "update" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Existing PR updated successfully" >> $GITHUB_STEP_SUMMARY
+          fi
