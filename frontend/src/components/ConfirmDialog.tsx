@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import {
-  DialogRoot,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-  DialogFooter,
-  DialogCloseTrigger,
+  Dialog,
+  Portal,
   Button,
   Text,
+  CloseButton,
 } from '@chakra-ui/react'
 
 interface ConfirmDialogProps {
@@ -37,32 +33,39 @@ export function ConfirmDialog({
   const colorPalette = variant === 'danger' ? 'red' : variant === 'warning' ? 'orange' : 'blue'
 
   return (
-    <DialogRoot open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogCloseTrigger />
-        </DialogHeader>
-        <DialogBody>
-          <Text>{message}</Text>
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange({ open: false })}>
-            {cancelText}
-          </Button>
-          <Button
-            colorPalette={colorPalette}
-            onClick={() => {
-              onConfirm()
-              onOpenChange({ open: false })
-            }}
-            loading={loading}
-          >
-            {confirmText}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </DialogRoot>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Portal>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>{title}</Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body>
+              <Text>{message}</Text>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Button variant="outline" onClick={() => onOpenChange({ open: false })}>
+                {cancelText}
+              </Button>
+              <Button
+                colorPalette={colorPalette}
+                onClick={() => {
+                  onConfirm()
+                  onOpenChange({ open: false })
+                }}
+                loading={loading}
+              >
+                {confirmText}
+              </Button>
+            </Dialog.Footer>
+            <Dialog.CloseTrigger asChild>
+              <CloseButton size="sm" position="absolute" top={3} right={3} />
+            </Dialog.CloseTrigger>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   )
 }
 

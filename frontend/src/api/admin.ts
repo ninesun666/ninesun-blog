@@ -209,3 +209,38 @@ export const getRecentVisits = async (): Promise<RecentVisit[]> => {
   const response = await api.get<RecentVisit[]>('/admin/visits/recent')
   return response.data
 }
+
+// Twitter Integration
+export interface TwitterAccount {
+  connected: boolean
+  username?: string
+  platformUserId?: string
+  connectedAt?: string
+}
+
+export interface TwitterSyncResult {
+  success: boolean
+  tweetId?: string
+  tweetUrl?: string
+  postedAt?: string
+  errorMessage?: string
+}
+
+export const getTwitterAuthUrl = async (): Promise<string> => {
+  const response = await api.get<{ url: string }>('/twitter/auth-url')
+  return response.data.url
+}
+
+export const getTwitterAccount = async (): Promise<TwitterAccount> => {
+  const response = await api.get<TwitterAccount>('/twitter/account')
+  return response.data
+}
+
+export const disconnectTwitter = async (): Promise<void> => {
+  await api.delete('/twitter/account')
+}
+
+export const syncArticleToTwitter = async (articleId: number, customText?: string): Promise<TwitterSyncResult> => {
+  const response = await api.post<TwitterSyncResult>(`/twitter/sync/${articleId}`, { customText })
+  return response.data
+}

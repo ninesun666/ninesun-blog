@@ -51,6 +51,12 @@ public class SiteSettings {
     @Column(name = "require_comment_approval")
     private Boolean requireCommentApproval;
     
+    @Column(name = "auto_sync_to_twitter")
+    private Boolean autoSyncToTwitter;
+    
+    @Column(name = "twitter_sync_format", columnDefinition = "TEXT")
+    private String twitterSyncFormat;
+    
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
@@ -75,6 +81,8 @@ public class SiteSettings {
                 .socialEmail("")
                 .allowGuestComment(true)
                 .requireCommentApproval(true)
+                .autoSyncToTwitter(false)
+                .twitterSyncFormat("📝 新文章: {title}\n{url}")
                 .build();
     }
 }

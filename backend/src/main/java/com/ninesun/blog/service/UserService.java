@@ -223,7 +223,9 @@ public class UserService {
                 settings.getSocialTwitter(),
                 settings.getSocialEmail(),
                 settings.getAllowGuestComment(),
-                settings.getRequireCommentApproval()
+                settings.getRequireCommentApproval(),
+                settings.getAutoSyncToTwitter() != null ? settings.getAutoSyncToTwitter() : false,
+                settings.getTwitterSyncFormat()
         );
     }
     
@@ -239,6 +241,8 @@ public class UserService {
         settings.setSocialEmail(dto.socialEmail());
         settings.setAllowGuestComment(dto.allowGuestComment());
         settings.setRequireCommentApproval(dto.requireCommentApproval());
+        settings.setAutoSyncToTwitter(dto.autoSyncToTwitter());
+        settings.setTwitterSyncFormat(dto.twitterSyncFormat());
         siteSettingsRepository.save(settings);
         return getSiteSettings();
     }

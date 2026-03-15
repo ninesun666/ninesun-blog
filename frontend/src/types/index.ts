@@ -101,6 +101,23 @@ export interface SiteSettings {
   socialEmail: string
   allowGuestComment: boolean
   requireCommentApproval: boolean
+  autoSyncToTwitter: boolean
+  twitterSyncFormat: string
+}
+
+export interface TwitterAccount {
+  connected: boolean
+  username?: string
+  platformUserId?: string
+  connectedAt?: string
+}
+
+export interface TwitterSyncResult {
+  success: boolean
+  tweetId?: string
+  tweetUrl?: string
+  postedAt?: string
+  errorMessage?: string
 }
 
 export interface Todo {

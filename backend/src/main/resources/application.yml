@@ -68,6 +68,14 @@ github:
   client-id: ${GITHUB_CLIENT_ID:}
   client-secret: ${GITHUB_CLIENT_SECRET:}
 
+twitter:
+  client-id: ${TWITTER_CLIENT_ID:}
+  client-secret: ${TWITTER_CLIENT_SECRET:}
+
+app:
+  encryption:
+    key: ${ENCRYPTION_KEY:}
+
 logging:
   level:
     root: INFO

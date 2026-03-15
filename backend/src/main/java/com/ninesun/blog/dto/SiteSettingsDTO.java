@@ -9,6 +9,8 @@ public record SiteSettingsDTO(
         String socialTwitter,
         String socialEmail,
         boolean allowGuestComment,
-        boolean requireCommentApproval
+        boolean requireCommentApproval,
+        boolean autoSyncToTwitter,
+        String twitterSyncFormat
 ) {
 }

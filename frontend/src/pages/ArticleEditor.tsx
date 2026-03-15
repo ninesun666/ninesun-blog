@@ -14,12 +14,14 @@ import {
   Icon,
   Card,
   Flex,
+  Checkbox,
 } from '@chakra-ui/react'
 import { NativeSelectField, NativeSelectRoot } from '@chakra-ui/react/native-select'
 import { FiPaperclip, FiTrash2 } from 'react-icons/fi'
 import MarkdownEditor from '../components/MarkdownEditor'
 import { articleApi, categoryApi, tagApi, attachmentApi } from '../api'
-import type { Attachment } from '../types'
+import { getTwitterAccount, syncArticleToTwitter, getSiteSettings } from '../api/admin'
+import type { Attachment, TwitterAccount, SiteSettings } from '../types'
 import { toast } from '../utils/notify'
 import { useConfirm } from '../components/ConfirmDialog'
 
@@ -68,13 +70,37 @@ const ArticleEditor = () => {
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Twitter 同步相关状态
+  const [twitterAccount, setTwitterAccount] = useState<TwitterAccount | null>(null)
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null)
+  const [syncToTwitter, setSyncToTwitter] = useState(false)
+  const [customTweetText, setCustomTweetText] = useState('')
 
   useEffect(() => {
     loadCategoriesAndTags()
+    loadTwitterAndSettings()
     if (isEdit) {
       loadArticle()
     }
   }, [id])
+
+  const loadTwitterAndSettings = async () => {
+    try {
+      const [account, settings] = await Promise.all([
+        getTwitterAccount().catch(() => ({ connected: false })),
+        getSiteSettings(),
+      ])
+      setTwitterAccount(account)
+      setSiteSettings(settings)
+      // 如果已连接 Twitter 且开启自动同步，默认勾选
+      if (account.connected && settings.autoSyncToTwitter) {
+        setSyncToTwitter(true)
+      }
+    } catch (error) {
+      console.error('Failed to load Twitter/settings:', error)
+    }
+  }
 
   const loadCategoriesAndTags = async () => {
     try {
@@ -175,13 +201,34 @@ const ArticleEditor = () => {
         tagIds: formData.tagIds,
       }
 
+      let articleId = id ? Number(id) : null
+
       if (isEdit) {
         await articleApi.update(Number(id), payload)
         toast.success('文章已更新')
       } else {
         const newArticle = await articleApi.create(payload)
+        articleId = newArticle.id
         toast.success('文章已创建')
-        navigate(`/admin/articles/edit/${newArticle.id}`)
+      }
+
+      // 如果发布且勾选同步到 Twitter
+      if (status === 'PUBLISHED' && syncToTwitter && articleId) {
+        try {
+          const result = await syncArticleToTwitter(articleId, customTweetText || undefined)
+          if (result.success) {
+            toast.success('已同步到 X 平台')
+          } else {
+            toast.warning(`同步失败: ${result.errorMessage}`)
+          }
+        } catch (error) {
+          console.error('Twitter sync failed:', error)
+          toast.warning('同步到 X 平台失败')
+        }
+      }
+
+      if (!isEdit && articleId) {
+        navigate(`/admin/articles/edit/${articleId}`)
         return
       }
     } catch (error) {
@@ -348,6 +395,41 @@ const ArticleEditor = () => {
               )}
             </VStack>
           </FormField>
+        )}
+
+        {/* Twitter 同步选项 */}
+        {twitterAccount?.connected && (
+          <Card.Root>
+            <Card.Body p={4}>
+              <VStack align="stretch" gap={3}>
+                <HStack>
+                  <Checkbox
+                    checked={syncToTwitter}
+                    onCheckedChange={(e: { checked: boolean }) => setSyncToTwitter(e.checked)}
+                  >
+                    同步到 X (Twitter)
+                  </Checkbox>
+                  {siteSettings?.autoSyncToTwitter && (
+                    <Text fontSize="xs" color="gray.500">(已启用自动同步)</Text>
+                  )}
+                </HStack>
+                {syncToTwitter && (
+                  <Box>
+                    <Text fontSize="sm" mb={1} color="gray.500">自定义推文内容（留空使用默认模板）</Text>
+                    <Textarea
+                      value={customTweetText}
+                      onChange={(e) => setCustomTweetText(e.target.value)}
+                      placeholder={siteSettings?.twitterSyncFormat || '📝 新文章: {title} {url}'}
+                      rows={2}
+                    />
+                    <Text fontSize="xs" color="gray.400" mt={1}>
+                      可用变量: {'{title}'}, {'{url}'}, {'{summary}'} · 最多 280 字符
+                    </Text>
+                  </Box>
+                )}
+              </VStack>
+            </Card.Body>
+          </Card.Root>
         )}
 
         <HStack justify="flex-end" gap={4}>

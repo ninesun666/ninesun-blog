@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Box, Card, Heading, Input,
-  Textarea, Button, SimpleGrid, Switch, Flex, Spinner, Center, Text, VStack, Separator
+  Textarea, Button, SimpleGrid, Switch, Flex, Spinner, Center, Text, VStack, Separator, Badge, HStack
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { getSiteSettings, updateSiteSettings, changePassword } from '../../api/admin'
+import { getSiteSettings, updateSiteSettings, changePassword, getTwitterAuthUrl, getTwitterAccount, disconnectTwitter } from '../../api/admin'
 import { useAuthStore } from '../../stores'
-import type { SiteSettings } from '../../types'
+import type { SiteSettings, TwitterAccount } from '../../types'
 
 const defaultSettings: SiteSettings = {
   siteName: '',
@@ -18,6 +18,8 @@ const defaultSettings: SiteSettings = {
   socialEmail: '',
   allowGuestComment: true,
   requireCommentApproval: true,
+  autoSyncToTwitter: false,
+  twitterSyncFormat: '📝 新文章: {title}\n{url}',
 }
 
 export default function AdminSettings() {
@@ -37,6 +39,11 @@ export default function AdminSettings() {
   const { data, isLoading } = useQuery({
     queryKey: ['site-settings'],
     queryFn: getSiteSettings,
+  })
+
+  const { data: twitterAccount, refetch: refetchTwitter } = useQuery({
+    queryKey: ['twitter-account'],
+    queryFn: getTwitterAccount,
   })
 
   useEffect(() => {
@@ -64,6 +71,38 @@ export default function AdminSettings() {
       setPasswordSuccess('')
     },
   })
+
+  const twitterDisconnectMutation = useMutation({
+    mutationFn: disconnectTwitter,
+    onSuccess: () => {
+      refetchTwitter()
+    },
+  })
+
+  // 处理 Twitter OAuth 回调参数
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const twitterStatus = params.get('twitter')
+    if (twitterStatus === 'connected') {
+      refetchTwitter()
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [refetchTwitter])
+
+  const handleConnectTwitter = async () => {
+    try {
+      const url = await getTwitterAuthUrl()
+      window.location.href = url
+    } catch (err) {
+      console.error('Failed to get Twitter auth URL', err)
+    }
+  }
+
+  const handleDisconnectTwitter = () => {
+    if (window.confirm('确定要解绑 Twitter 账号吗？')) {
+      twitterDisconnectMutation.mutate()
+    }
+  }
 
   const handleSave = () => {
     updateMutation.mutate(settings)
@@ -206,6 +245,69 @@ export default function AdminSettings() {
                 </Switch.Root>
               </Flex>
             </SimpleGrid>
+          </Card.Body>
+        </Card.Root>
+
+        {/* 社交账号绑定 */}
+        <Card.Root>
+          <Card.Body>
+            <Heading size="lg" mb={4}>社交账号绑定</Heading>
+            <Flex justify="space-between" align="center">
+              <HStack>
+                <Text fontWeight="medium">X (Twitter)</Text>
+                {twitterAccount?.connected && (
+                  <Badge colorPalette="green">已绑定 @{twitterAccount.username}</Badge>
+                )}
+              </HStack>
+              {twitterAccount?.connected ? (
+                <Button
+                  size="sm"
+                  colorPalette="red"
+                  variant="outline"
+                  onClick={handleDisconnectTwitter}
+                  loading={twitterDisconnectMutation.isPending}
+                >
+                  解绑
+                </Button>
+              ) : (
+                <Button size="sm" colorPalette="blue" onClick={handleConnectTwitter}>
+                  绑定账号
+                </Button>
+              )}
+            </Flex>
+            {!twitterAccount?.connected && (
+              <Text fontSize="sm" color="gray.500" mt={2}>
+                绑定后可将文章自动同步到 X 平台
+              </Text>
+            )}
+          </Card.Body>
+        </Card.Root>
+
+        {/* 自动同步设置 */}
+        <Card.Root>
+          <Card.Body>
+            <Heading size="lg" mb={4}>自动同步设置</Heading>
+            <Flex align="center" gap={3} mb={4}>
+              <Switch.Root
+                checked={settings.autoSyncToTwitter}
+                onCheckedChange={(e: { checked: boolean }) => handleChange('autoSyncToTwitter', e.checked)}
+              >
+                <Switch.HiddenInput />
+                <Switch.Control />
+                <Switch.Label>发布文章自动同步到 X</Switch.Label>
+              </Switch.Root>
+            </Flex>
+            <Box>
+              <Text fontSize="sm" mb={1} color="gray.500">推文内容模板</Text>
+              <Input
+                value={settings.twitterSyncFormat}
+                onChange={(e) => handleChange('twitterSyncFormat', e.target.value)}
+                placeholder="📝 新文章: {title} {url}"
+              />
+              <Text fontSize="xs" color="gray.400" mt={1}>
+                可用变量: {'{title}'}, {'{url}'}, {'{summary}'}
+              </Text>
+            </Box>
           </Card.Body>
         </Card.Root>
       </SimpleGrid>
