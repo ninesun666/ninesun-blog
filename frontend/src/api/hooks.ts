@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { articleApi, categoryApi, tagApi } from '../api'
+import { getPublicSiteSettings } from './admin'
 
 export function useArticles(page = 0, size = 10) {
   return useQuery({
@@ -53,5 +54,13 @@ export function useTags() {
   return useQuery({
     queryKey: ['tags'],
     queryFn: tagApi.getAll,
+  })
+}
+
+export function useSiteSettings() {
+  return useQuery({
+    queryKey: ['siteSettings'],
+    queryFn: getPublicSiteSettings,
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
   })
 }

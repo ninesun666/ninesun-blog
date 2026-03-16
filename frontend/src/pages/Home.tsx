@@ -1,15 +1,17 @@
 import { Box, Heading, Text, SimpleGrid, Card, Badge, HStack, Spinner, Center, VStack, Icon, Flex, Container, Link as ChakraLink } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import { FiClock, FiArrowRight, FiBookOpen, FiTag, FiFolder } from 'react-icons/fi'
-import { useArticles, useCategories, useTags } from '../api/hooks'
+import { useArticles, useCategories, useTags, useSiteSettings } from '../api/hooks'
 import { SEO, generateWebsiteJsonLd } from '../components/SEO'
 
 const Home = () => {
   const { data: articlesData, isLoading: articlesLoading } = useArticles(0, 6)
   const { data: categories, isLoading: categoriesLoading } = useCategories()
   const { data: tags, isLoading: tagsLoading } = useTags()
+  const { data: siteSettings } = useSiteSettings()
 
   const articles = articlesData?.content || []
+  const siteDescription = siteSettings?.siteDescription || '分享技术，记录成长'
   
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-CN', {
@@ -23,7 +25,7 @@ const Home = () => {
     <Box>
       <SEO 
         title="首页"
-        description="Ninesun Blog - 分享技术，记录成长"
+        description={`Ninesun Blog - ${siteDescription}`}
         jsonLd={generateWebsiteJsonLd()}
       />
       
@@ -60,7 +62,7 @@ const Home = () => {
             maxW="600px"
             fontWeight="500"
           >
-            分享技术，记录成长
+            {siteDescription}
           </Text>
         </VStack>
       </Box>
