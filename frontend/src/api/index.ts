@@ -191,5 +191,29 @@ export const attachmentApi = {
 
   getDownloadUrl: (id: number): string => {
     return `${api.defaults.baseURL}/attachments/${id}/download`
+  },
+
+  download: async (id: number, filename: string): Promise<void> => {
+    try {
+      const response = await api.get(`/attachments/${id}/download`, {
+        responseType: 'blob'
+      })
+      
+      // 创建 blob URL 并触发下载
+      const blob = new Blob([response.data])
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        throw new Error('请先登录后再下载附件')
+      }
+      throw new Error('下载失败，请稍后重试')
+    }
   }
 }
