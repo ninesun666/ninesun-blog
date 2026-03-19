@@ -41,12 +41,13 @@ public class LikeService {
         if (existingLike != null) {
             // Unlike - remove the like
             likeRepository.delete(existingLike);
+            article.setLikeCount(Math.max(0, article.getLikeCount() - 1));
         } else {
             // Like - create new
             Like like = new Like();
             like.setArticle(article);
             like.setIp(clientIp);
-            
+
             // If user is authenticated, link to user
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
@@ -54,10 +55,13 @@ public class LikeService {
                 User user = userRepository.findByUsername(username).orElse(null);
                 like.setUser(user);
             }
-            
+
             likeRepository.save(like);
+            article.setLikeCount(article.getLikeCount() + 1);
         }
-        
+
+        articleRepository.save(article);
+
         return getLikeInfo(articleId, request);
     }
 
