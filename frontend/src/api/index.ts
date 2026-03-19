@@ -1,4 +1,4 @@
-import api from './client'
+import api, { uploadApi } from './client'
 import type { Article, ArticleListItem, Category, Tag, PageResponse, User, Comment, Attachment } from '../types'
 
 export interface LoginRequest {
@@ -176,11 +176,16 @@ export const attachmentApi = {
     return data
   },
 
-  upload: async (articleId: number, file: File): Promise<Attachment> => {
+  upload: async (articleId: number, file: File, onProgress?: (percent: number) => void): Promise<Attachment> => {
     const formData = new FormData()
     formData.append('file', file)
-    const { data } = await api.post(`/articles/${articleId}/attachments`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const { data } = await uploadApi.post(`/articles/${articleId}/attachments`, formData, {
+      onUploadProgress: (progressEvent) => {
+        if (onProgress && progressEvent.total) {
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          onProgress(percent)
+        }
+      },
     })
     return data
   },

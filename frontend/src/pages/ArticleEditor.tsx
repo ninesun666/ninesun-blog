@@ -71,6 +71,7 @@ const ArticleEditor = () => {
 
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Twitter 同步相关状态
@@ -154,18 +155,34 @@ const ArticleEditor = () => {
     const file = e.target.files?.[0]
     if (!file || !id) return
 
+    // 前端文件大小校验（20MB）
+    const maxSize = 20 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error(`文件过大（${(file.size / 1024 / 1024).toFixed(1)}MB），最大支持 20MB`)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
     setUploading(true)
+    setUploadProgress(0)
     try {
-      const newAttachment = await attachmentApi.upload(Number(id), file)
+      const newAttachment = await attachmentApi.upload(Number(id), file, (percent) => {
+        setUploadProgress(percent)
+      })
       setAttachments(prev => [...prev, newAttachment])
       toast.success('附件上传成功')
-    } catch (error) {
-      toast.error('上传失败')
+    } catch (error: any) {
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        toast.error('上传超时，请检查网络连接或尝试上传更小的文件')
+      } else if (error.response?.status === 413) {
+        toast.error('文件超出服务器限制（最大 20MB）')
+      } else {
+        toast.error(`上传失败：${error.response?.data?.message || '请稍后重试'}`)
+      }
     } finally {
       setUploading(false)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+      setUploadProgress(0)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
@@ -356,14 +373,39 @@ const ArticleEditor = () => {
                   variant="outline"
                   onClick={() => fileInputRef.current?.click()}
                   loading={uploading}
+                  disabled={uploading}
                 >
                   <Icon as={FiPaperclip} mr={2} />
-                  上传附件
+                  {uploading ? `上传中 ${uploadProgress}%` : '上传附件'}
                 </Button>
                 <Text fontSize="sm" color="gray.500">
-                  支持 pdf, zip, doc, xls, ppt, txt 等格式，最大 20MB
+                  支持 pdf, zip, doc, xls, ppt, txt, 图片等格式，最大 20MB
                 </Text>
               </HStack>
+
+              {/* 进度条 */}
+              {uploading && (
+                <Box w="full" mt={1}>
+                  <Box
+                    h="4px"
+                    bg="gray.100"
+                    _dark={{ bg: 'gray.700' }}
+                    borderRadius="full"
+                    overflow="hidden"
+                  >
+                    <Box
+                      h="full"
+                      w={`${uploadProgress}%`}
+                      bg="linear-gradient(90deg, #7c3aed, #a855f7)"
+                      borderRadius="full"
+                      transition="width 0.3s ease"
+                    />
+                  </Box>
+                  <Text fontSize="xs" color="gray.500" mt={1}>
+                    {uploadProgress < 100 ? `正在上传... ${uploadProgress}%` : '上传完成，等待服务器处理...'}
+                  </Text>
+                </Box>
+              )}
 
               {/* 附件列表 */}
               {attachments.length > 0 && (
