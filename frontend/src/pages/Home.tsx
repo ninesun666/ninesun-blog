@@ -71,8 +71,8 @@ const Home = () => {
       <Container maxW={{ base: "100%", md: "container.xl", "2xl": "1600px" }} px={{ base: 4, md: 6 }}>
         <Flex align="center" justify="space-between" mb={8}>
           <HStack gap={3}>
-            <Icon as={FiBookOpen} color="brand.600" boxSize={6} />
-            <Heading size="xl" fontWeight="700" color="gray.800">最新文章</Heading>
+            <Icon as={FiBookOpen} color="brand.600" boxSize={6} _dark={{ color: 'brand.400' }} />
+            <Heading size="xl" fontWeight="700" color="gray.800" _dark={{ color: 'whiteAlpha.900' }}>最新文章</Heading>
           </HStack>
           <ChakraLink 
             asChild
@@ -109,6 +109,7 @@ const Home = () => {
                 asChild
                 className="card-hover"
                 bg="white"
+                _dark={{ bg: '#1a1a2e', borderColor: '#2d2d44' }}
                 borderRadius="xl"
                 border="1px solid"
                 borderColor="gray.100"
@@ -146,6 +147,7 @@ const Home = () => {
                         size="lg" 
                         fontWeight="700" 
                         color="gray.800"
+                        _dark={{ color: 'whiteAlpha.900' }}
                         lineClamp={2}
                         _groupHover={{ color: 'brand.600' }}
                         transition="color 0.2s"
@@ -157,6 +159,7 @@ const Home = () => {
                       {article.summary && (
                         <Text 
                           color="gray.500" 
+                          _dark={{ color: 'whiteAlpha.700' }}
                           fontSize="sm" 
                           lineClamp={2}
                           lineHeight="1.7"
@@ -172,10 +175,11 @@ const Home = () => {
                             <Badge 
                               key={tag.id} 
                               variant="outline"
-                              colorScheme="purple"
+                              colorPalette="purple"
                               fontSize="xs"
                               fontWeight="500"
                               borderRadius="md"
+                              _dark={{ color: 'purple.300', borderColor: 'purple.500' }}
                             >
                               #{tag.name}
                             </Badge>
@@ -195,6 +199,7 @@ const Home = () => {
           {/* Categories */}
           <Box 
             bg="white" 
+            _dark={{ bg: '#1a1a2e', borderColor: '#2d2d44' }}
             p={8} 
             borderRadius="2xl" 
             border="1px solid"
@@ -202,7 +207,7 @@ const Home = () => {
           >
             <HStack gap={3} mb={6}>
               <Icon as={FiFolder} color="brand.500" boxSize={5} />
-              <Heading size="lg" fontWeight="700" color="gray.800">分类</Heading>
+              <Heading size="lg" fontWeight="700" color="gray.800" _dark={{ color: 'whiteAlpha.900' }}>分类</Heading>
             </HStack>
             {categoriesLoading ? (
               <Center py={6}>
@@ -219,6 +224,7 @@ const Home = () => {
                     borderRadius="lg"
                     bg="purple.50"
                     color="purple.700"
+                    _dark={{ bg: 'purple.900', color: 'purple.200', _hover: { bg: 'purple.800' } }}
                     fontWeight="600"
                     fontSize="sm"
                     _hover={{ bg: 'purple.100' }}
@@ -236,6 +242,7 @@ const Home = () => {
           {/* Tags */}
           <Box 
             bg="white" 
+            _dark={{ bg: '#1a1a2e', borderColor: '#2d2d44' }}
             p={8} 
             borderRadius="2xl"
             border="1px solid"
@@ -243,7 +250,7 @@ const Home = () => {
           >
             <HStack gap={3} mb={6}>
               <Icon as={FiTag} color="brand.500" boxSize={5} />
-              <Heading size="lg" fontWeight="700" color="gray.800">标签</Heading>
+              <Heading size="lg" fontWeight="700" color="gray.800" _dark={{ color: 'whiteAlpha.900' }}>标签</Heading>
             </HStack>
             {tagsLoading ? (
               <Center py={6}>
@@ -259,10 +266,11 @@ const Home = () => {
                     py={1.5}
                     borderRadius="md"
                     variant="outline"
-                    colorScheme="purple"
+                    colorPalette="purple"
                     fontWeight="500"
                     fontSize="sm"
                     _hover={{ bg: 'purple.50' }}
+                    _dark={{ color: 'purple.300', borderColor: 'purple.500', _hover: { bg: 'whiteAlpha.200' } }}
                     transition="all 0.2s"
                   >
                     <Link to={`/tag/${tag.slug}`}>#{tag.name}</Link>
