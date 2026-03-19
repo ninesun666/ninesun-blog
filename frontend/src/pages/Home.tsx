@@ -5,7 +5,7 @@ import { useArticles, useCategories, useTags, useSiteSettings } from '../api/hoo
 import { SEO, generateWebsiteJsonLd } from '../components/SEO'
 
 const Home = () => {
-  const { data: articlesData, isLoading: articlesLoading } = useArticles(0, 6)
+  const { data: articlesData, isLoading: articlesLoading } = useArticles(0, 8)
   const { data: categories, isLoading: categoriesLoading } = useCategories()
   const { data: tags, isLoading: tagsLoading } = useTags()
   const { data: siteSettings } = useSiteSettings()
@@ -102,7 +102,7 @@ const Home = () => {
             </VStack>
           </Center>
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, "2xl": 4 }} gap={6}>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} gap={6}>
             {articles.map((article: any, index: number) => (
               <Card.Root 
                 key={article.id} 
