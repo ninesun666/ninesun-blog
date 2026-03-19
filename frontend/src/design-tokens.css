@@ -1,0 +1,360 @@
+/**
+ * Design Tokens - CSS Variables
+ * NineSun Blog Design System v1.0
+ * Based on iOS Human Interface Guidelines + Brand Purple Theme
+ */
+
+:root {
+  /* ========================================
+     BRAND COLORS - Purple Scale
+     ======================================== */
+  --color-brand-50: #faf5ff;
+  --color-brand-100: #f3e8ff;
+  --color-brand-200: #e9d5ff;
+  --color-brand-300: #d8b4fe;
+  --color-brand-400: #c084fc;
+  --color-brand-500: #a855f7;
+  --color-brand-600: #9333ea;
+  --color-brand-700: #7c3aed;
+  --color-brand-800: #6b21a8;
+  --color-brand-900: #581c87;
+  --color-brand-950: #3b0764;
+
+  /* ========================================
+     FUNCTIONAL COLORS
+     ======================================== */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+
+  /* ========================================
+     NEUTRAL COLORS - Light Mode
+     ======================================== */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+  --color-gray-950: #020617;
+
+  /* ========================================
+     SEMANTIC COLORS - Light Mode
+     ======================================== */
+  --color-bg-default: #f8fafc;
+  --color-bg-subtle: #ffffff;
+  --color-bg-muted: #f1f5f9;
+  --color-bg-elevated: #fafafa;
+
+  --color-fg-default: #1a1a2e;
+  --color-fg-muted: #6b7280;
+  --color-fg-subtle: #9ca3af;
+  --color-fg-inverse: #ffffff;
+
+  --color-border-default: #e5e7eb;
+  --color-border-subtle: #f3f4f6;
+  --color-border-muted: #d1d5db;
+
+  --color-surface-default: #ffffff;
+  --color-surface-elevated: #fafafa;
+  --color-surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* ========================================
+     TYPOGRAPHY - Font Families
+     ======================================== */
+  --font-family-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', SFMono-Regular, Consolas, monospace;
+
+  /* ========================================
+     TYPOGRAPHY - Font Sizes
+     ======================================== */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 32px;
+  --font-size-5xl: 40px;
+  --font-size-6xl: 48px;
+
+  /* ========================================
+     TYPOGRAPHY - Line Heights
+     ======================================== */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+
+  /* ========================================
+     TYPOGRAPHY - Font Weights
+     ======================================== */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* ========================================
+     TYPOGRAPHY - Letter Spacing
+     ======================================== */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+
+  /* ========================================
+     SPACING SCALE
+     ======================================== */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ========================================
+     BORDER RADIUS
+     ======================================== */
+  --radius-none: 0;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-full: 9999px;
+
+  /* Component-specific radius */
+  --radius-button: 12px;
+  --radius-button-sm: 8px;
+  --radius-card: 16px;
+  --radius-dialog: 16px;
+  --radius-input: 10px;
+  --radius-badge: 6px;
+
+  /* ========================================
+     SHADOWS
+     ======================================== */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  /* Component-specific shadows */
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-card-dark: 0 2px 12px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover-dark: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-dialog: 0 8px 32px rgba(0, 0, 0, 0.16);
+  --shadow-menu: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-button-focus: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  --shadow-purple-glow: 0 20px 40px -12px rgba(124, 58, 237, 0.15);
+
+  /* ========================================
+     TRANSITIONS & ANIMATION
+     ======================================== */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* ========================================
+     Z-INDEX SCALE
+     ======================================== */
+  --z-hide: -1;
+  --z-base: 0;
+  --z-docked: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-banner: 300;
+  --z-overlay: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-skip-link: 700;
+  --z-toast: 800;
+  --z-tooltip: 900;
+
+  /* ========================================
+     BREAKPOINTS (for reference in JS)
+     ======================================== */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ========================================
+     COMPONENT TOKENS
+     ======================================== */
+
+  /* Button */
+  --button-padding-x: 24px;
+  --button-padding-y: 12px;
+  --button-padding-x-sm: 16px;
+  --button-padding-y-sm: 8px;
+  --button-padding-x-lg: 28px;
+  --button-padding-y-lg: 14px;
+  --button-min-height: 44px;
+  --button-min-height-sm: 32px;
+  --button-min-height-lg: 48px;
+  --button-icon-size: 36px;
+
+  /* Card */
+  --card-padding: 20px;
+  --card-padding-sm: 12px;
+  --card-padding-lg: 24px;
+
+  /* Dialog */
+  --dialog-padding: 24px;
+  --dialog-gap-title: 16px;
+  --dialog-gap-content: 24px;
+  --dialog-gap-buttons: 12px;
+  --dialog-max-width: 480px;
+
+  /* Input */
+  --input-padding: 12px 16px;
+  --input-min-height: 44px;
+
+  /* Table */
+  --table-padding: 16px;
+  --table-padding-sm: 12px;
+
+  /* ========================================
+     OPACITY SCALE
+     ======================================== */
+  --opacity-0: 0;
+  --opacity-25: 0.25;
+  --opacity-50: 0.5;
+  --opacity-75: 0.75;
+  --opacity-100: 1;
+
+  /* Disabled state */
+  --opacity-disabled: 0.5;
+
+  /* Hover state overlay */
+  --opacity-hover: 0.1;
+  --opacity-active: 0.2;
+}
+
+/* ========================================
+   DARK MODE OVERRIDES
+   ======================================== */
+.dark {
+  /* Neutral Colors - Dark Mode */
+  --color-gray-50: #0f0f1a;
+  --color-gray-100: #1a1a2e;
+  --color-gray-200: #2d2d44;
+  --color-gray-300: #3d3d5c;
+  --color-gray-400: #6b7280;
+  --color-gray-500: #9ca3af;
+  --color-gray-600: #d1d5db;
+  --color-gray-700: #e5e7eb;
+  --color-gray-800: #f3f4f6;
+  --color-gray-900: #f9fafb;
+
+  /* Semantic Colors - Dark Mode */
+  --color-bg-default: #0f0f1a;
+  --color-bg-subtle: #1a1a2e;
+  --color-bg-muted: #12121f;
+  --color-bg-elevated: #1e1e32;
+
+  --color-fg-default: #e5e7eb;
+  --color-fg-muted: #9ca3af;
+  --color-fg-subtle: #6b7280;
+  --color-fg-inverse: #0f0f1a;
+
+  --color-border-default: #2d2d44;
+  --color-border-subtle: #1a1a2e;
+  --color-border-muted: #3d3d5c;
+
+  --color-surface-default: #1a1a2e;
+  --color-surface-elevated: #1e1e32;
+  --color-surface-overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-300);
+  border-radius: var(--radius-xs);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-400);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-brand-800);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-700);
+}
+
+/* ========================================
+   SELECTION STYLING
+   ======================================== */
+::selection {
+  background: rgba(124, 58, 237, 0.3);
+  color: inherit;
+}
+
+.dark ::selection {
+  background: rgba(167, 139, 250, 0.3);
+}

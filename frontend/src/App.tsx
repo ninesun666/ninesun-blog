@@ -22,6 +22,7 @@ import {
 } from './pages/admin'
 import AdminVisits from './pages/admin/AdminVisits'
 import Todos from './pages/Todos'
+import DesignTokens from './pages/DesignTokens'
 import { useAuthStore } from './stores'
 
 // 管理员路由保护组件
@@ -44,6 +45,9 @@ function App() {
     <Box minH="100vh">
       <Toaster />
       <Routes>
+        {/* Design Tokens Showcase */}
+        <Route path="/design-tokens" element={<DesignTokens />} />
+
         {/* Admin Routes */}
         <Route path="/admin"
           element={
