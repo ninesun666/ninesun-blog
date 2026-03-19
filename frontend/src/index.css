@@ -568,3 +568,28 @@ html {
     color: #000 !important;
   }
 }
+
+/* ========================================
+   Bilibili 视频嵌入
+   ======================================== */
+.bilibili-embed-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 比例 */
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 20px 0;
+  background: #000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.bilibili-embed-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+}
