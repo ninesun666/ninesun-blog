@@ -22,7 +22,9 @@ import type { Attachment } from '../types'
 import { toast } from '../utils/notify'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
 import hljs from 'highlight.js'
+import { preprocessBilibiliEmbeds } from '../utils/bilibili'
 import LikeButton from '../components/LikeButton'
 import CommentSection from '../components/CommentSection'
 import ArticleSidebar from '../components/ArticleSidebar'
@@ -322,8 +324,11 @@ const ArticleDetail = () => {
 
               {/* Markdown 正文内容 */}
               <Box ref={codeRef} className="markdown-body">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {article.content}
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]} 
+                  rehypePlugins={[rehypeRaw]}
+                >
+                  {preprocessBilibiliEmbeds(article.content)}
                 </ReactMarkdown>
               </Box>
 

@@ -1,9 +1,10 @@
 import { Box, Text, HStack, Icon, Progress, Button } from '@chakra-ui/react'
 import MDEditor from '@uiw/react-md-editor'
-import { FiImage, FiUpload } from 'react-icons/fi'
+import { FiImage, FiUpload, FiVideo } from 'react-icons/fi'
 import api from '../api/client'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { toast } from '../utils/notify'
+import { generateBilibiliMarkdown } from '../utils/bilibili'
 
 interface MarkdownEditorProps {
   value: string
@@ -142,6 +143,18 @@ const MarkdownEditor = ({
     }
   }
 
+  const handleInsertBilibili = useCallback(() => {
+    const input = window.prompt('请输入 Bilibili 视频链接或 BV/AV 号（可带 ?p=n 分P）:')
+    if (!input) return
+
+    const markdown = generateBilibiliMarkdown(input)
+    if (markdown) {
+      insertAtCursor(markdown)
+    } else {
+      toast.warning('无法识别的 B 站链接或视频号格式')
+    }
+  }, [insertAtCursor])
+
   // 绑定事件
   useEffect(() => {
     const container = containerRef.current
@@ -170,8 +183,17 @@ const MarkdownEditor = ({
           <Icon as={FiUpload} />
           上传图片
         </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          colorPalette="pink"
+          onClick={handleInsertBilibili}
+        >
+          <Icon as={FiVideo} />
+          插入 B站视频
+        </Button>
         <Text fontSize="xs" color="gray.500">
-          或直接粘贴/拖拽图片
+          或直接粘贴图片
         </Text>
       </HStack>
 
