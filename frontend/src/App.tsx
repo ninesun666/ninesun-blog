@@ -76,6 +76,7 @@ function App() {
           <Route path="tag/:slug" element={<TagPage />} />
           <Route path="todos" element={<Todos />} />
           <Route path="login" element={<Login />} />
+          <Route path="auth/github/callback" element={<Login />} />
         </Route>
 
         {/* Article Editor (standalone) */}
