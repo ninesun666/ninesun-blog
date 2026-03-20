@@ -63,4 +63,7 @@ export const modelConfigApi = {
   // 当前配置
   getActiveChatConfig: () => api.get('/admin/models/active/chat'),
   getActiveEmbeddingConfig: () => api.get('/admin/models/active/embedding'),
+
+  // 测试模型
+  testConfig: (configId: number) => api.post(`/admin/models/configs/${configId}/test`),
 }

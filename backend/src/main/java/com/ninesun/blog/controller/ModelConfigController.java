@@ -100,6 +100,11 @@ public class ModelConfigController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/configs/{configId}/test")
+    public ResponseEntity<Map<String, Object>> testModelConfig(@PathVariable Long configId) {
+        return ResponseEntity.ok(modelProviderService.testModelConfig(configId));
+    }
+
     // ========== 当前配置查询（用于 AI 服务） ==========
 
     @GetMapping("/active/chat")

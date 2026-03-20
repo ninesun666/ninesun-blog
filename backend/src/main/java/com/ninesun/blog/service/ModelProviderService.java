@@ -26,6 +26,7 @@ public class ModelProviderService {
     private final ModelProviderRepository providerRepository;
     private final ModelConfigRepository configRepository;
     private final ObjectMapper objectMapper;
+    private final org.springframework.web.reactive.function.client.WebClient.Builder webClientBuilder;
 
     // ========== 提供商管理 ==========
 
@@ -306,6 +307,127 @@ public class ModelProviderService {
                     .build();
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("解析模型配置失败");
+        }
+    }
+
+    // ========== 测试模型连接 ==========
+
+    public Map<String, Object> testModelConfig(Long configId) {
+        ModelConfig config = configRepository.findById(configId)
+                .orElseThrow(() -> new IllegalArgumentException("配置不存在"));
+        
+        ModelProvider provider = config.getProvider();
+        
+        if (!provider.getEnabled()) {
+            return Map.of("success", false, "message", "提供商未启用");
+        }
+        
+        if (!config.getEnabled()) {
+            return Map.of("success", false, "message", "模型配置未启用");
+        }
+
+        try {
+            ActiveModelConfig activeConfig = buildActiveConfig(provider, config);
+            
+            if ("embedding".equals(config.getType())) {
+                return testEmbeddingModel(activeConfig);
+            } else {
+                return testChatModel(activeConfig);
+            }
+        } catch (Exception e) {
+            log.error("测试模型失败: {}", e.getMessage());
+            return Map.of("success", false, "message", "测试失败: " + e.getMessage());
+        }
+    }
+
+    private Map<String, Object> testChatModel(ActiveModelConfig config) {
+        try {
+            var webClient = webClientBuilder.build();
+            
+            String apiUrl;
+            Map<String, Object> requestBody;
+            
+            if ("azure".equals(config.getProvider())) {
+                apiUrl = config.getEndpoint() + "/openai/deployments/" + config.getModelName() 
+                        + "/chat/completions?api-version=" + (config.getApiVersion() != null ? config.getApiVersion() : "2024-02-01");
+                requestBody = Map.of(
+                        "messages", List.of(Map.of("role", "user", "content", "你好")),
+                        "max_tokens", 10,
+                        "temperature", 0.1
+                );
+            } else if ("ollama".equals(config.getProvider())) {
+                apiUrl = config.getBaseUrl() + "/api/chat";
+                requestBody = Map.of(
+                        "model", config.getModelName(),
+                        "messages", List.of(Map.of("role", "user", "content", "你好")),
+                        "stream", false
+                );
+            } else {
+                // OpenAI, Anthropic, Gemini, SiliconFlow 等
+                apiUrl = config.getBaseUrl() + "/chat/completions";
+                requestBody = Map.of(
+                        "model", config.getModelName(),
+                        "messages", List.of(Map.of("role", "user", "content", "你好")),
+                        "max_tokens", 10,
+                        "temperature", 0.1
+                );
+            }
+
+            var response = webClient.post()
+                    .uri(apiUrl)
+                    .header("Authorization", "Bearer " + config.getApiKey())
+                    .header("Content-Type", "application/json")
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .toEntity(String.class)
+                    .block();
+
+            if (response != null && response.getStatusCode().is2xxSuccessful()) {
+                return Map.of(
+                        "success", true, 
+                        "message", "连接成功",
+                        "statusCode", response.getStatusCode().value()
+                );
+            } else {
+                return Map.of("success", false, "message", "API 返回错误状态码");
+            }
+        } catch (Exception e) {
+            log.error("测试聊天模型失败: {}", e.getMessage());
+            return Map.of("success", false, "message", "连接失败: " + e.getMessage());
+        }
+    }
+
+    private Map<String, Object> testEmbeddingModel(ActiveModelConfig config) {
+        try {
+            var webClient = webClientBuilder.build();
+            
+            String apiUrl = config.getBaseUrl() + "/embeddings";
+            var requestBody = Map.of(
+                    "model", config.getModelName(),
+                    "input", "测试文本"
+            );
+
+            var response = webClient.post()
+                    .uri(apiUrl)
+                    .header("Authorization", "Bearer " + config.getApiKey())
+                    .header("Content-Type", "application/json")
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .toEntity(String.class)
+                    .block();
+
+            if (response != null && response.getStatusCode().is2xxSuccessful()) {
+                return Map.of(
+                        "success", true, 
+                        "message", "连接成功",
+                        "statusCode", response.getStatusCode().value()
+                );
+            } else {
+                return Map.of("success", false, "message", "API 返回错误状态码");
+            }
+        } catch (Exception e) {
+            log.error("测试 Embedding 模型失败: {}", e.getMessage());
+            return Map.of("success", false, "message", "连接失败: " + e.getMessage());
         }
     }
 }

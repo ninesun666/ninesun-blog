@@ -388,6 +388,7 @@ function ConfigModelsDialog({
     enabled: true,
     parameters: { temperature: 0.7, max_tokens: 2000 }
   })
+  const [testResults, setTestResults] = useState<Record<number, { success: boolean; message: string }>>({})
 
   const createConfigMutation = useMutation({
     mutationFn: (data: Partial<ModelConfig>) =>
@@ -416,6 +417,22 @@ function ConfigModelsDialog({
       queryClient.invalidateQueries({ queryKey: ['model-configs', provider?.id] })
       queryClient.invalidateQueries({ queryKey: ['model-providers'] })
     },
+  })
+
+  const testConfigMutation = useMutation({
+    mutationFn: (configId: number) => modelConfigApi.testConfig(configId),
+    onSuccess: (result: any, configId) => {
+      setTestResults(prev => ({
+        ...prev,
+        [configId]: { success: result.data.success, message: result.data.message }
+      }))
+    },
+    onError: (error: any, configId) => {
+      setTestResults(prev => ({
+        ...prev,
+        [configId]: { success: false, message: error.message || '测试失败' }
+      }))
+    }
   })
 
   const handleCreate = () => {
@@ -480,14 +497,30 @@ function ConfigModelsDialog({
                           </Badge>
                         </Table.Cell>
                         <Table.Cell>
-                          <Button
-                            size="xs"
-                            colorPalette="red"
-                            variant="ghost"
-                            onClick={() => deleteConfigMutation.mutate(config.id)}
-                          >
-                            删除
-                          </Button>
+                          <Stack direction="row" gap={1}>
+                            <Button
+                              size="xs"
+                              variant="ghost"
+                              colorPalette={testResults[config.id]?.success ? 'green' : testResults[config.id] ? 'red' : 'blue'}
+                              onClick={() => testConfigMutation.mutate(config.id)}
+                              loading={testConfigMutation.isPending && testConfigMutation.variables === config.id}
+                            >
+                              {testResults[config.id]?.success ? '✓ 正常' : testResults[config.id] ? '✗ 失败' : '测试'}
+                            </Button>
+                            <Button
+                              size="xs"
+                              colorPalette="red"
+                              variant="ghost"
+                              onClick={() => deleteConfigMutation.mutate(config.id)}
+                            >
+                              删除
+                            </Button>
+                          </Stack>
+                          {testResults[config.id] && !testResults[config.id].success && (
+                            <Text fontSize="xs" color="red.500" mt={1}>
+                              {testResults[config.id].message}
+                            </Text>
+                          )}
                         </Table.Cell>
                       </Table.Row>
                     ))}
