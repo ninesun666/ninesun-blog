@@ -26,7 +26,7 @@ public class ArticleEmbedding {
     @Column(name = "content_hash", length = 64)
     private String contentHash;
     
-    @Column(name = "embedding", columnDefinition = "vector(1536)")
+    @Column(name = "embedding", columnDefinition = "vector(1024)")
     private float[] embedding;
     
     @Column(name = "created_at")
