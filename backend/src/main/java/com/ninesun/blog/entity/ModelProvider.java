@@ -34,9 +34,11 @@ public class ModelProvider {
     private String description;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean enabled = false;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer priority = 0;
 
     @Column(nullable = false, columnDefinition = "jsonb")

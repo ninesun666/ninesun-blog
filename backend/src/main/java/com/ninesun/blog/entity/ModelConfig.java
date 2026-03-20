@@ -37,12 +37,15 @@ public class ModelConfig {
     private String displayName; // 显示名称
 
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private String type = "chat"; // 'chat' | 'embedding' | 'tts' | 'stt'
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean enabled = true;
 
     @Column(name = "is_default")
+    @Builder.Default
     private Boolean isDefault = false;
 
     @Column(nullable = false, columnDefinition = "jsonb")
