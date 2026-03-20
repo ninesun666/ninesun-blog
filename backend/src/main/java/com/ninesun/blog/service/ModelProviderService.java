@@ -59,10 +59,18 @@ public class ModelProviderService {
         ModelProvider provider = providerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("提供商不存在"));
 
-        provider.setName(dto.getName());
-        provider.setDescription(dto.getDescription());
-        provider.setEnabled(dto.getEnabled());
-        provider.setPriority(dto.getPriority());
+        if (dto.getName() != null) {
+            provider.setName(dto.getName());
+        }
+        if (dto.getDescription() != null) {
+            provider.setDescription(dto.getDescription());
+        }
+        if (dto.getEnabled() != null) {
+            provider.setEnabled(dto.getEnabled());
+        }
+        if (dto.getPriority() != null) {
+            provider.setPriority(dto.getPriority());
+        }
         
         if (dto.getConfig() != null) {
             try {
@@ -157,8 +165,12 @@ public class ModelProviderService {
         ModelConfig config = configRepository.findById(configId)
                 .orElseThrow(() -> new IllegalArgumentException("配置不存在"));
 
-        config.setDisplayName(dto.getDisplayName());
-        config.setEnabled(dto.getEnabled());
+        if (dto.getDisplayName() != null) {
+            config.setDisplayName(dto.getDisplayName());
+        }
+        if (dto.getEnabled() != null) {
+            config.setEnabled(dto.getEnabled());
+        }
 
         if (dto.getIsDefault() != null && dto.getIsDefault() && !config.getIsDefault()) {
             clearDefaultConfig(config.getType());
