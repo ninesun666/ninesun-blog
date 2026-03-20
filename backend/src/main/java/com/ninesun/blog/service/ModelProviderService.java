@@ -354,55 +354,38 @@ public class ModelProviderService {
 
     private Map<String, Object> testChatModel(ActiveModelConfig config) {
         try {
-            var webClient = webClientBuilder.build();
-            
-            String apiUrl;
-            Map<String, Object> requestBody;
-            
-            if ("azure".equals(config.getProvider())) {
-                apiUrl = config.getEndpoint() + "/openai/deployments/" + config.getModelName() 
-                        + "/chat/completions?api-version=" + (config.getApiVersion() != null ? config.getApiVersion() : "2024-02-01");
-                requestBody = Map.of(
-                        "messages", List.of(Map.of("role", "user", "content", "你好")),
-                        "max_tokens", 10,
-                        "temperature", 0.1
-                );
-            } else if ("ollama".equals(config.getProvider())) {
-                apiUrl = config.getBaseUrl() + "/api/chat";
-                requestBody = Map.of(
-                        "model", config.getModelName(),
-                        "messages", List.of(Map.of("role", "user", "content", "你好")),
-                        "stream", false
-                );
+            // 使用 OpenAI Java SDK
+            com.openai.client.OpenAIClient client;
+            if (config.getBaseUrl() != null && !config.getBaseUrl().isEmpty()) {
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .baseUrl(config.getBaseUrl())
+                        .apiKey(config.getApiKey())
+                        .build();
             } else {
-                // OpenAI, Anthropic, Gemini, SiliconFlow 等
-                apiUrl = config.getBaseUrl() + "/chat/completions";
-                requestBody = Map.of(
-                        "model", config.getModelName(),
-                        "messages", List.of(Map.of("role", "user", "content", "你好")),
-                        "max_tokens", 10,
-                        "temperature", 0.1
-                );
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .apiKey(config.getApiKey())
+                        .build();
             }
 
-            var response = webClient.post()
-                    .uri(apiUrl)
-                    .header("Authorization", "Bearer " + config.getApiKey())
-                    .header("Content-Type", "application/json")
-                    .bodyValue(requestBody)
-                    .retrieve()
-                    .toEntity(String.class)
-                    .block();
+            var params = com.openai.models.ChatCompletionCreateParams.builder()
+                    .model(config.getModelName())
+                    .addUserMessage("你好，这是一条测试消息。请回复\"测试成功\"即可。")
+                    .maxCompletionTokens(20)
+                    .temperature(0.1)
+                    .build();
 
-            if (response != null && response.getStatusCode().is2xxSuccessful()) {
-                return Map.of(
-                        "success", true, 
-                        "message", "连接成功",
-                        "statusCode", response.getStatusCode().value()
-                );
-            } else {
-                return Map.of("success", false, "message", "API 返回错误状态码");
+            var completion = client.chat().completions().create(params);
+            
+            if (completion.choices().isEmpty()) {
+                return Map.of("success", false, "message", "API 返回空响应");
             }
+            
+            var message = completion.choices().get(0).message();
+            return Map.of(
+                    "success", true,
+                    "message", "连接成功",
+                    "response", message.content().orElse("无内容")
+            );
         } catch (Exception e) {
             log.error("测试聊天模型失败: {}", e.getMessage());
             return Map.of("success", false, "message", "连接失败: " + e.getMessage());
@@ -411,32 +394,35 @@ public class ModelProviderService {
 
     private Map<String, Object> testEmbeddingModel(ActiveModelConfig config) {
         try {
-            var webClient = webClientBuilder.build();
-            
-            String apiUrl = config.getBaseUrl() + "/embeddings";
-            var requestBody = Map.of(
-                    "model", config.getModelName(),
-                    "input", "测试文本"
-            );
-
-            var response = webClient.post()
-                    .uri(apiUrl)
-                    .header("Authorization", "Bearer " + config.getApiKey())
-                    .header("Content-Type", "application/json")
-                    .bodyValue(requestBody)
-                    .retrieve()
-                    .toEntity(String.class)
-                    .block();
-
-            if (response != null && response.getStatusCode().is2xxSuccessful()) {
-                return Map.of(
-                        "success", true, 
-                        "message", "连接成功",
-                        "statusCode", response.getStatusCode().value()
-                );
+            // 使用 OpenAI Java SDK
+            com.openai.client.OpenAIClient client;
+            if (config.getBaseUrl() != null && !config.getBaseUrl().isEmpty()) {
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .baseUrl(config.getBaseUrl())
+                        .apiKey(config.getApiKey())
+                        .build();
             } else {
-                return Map.of("success", false, "message", "API 返回错误状态码");
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .apiKey(config.getApiKey())
+                        .build();
             }
+
+            var params = com.openai.models.EmbeddingCreateParams.builder()
+                    .model(config.getModelName())
+                    .input("测试文本")
+                    .build();
+
+            var embeddings = client.embeddings().create(params);
+            
+            if (embeddings.data().isEmpty()) {
+                return Map.of("success", false, "message", "API 返回空响应");
+            }
+            
+            return Map.of(
+                    "success", true,
+                    "message", "连接成功",
+                    "dimensions", embeddings.data().get(0).embedding().size()
+            );
         } catch (Exception e) {
             log.error("测试 Embedding 模型失败: {}", e.getMessage());
             return Map.of("success", false, "message", "连接失败: " + e.getMessage());

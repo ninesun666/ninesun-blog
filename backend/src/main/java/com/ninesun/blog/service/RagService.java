@@ -181,21 +181,37 @@ public class RagService {
      */
     private String callLLM(String query, List<Map<String, Object>> context, String history) {
         try {
-            WebClient webClient = webClientBuilder.build();
-            
             // 获取当前配置
             ActiveModelConfig config = getChatConfig();
             if (config == null) {
                 return "AI 服务未配置";
             }
             
+            // 使用 OpenAI Java SDK
+            com.openai.client.OpenAIClient client;
+            if (config.getBaseUrl() != null && !config.getBaseUrl().isEmpty()) {
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .baseUrl(config.getBaseUrl())
+                        .apiKey(config.getApiKey())
+                        .build();
+            } else {
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .apiKey(config.getApiKey())
+                        .build();
+            }
+
             // 构建消息
-            List<Map<String, String>> messages = new ArrayList<>();
-            messages.add(Map.of("role", "system", "content", SYSTEM_PROMPT));
+            var paramsBuilder = com.openai.models.ChatCompletionCreateParams.builder()
+                    .model(config.getModelName())
+                    .temperature(config.getTemperature())
+                    .maxCompletionTokens(config.getMaxTokens());
+            
+            // 添加系统提示
+            paramsBuilder.addSystemMessage(SYSTEM_PROMPT);
             
             // 添加历史对话
             if (history != null && !history.isEmpty()) {
-                messages.add(Map.of("role", "system", "content", "之前的对话：\n" + history));
+                paramsBuilder.addSystemMessage("之前的对话：\n" + history);
             }
             
             // 添加上下文
@@ -204,39 +220,21 @@ public class RagService {
                 for (Map<String, Object> article : context) {
                     contextBuilder.append(article.get("content")).append("\n\n---\n\n");
                 }
-                messages.add(Map.of("role", "system", "content", contextBuilder.toString()));
+                paramsBuilder.addSystemMessage(contextBuilder.toString());
             }
             
             // 添加用户问题
-            messages.add(Map.of("role", "user", "content", query));
+            paramsBuilder.addUserMessage(query);
             
-            String messagesJson = objectMapper.writeValueAsString(messages);
-            log.debug("[AI Chat Flow - LLM] Constructed LLM Request Messages:\n{}", messagesJson);
+            log.debug("[AI Chat Flow - LLM] Sending Request (Model: {})...", config.getModelName());
             
-            String requestBody = String.format(
-                "{\"model\": \"%s\", \"messages\": %s, \"temperature\": %.2f, \"max_tokens\": %d}",
-                config.getModelName(),
-                messagesJson,
-                config.getTemperature(),
-                config.getMaxTokens()
-            );
+            var completion = client.chat().completions().create(paramsBuilder.build());
             
-            String apiUrl = config.getFullApiUrl();
-            log.debug("[AI Chat Flow - LLM] Sending Request (URL: {}, Model: {})...", apiUrl, config.getModelName());
+            log.debug("[AI Chat Flow - LLM] LLM Response Received. Choices: {}", completion.choices().size());
             
-            String response = webClient.post()
-                .uri(apiUrl)
-                .header("Authorization", "Bearer " + config.getApiKey())
-                .header("Content-Type", "application/json")
-                .bodyValue(requestBody)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+            String finalContent = completion.choices().get(0).message().content()
+                    .orElse("抱歉，无法生成回复。");
             
-            log.debug("[AI Chat Flow - LLM] Raw LLM Response Processed. Payload size: {}", response != null ? response.length() : 0);
-            
-            JsonNode root = objectMapper.readTree(response);
-            String finalContent = root.path("choices").get(0).path("message").path("content").asText();
             log.debug("[AI Chat Flow - LLM] Extracted Response Content: \n{}", finalContent);
             
             return finalContent;

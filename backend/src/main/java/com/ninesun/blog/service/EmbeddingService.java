@@ -186,28 +186,35 @@ public class EmbeddingService {
         try {
             String truncatedText = truncateText(text, MAX_CONTENT_LENGTH);
             
-            WebClient webClient = webClientBuilder.build();
-            String requestBody = String.format(
-                "{\"model\": \"%s\", \"input\": %s}",
-                config.getModelName(),
-                objectMapper.writeValueAsString(truncatedText)
-            );
+            // 使用 OpenAI Java SDK
+            com.openai.client.OpenAIClient client;
+            if (config.getBaseUrl() != null && !config.getBaseUrl().isEmpty()) {
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .baseUrl(config.getBaseUrl())
+                        .apiKey(config.getApiKey())
+                        .build();
+            } else {
+                client = com.openai.client.okhttp.OpenAIOkHttpClient.builder()
+                        .apiKey(config.getApiKey())
+                        .build();
+            }
             
-            String response = webClient.post()
-                .uri(config.getBaseUrl() + "/embeddings")
-                .header("Authorization", "Bearer " + config.getApiKey())
-                .header("Content-Type", "application/json")
-                .bodyValue(requestBody)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+            var params = com.openai.models.EmbeddingCreateParams.builder()
+                    .model(config.getModelName())
+                    .input(truncatedText)
+                    .build();
             
-            JsonNode root = objectMapper.readTree(response);
-            JsonNode embeddingNode = root.path("data").get(0).path("embedding");
+            var embeddings = client.embeddings().create(params);
             
-            float[] embedding = new float[embeddingNode.size()];
-            for (int i = 0; i < embeddingNode.size(); i++) {
-                embedding[i] = (float) embeddingNode.get(i).asDouble();
+            if (embeddings.data().isEmpty()) {
+                log.error("Embedding API returned empty data");
+                return new float[0];
+            }
+            
+            var embeddingList = embeddings.data().get(0).embedding();
+            float[] embedding = new float[embeddingList.size()];
+            for (int i = 0; i < embeddingList.size(); i++) {
+                embedding[i] = embeddingList.get(i).floatValue();
             }
             
             return embedding;
