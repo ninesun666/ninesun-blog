@@ -7,6 +7,7 @@ import { todosApi } from '../api/todos'
 import { useAuthStore } from '../stores'
 import type { Todo, TodoStats } from '../types'
 import { SEO } from '../components/SEO'
+import { toast } from '../utils/notify'
 
 // 时间阶段选项
 const TIME_SLOT_OPTIONS = [
@@ -79,6 +80,28 @@ const Todos = () => {
       day: 'numeric',
       weekday: 'long'
     })
+  }
+
+  const handleToggleComplete = async (todo: Todo) => {
+    if (!isAdmin) {
+      toast.warning('仅管理员可更改待办状态')
+      return
+    }
+
+    try {
+      const updatedTodo = await todosApi.toggleComplete(todo.id)
+      setTodos(prev => prev.map(t => t.id === todo.id ? updatedTodo : t))
+      // 待办状态改变后，日历上的统计数据（如完成数）需刷新
+      loadStats()
+      if (updatedTodo.completed) {
+        toast.success(`🎉 '${todo.title}' 已完成`)
+      } else {
+        toast.info(`待办已恢复为未完成`)
+      }
+    } catch (error) {
+      toast.error('操作失败，请重试')
+      console.error(error)
+    }
   }
 
   return (
@@ -163,12 +186,19 @@ const Todos = () => {
                       transition="all 0.2s"
                     >
                       <HStack gap={4} align="flex-start">
-                        <Icon
-                          as={todo.completed ? FiCheckCircle : FiCircle}
-                          color={todo.completed ? 'green.500' : 'gray.400'}
-                          boxSize={6}
-                          mt={0.5}
-                        />
+                        <Box
+                          onClick={() => handleToggleComplete(todo)}
+                          cursor={isAdmin ? "pointer" : "default"}
+                          _hover={isAdmin ? { transform: "scale(1.1)" } : {}}
+                          transition="all 0.2s"
+                        >
+                          <Icon
+                            as={todo.completed ? FiCheckCircle : FiCircle}
+                            color={todo.completed ? 'green.500' : 'gray.400'}
+                            boxSize={6}
+                            mt={0.5}
+                          />
+                        </Box>
                         <VStack align="stretch" gap={1} flex="1">
                           <HStack justify="space-between" flexWrap="wrap" gap={2}>
                             <Text
@@ -178,6 +208,10 @@ const Todos = () => {
                               textDecoration={todo.completed ? 'line-through' : 'none'}
                               textDecorationColor="green.400"
                               textDecorationThickness="2px"
+                              cursor={isAdmin ? "pointer" : "default"}
+                              onClick={() => handleToggleComplete(todo)}
+                              _hover={isAdmin ? { color: todo.completed ? 'gray.400' : 'brand.600' } : {}}
+                              transition="color 0.2s"
                             >
                               {todo.title}
                             </Text>
