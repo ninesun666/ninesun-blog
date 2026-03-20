@@ -47,6 +47,10 @@ services:
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
       JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-key-change-in-production}
       SITE_URL: ${SITE_URL:-http://localhost:8999}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
     ports:
       - "8089:8089"
     volumes:
