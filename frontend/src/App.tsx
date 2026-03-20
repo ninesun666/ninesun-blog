@@ -20,6 +20,7 @@ import {
   AdminSettings,
   AdminTodos
 } from './pages/admin'
+import AdminModels from './pages/admin/AdminModels'
 import AdminVisits from './pages/admin/AdminVisits'
 import Todos from './pages/Todos'
 import DesignTokens from './pages/DesignTokens'
@@ -65,6 +66,7 @@ function App() {
           <Route path="comments" element={<AdminComments />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="models" element={<AdminModels />} />
         </Route>
 
         {/* Frontend Routes */}

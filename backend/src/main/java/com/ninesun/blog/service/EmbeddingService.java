@@ -28,15 +28,17 @@ public class EmbeddingService {
     private final ArticleRepository articleRepository;
     private final WebClient.Builder webClientBuilder;
     private final ObjectMapper objectMapper;
+    private final ModelProviderService modelProviderService;
     
+    // 备用配置（当数据库没有配置时使用）
     @Value("${openai.api-key:}")
-    private String apiKey;
+    private String fallbackApiKey;
     
     @Value("${openai.base-url:https://api.openai.com/v1}")
-    private String baseUrl;
+    private String fallbackBaseUrl;
     
-    @Value("${openai.embedding-model:text-embedding-v4}")
-    private String embeddingModel;
+    @Value("${openai.embedding-model:text-embedding-3-small}")
+    private String fallbackEmbeddingModel;
     
     private static final int MAX_CONTENT_LENGTH = 8000;
     
@@ -46,8 +48,9 @@ public class EmbeddingService {
     @Async
     @Transactional
     public void generateAndStoreEmbedding(Long articleId) {
-        if (apiKey == null || apiKey.isEmpty()) {
-            log.warn("OpenAI API key not configured, skipping embedding generation");
+        ActiveModelConfig config = getEmbeddingConfig();
+        if (config == null || config.getApiKey() == null || config.getApiKey().isEmpty()) {
+            log.warn("Embedding model not configured, skipping embedding generation");
             return;
         }
         
@@ -102,8 +105,9 @@ public class EmbeddingService {
      */
     @Transactional
     public int generateAllEmbeddings() {
-        if (apiKey == null || apiKey.isEmpty()) {
-            log.warn("OpenAI API key not configured");
+        ActiveModelConfig config = getEmbeddingConfig();
+        if (config == null || config.getApiKey() == null || config.getApiKey().isEmpty()) {
+            log.warn("Embedding model not configured");
             return 0;
         }
         
@@ -130,7 +134,8 @@ public class EmbeddingService {
      */
     @Transactional
     public void generateAndStoreEmbeddingSync(Long articleId) {
-        if (apiKey == null || apiKey.isEmpty()) {
+        ActiveModelConfig config = getEmbeddingConfig();
+        if (config == null || config.getApiKey() == null || config.getApiKey().isEmpty()) {
             return;
         }
         
@@ -172,7 +177,9 @@ public class EmbeddingService {
      * 生成文本的 embedding
      */
     public float[] generateEmbedding(String text) {
-        if (apiKey == null || apiKey.isEmpty()) {
+        ActiveModelConfig config = getEmbeddingConfig();
+        if (config == null || config.getApiKey() == null || config.getApiKey().isEmpty()) {
+            log.warn("Embedding model not configured");
             return new float[0];
         }
         
@@ -182,13 +189,13 @@ public class EmbeddingService {
             WebClient webClient = webClientBuilder.build();
             String requestBody = String.format(
                 "{\"model\": \"%s\", \"input\": %s}",
-                embeddingModel,
+                config.getModelName(),
                 objectMapper.writeValueAsString(truncatedText)
             );
             
             String response = webClient.post()
-                .uri(baseUrl + "/embeddings")
-                .header("Authorization", "Bearer " + apiKey)
+                .uri(config.getBaseUrl() + "/embeddings")
+                .header("Authorization", "Bearer " + config.getApiKey())
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
@@ -206,8 +213,31 @@ public class EmbeddingService {
             return embedding;
             
         } catch (Exception e) {
-            log.error("Error calling OpenAI embedding API: {}", e.getMessage());
+            log.error("Error calling embedding API: {}", e.getMessage());
             return new float[0];
+        }
+    }
+    
+    /**
+     * 获取当前配置的 embedding 模型
+     */
+    private ActiveModelConfig getEmbeddingConfig() {
+        try {
+            return modelProviderService.getActiveEmbeddingConfig();
+        } catch (Exception e) {
+            log.warn("Failed to get embedding config from database, using fallback: {}", e.getMessage());
+            // 使用备用配置
+            if (fallbackApiKey != null && !fallbackApiKey.isEmpty()) {
+                return ActiveModelConfig.builder()
+                        .provider("openai")
+                        .providerName("OpenAI")
+                        .modelName(fallbackEmbeddingModel)
+                        .displayName("Fallback Embedding")
+                        .apiKey(fallbackApiKey)
+                        .baseUrl(fallbackBaseUrl)
+                        .build();
+            }
+            return null;
         }
     }
     

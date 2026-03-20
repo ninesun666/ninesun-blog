@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { Box, Flex, VStack, HStack, Text, Button, Container, Icon, Avatar, IconButton, useBreakpointValue } from '@chakra-ui/react'
 import { useAuthStore } from '../../stores'
 import { useColorModeValue } from '../../components/ui/color-mode'
-import { FiHome, FiFileText, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiBarChart2, FiFolder, FiTag, FiGlobe, FiCalendar, FiMenu, FiX } from 'react-icons/fi'
+import { FiHome, FiFileText, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiBarChart2, FiFolder, FiTag, FiGlobe, FiCalendar, FiMenu, FiX, FiCpu } from 'react-icons/fi'
 
 const navItems = [
   { to: '/admin', label: '仪表盘', icon: FiBarChart2, end: true },
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/admin/tags', label: '标签管理', icon: FiTag },
   { to: '/admin/comments', label: '评论审核', icon: FiMessageSquare },
   { to: '/admin/users', label: '用户管理', icon: FiUsers },
+  { to: '/admin/models', label: '模型配置', icon: FiCpu },
   { to: '/admin/settings', label: '站点设置', icon: FiSettings },
 ]
 

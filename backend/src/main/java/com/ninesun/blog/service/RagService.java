@@ -29,15 +29,17 @@ public class RagService {
     private final ArticleRepository articleRepository;
     private final WebClient.Builder webClientBuilder;
     private final ObjectMapper objectMapper;
+    private final ModelProviderService modelProviderService;
     
+    // 备用配置
     @Value("${openai.api-key:}")
-    private String apiKey;
+    private String fallbackApiKey;
     
     @Value("${openai.base-url:https://api.openai.com/v1}")
-    private String baseUrl;
+    private String fallbackBaseUrl;
     
-    @Value("${openai.chat-model:glm-5}")
-    private String chatModel;
+    @Value("${openai.chat-model:gpt-4o-mini}")
+    private String fallbackChatModel;
     
     @Value("${rag.max-context-articles:5}")
     private int maxContextArticles;
@@ -67,10 +69,11 @@ public class RagService {
         
         Map<String, Object> result = new HashMap<>();
         
-        if (apiKey == null || apiKey.isEmpty()) {
+        ActiveModelConfig config = getChatConfig();
+        if (config == null || config.getApiKey() == null || config.getApiKey().isEmpty()) {
             result.put("success", false);
             result.put("error", "AI 服务未配置");
-            log.debug("[AI Chat Flow] FAIL: AI Service not configured (API Key is missing).");
+            log.debug("[AI Chat Flow] FAIL: AI Service not configured.");
             return result;
         }
         
@@ -180,13 +183,18 @@ public class RagService {
         try {
             WebClient webClient = webClientBuilder.build();
             
+            // 获取当前配置
+            ActiveModelConfig config = getChatConfig();
+            if (config == null) {
+                return "AI 服务未配置";
+            }
+            
             // 构建消息
             List<Map<String, String>> messages = new ArrayList<>();
             messages.add(Map.of("role", "system", "content", SYSTEM_PROMPT));
             
             // 添加历史对话
             if (history != null && !history.isEmpty()) {
-                // 简单处理历史，实际应该解析 JSON
                 messages.add(Map.of("role", "system", "content", "之前的对话：\n" + history));
             }
             
@@ -206,16 +214,19 @@ public class RagService {
             log.debug("[AI Chat Flow - LLM] Constructed LLM Request Messages:\n{}", messagesJson);
             
             String requestBody = String.format(
-                "{\"model\": \"%s\", \"messages\": %s, \"temperature\": 0.7, \"max_tokens\": 1000}",
-                chatModel,
-                messagesJson
+                "{\"model\": \"%s\", \"messages\": %s, \"temperature\": %.2f, \"max_tokens\": %d}",
+                config.getModelName(),
+                messagesJson,
+                config.getTemperature(),
+                config.getMaxTokens()
             );
             
-            log.debug("[AI Chat Flow - LLM] Sending Request (URL: {}, Model: {})...", baseUrl + "/chat/completions", chatModel);
+            String apiUrl = config.getFullApiUrl();
+            log.debug("[AI Chat Flow - LLM] Sending Request (URL: {}, Model: {})...", apiUrl, config.getModelName());
             
             String response = webClient.post()
-                .uri(baseUrl + "/chat/completions")
-                .header("Authorization", "Bearer " + apiKey)
+                .uri(apiUrl)
+                .header("Authorization", "Bearer " + config.getApiKey())
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
@@ -234,6 +245,30 @@ public class RagService {
             log.error("Error calling LLM: {}", e.getMessage());
             log.debug("[AI Chat Flow - LLM] LLM Exception trace: ", e);
             return "抱歉，处理您的请求时出现了问题。";
+        }
+    }
+    
+    /**
+     * 获取当前配置的聊天模型
+     */
+    private ActiveModelConfig getChatConfig() {
+        try {
+            return modelProviderService.getActiveChatConfig();
+        } catch (Exception e) {
+            log.warn("Failed to get chat config from database, using fallback: {}", e.getMessage());
+            // 使用备用配置
+            if (fallbackApiKey != null && !fallbackApiKey.isEmpty()) {
+                return ActiveModelConfig.builder()
+                        .provider("openai")
+                        .providerName("OpenAI")
+                        .modelName(fallbackChatModel)
+                        .displayName("Fallback Chat")
+                        .apiKey(fallbackApiKey)
+                        .baseUrl(fallbackBaseUrl)
+                        .parameters(Map.of("temperature", 0.7, "max_tokens", 1000))
+                        .build();
+            }
+            return null;
         }
     }
     
