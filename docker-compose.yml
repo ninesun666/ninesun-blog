@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: ninesun-blog-postgres
     restart: unless-stopped
     environment:
@@ -11,6 +11,7 @@ services:
       - "5441:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ninesun} -d ${POSTGRES_DB:-ninesun_blog}"]
       interval: 10s

@@ -107,7 +107,7 @@ public class EmbeddingService {
             return 0;
         }
         
-        List<Article> articles = articleRepository.findByStatus("PUBLISHED");
+        List<Article> articles = articleRepository.findByStatus(Article.ArticleStatus.PUBLISHED);
         int count = 0;
         
         for (Article article : articles) {

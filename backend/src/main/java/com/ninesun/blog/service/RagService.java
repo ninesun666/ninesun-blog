@@ -61,32 +61,45 @@ public class RagService {
      * RAG 问答
      */
     public Map<String, Object> chat(String query, String conversationHistory) {
+        log.debug("====== [AI Chat Flow] START ======");
+        log.debug("[AI Chat Flow] 1. Request Received. Query: '{}'", query);
+        log.debug("[AI Chat Flow] 2. History Length: {} chars", conversationHistory != null ? conversationHistory.length() : 0);
+        
         Map<String, Object> result = new HashMap<>();
         
         if (apiKey == null || apiKey.isEmpty()) {
             result.put("success", false);
             result.put("error", "AI 服务未配置");
+            log.debug("[AI Chat Flow] FAIL: AI Service not configured (API Key is missing).");
             return result;
         }
         
         try {
             // 1. 生成查询的 embedding
+            log.debug("[AI Chat Flow] 3. Generating embedding for the query...");
             float[] queryEmbedding = embeddingService.generateEmbedding(query);
             if (queryEmbedding.length == 0) {
                 result.put("success", false);
                 result.put("error", "无法处理查询");
+                log.debug("[AI Chat Flow] FAIL: Empty embedding returned for query.");
                 return result;
             }
+            log.debug("[AI Chat Flow] 4. Query embedding generated successfully. Vector dimension: {}", queryEmbedding.length);
             
             // 2. 向量搜索相似文章
+            log.debug("[AI Chat Flow] 5. Starting vector similarity search to find related articles...");
             String queryVector = embeddingService.embeddingToString(queryEmbedding);
             List<Object[]> similarArticles = embeddingRepository.findSimilarArticles(queryVector, maxContextArticles);
+            log.debug("[AI Chat Flow] 6. Vector search completed. Found {} raw related articles.", similarArticles.size());
             
             // 3. 获取相关文章内容
+            log.debug("[AI Chat Flow] 7. Building context from found articles...");
             List<Map<String, Object>> context = buildContext(similarArticles);
             
             // 4. 构建 prompt 并调用 LLM
+            log.debug("[AI Chat Flow] 9. Preparing to call LLM...");
             String response = callLLM(query, context, conversationHistory);
+            log.debug("[AI Chat Flow] 10. LLM API Call completed.");
             
             result.put("success", true);
             result.put("response", response);
@@ -98,12 +111,14 @@ public class RagService {
                 ))
                 .collect(Collectors.toList()));
             
+            log.debug("====== [AI Chat Flow] SUCCESS ======");
             return result;
             
         } catch (Exception e) {
             log.error("RAG chat error: {}", e.getMessage());
             result.put("success", false);
             result.put("error", "处理请求时出错: " + e.getMessage());
+            log.debug("====== [AI Chat Flow] ERROR: {} ======", e.getMessage());
             return result;
         }
     }
@@ -121,13 +136,18 @@ public class RagService {
             
             // 只取距离小于 0.5 的结果（相似度足够高）
             if (distance > 0.5) {
+                log.debug("[AI Chat Flow - Context] Ignored Article ID {} due to distance {} > 0.5 limit", articleId, distance);
                 continue;
             }
             
             Optional<Article> articleOpt = articleRepository.findById(articleId);
-            if (articleOpt.isEmpty()) continue;
+            if (articleOpt.isEmpty()) {
+                log.debug("[AI Chat Flow - Context] Article ID {} not found in database", articleId);
+                continue;
+            }
             
             Article article = articleOpt.get();
+            log.debug("[AI Chat Flow - Context] Selected Article ID {}, Title: '{}', Distance: {}", article.getId(), article.getTitle(), distance);
             
             String content = String.format(
                 "【文章标题】%s\n【文章内容】%s",
@@ -135,7 +155,10 @@ public class RagService {
                 truncateText(article.getContent(), 1000)
             );
             
-            if (totalLength + content.length() > maxContextLength) break;
+            if (totalLength + content.length() > maxContextLength) {
+                log.debug("[AI Chat Flow - Context] Context length limit reached ({} > {}). Stopping inclusion.", totalLength + content.length(), maxContextLength);
+                break;
+            }
             
             totalLength += content.length();
             context.add(Map.of(
@@ -180,11 +203,15 @@ public class RagService {
             messages.add(Map.of("role", "user", "content", query));
             
             String messagesJson = objectMapper.writeValueAsString(messages);
+            log.debug("[AI Chat Flow - LLM] Constructed LLM Request Messages:\n{}", messagesJson);
+            
             String requestBody = String.format(
                 "{\"model\": \"%s\", \"messages\": %s, \"temperature\": 0.7, \"max_tokens\": 1000}",
                 chatModel,
                 messagesJson
             );
+            
+            log.debug("[AI Chat Flow - LLM] Sending Request (URL: {}, Model: {})...", baseUrl + "/chat/completions", chatModel);
             
             String response = webClient.post()
                 .uri(baseUrl + "/chat/completions")
@@ -195,11 +222,17 @@ public class RagService {
                 .bodyToMono(String.class)
                 .block();
             
+            log.debug("[AI Chat Flow - LLM] Raw LLM Response Processed. Payload size: {}", response != null ? response.length() : 0);
+            
             JsonNode root = objectMapper.readTree(response);
-            return root.path("choices").get(0).path("message").path("content").asText();
+            String finalContent = root.path("choices").get(0).path("message").path("content").asText();
+            log.debug("[AI Chat Flow - LLM] Extracted Response Content: \n{}", finalContent);
+            
+            return finalContent;
             
         } catch (Exception e) {
             log.error("Error calling LLM: {}", e.getMessage());
+            log.debug("[AI Chat Flow - LLM] LLM Exception trace: ", e);
             return "抱歉，处理您的请求时出现了问题。";
         }
     }
