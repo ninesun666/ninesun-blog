@@ -1,0 +1,109 @@
+{
+  "project": {
+    "source_issue": 123
+  },
+  "features": [
+    {
+      "id": "T001",
+      "description": "Investigate existing pull request",
+      "details": "Locate and review the existing pull request for branch 'feat/issue-117-manual-review-required-failed-to-process-issue-115'. Check its status, content, and whether it properly addresses issue #117. Determine if it's ready for review or needs modifications.",
+      "priority": "high",
+      "dependencies": [],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "investigation_report": ".agent-harness/investigation_report_T001.md",
+      "findings": {
+        "branch": "feat/issue-117-manual-review-required-failed-to-process-issue-115",
+        "related_issues": [
+          117,
+          115,
+          123
+        ],
+        "pr_status": "requires_manual_review",
+        "recommendation": "Proceed to T002 to review issue #117, then T003 to decide on PR resolution path"
+      }
+    },
+    {
+      "id": "T002",
+      "description": "Review underlying issue #117",
+      "details": "Examine issue #117 to understand what the automation was attempting to implement. Verify if the changes in the existing PR align with the requirements of issue #117.",
+      "priority": "high",
+      "dependencies": [
+        "T001"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "investigation_report": ".agent-harness/investigation_report_T002.md",
+      "findings": {
+        "issue_117_type": "automation_error_report",
+        "root_cause_issue": 115,
+        "pr_alignment": "unknown",
+        "notes": "Issue #117 is a meta-issue for failure tracking. Actual requirements are in Issue #115. PR alignment depends on Issue #115 requirements."
+      }
+    },
+    {
+      "id": "T003",
+      "description": "Decide on PR resolution path",
+      "details": "Based on investigation results, either: (a) Accept the existing PR and proceed with review, (b) Close the existing PR and trigger automation retry, or (c) Manually complete the work if automation cannot proceed.",
+      "priority": "high",
+      "dependencies": [
+        "T001",
+        "T002"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": true,
+      "status": "completed",
+      "decision_report": ".agent-harness/decision_report_T003.md",
+      "decision": {
+        "path_chosen": "c",
+        "path_description": "Manually complete the work",
+        "rationale": "PR requires manual review with unknown alignment to Issue #115. Manual completion ensures quality and avoids automation retry risks.",
+        "next_steps": [
+          "Review Issue #115 in detail",
+          "Examine existing PR content",
+          "Complete implementation manually",
+          "Proceed to T004 to close Issue #123"
+        ]
+      }
+    },
+    {
+      "id": "T004",
+      "description": "Close this automation failure issue",
+      "details": "Once the PR situation is resolved, close this issue #123 with appropriate documentation of the resolution. Link to the valid PR or explain the manual fix applied.",
+      "priority": "medium",
+      "dependencies": [
+        "T003"
+      ],
+      "files_to_modify": [],
+      "estimated_complexity": "low",
+      "passes": false
+    },
+    {
+      "id": "T005",
+      "description": "Improve automation error handling (optional)",
+      "details": "Consider updating the AI Harness automation to gracefully handle scenarios where a PR already exists. Options include: checking for existing PRs before creation, updating existing PRs, or providing clearer error messages with recovery suggestions.",
+      "priority": "low",
+      "dependencies": [
+        "T003"
+      ],
+      "files_to_modify": [
+        ".github/workflows/ai-harness.yml",
+        "automation/pr-creator.js"
+      ],
+      "estimated_complexity": "medium",
+      "passes": false
+    }
+  ],
+  "overall_approach": "Investigate the existing pull request for the branch 'feat/issue-117-manual-review-required-failed-to-process-issue-115', determine if it's valid and usable, and either proceed with the existing PR or close it and retry the automation. Additionally, consider improving the automation to handle duplicate PR scenarios gracefully.",
+  "potential_risks": [
+    "The existing PR may be stale or incomplete",
+    "Closing the existing PR could lose work already done",
+    "The underlying issue #117 may have its own problems that need addressing",
+    "Retry without fixing root cause could result in repeated failures"
+  ]
+}
