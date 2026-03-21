@@ -1,0 +1,29 @@
+/* CSS Variables for consistent layout values */
+:root {
+  /* Container widths */
+  --container-max-width: 1400px;
+  --container-max-width-xl: 1600px;
+  --content-max-width: 800px;
+  
+  /* Sidebar */
+  --sidebar-width: 320px;
+  --sidebar-width-md: 280px;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  
+  /* Breakpoints (for reference, use in media queries) */
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-xxl: 1920px;
+  
+  /* Grid */
+  --grid-gap: 1.5rem;
+  --grid-gap-lg: 2rem;
+}
