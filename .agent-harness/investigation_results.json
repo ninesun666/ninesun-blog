@@ -1,0 +1,20 @@
+{
+  "status": "pending_investigation",
+  "message": "Run investigate_pr_117.py to populate this file with actual GitHub data",
+  "instructions": [
+    "1. Ensure GitHub CLI (gh) is authenticated: gh auth status",
+    "2. Run: python3 .agent-harness/investigate_pr_117.py",
+    "3. Review the generated results in this file"
+  ],
+  "task": "T001",
+  "branch_to_investigate": "feat/issue-117-manual-review-required-failed-to-process-issue-115",
+  "related_issues": [117, 115, 122],
+  "expected_actions": [
+    "Check if PR exists on the branch",
+    "Review PR status (open/closed/merged)",
+    "Review issue #117 requirements",
+    "Review issue #115 context",
+    "Determine if existing PR can be used or should be closed",
+    "Document findings for T003 resolution"
+  ]
+}
